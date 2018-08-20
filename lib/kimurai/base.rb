@@ -96,8 +96,10 @@ module Kimurai
     def initialize(engine: self.class.engine, config: {})
       @engine = engine
       @config = self.class.config.deep_merge(config)
-      @pipelines = self.class.pipelines
-        .map { |pipeline| [pipeline, pipeline.to_s.classify.constantize.new] }.to_h
+      @pipelines = self.class.pipelines.map do |pipeline_name|
+        klass = Pipeline.descendants.find { |kl| kl.name == pipeline_name }
+        [pipeline_name, klass.new]
+      end.to_h
     end
 
     def browser

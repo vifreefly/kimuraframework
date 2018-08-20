@@ -1,4 +1,3 @@
-require 'logger'
 require 'rbcat'
 
 module Kimurai
@@ -17,25 +16,21 @@ module Kimurai
         end
       end
 
-    @run_info = {
-      crawler_name: name,
-      status: :running,
-      environment: Kimurai.env,
-      start_time: Time.new,
-      stop_time: nil,
-      running_time: nil,
-      visits: {
-        requests: 0,
-        responses: 0,
-        requests_errors: Hash.new(0)
-      },
-      items: {
-        sent: 0,
-        processed: 0,
-        drop_errors: Hash.new(0)
-      },
-      error: nil
-    }
+    ###
+
+    def self.run_info
+      @run_info ||= {
+        crawler_name: name,
+        status: :running,
+        environment: Kimurai.env,
+        start_time: Time.new,
+        stop_time: nil,
+        running_time: nil,
+        visits: { requests: 0, responses: 0 },
+        items: { sent: 0, processed: 0 },
+        error: nil
+      }
+    end
 
     def self.running?
       run_info[:status] == :running
@@ -47,6 +42,12 @@ module Kimurai
 
     def self.failed?
       run_info[:status] == :failed
+    end
+
+    def self.update(type, subtype)
+      (@sync_mutex ||= Mutex.new).synchronize do
+        run_info[type][subtype] += 1
+      end
     end
 
     ###
@@ -81,17 +82,15 @@ module Kimurai
 
     def self.logger
       @logger ||= Kimurai.configuration.logger || begin
-        STDOUT.sync = true
-
         log_level = (ENV["LOG_LEVEL"] || Kimurai.configuration.log_level || "DEBUG").upcase
         log_level = "Logger::#{log_level}".constantize
-        Logger.new(STDOUT, formatter: LoggerFormatter,
-                           level: log_level,
-                           progname: ENV["CURRENT_CRAWLER"]) # fix it
+        Logger.new(STDOUT, formatter: LoggerFormatter, level: log_level, progname: name)
       end
     end
 
     ######
+
+    attr_reader :logger
 
     def initialize(engine: self.class.engine, config: {})
       @engine = engine
@@ -100,10 +99,12 @@ module Kimurai
         klass = Pipeline.descendants.find { |kl| kl.name == pipeline_name }
         [pipeline_name, klass.new]
       end.to_h
+
+      @logger = self.class.logger
     end
 
     def browser
-      @browser ||= BrowserBuilder.new(@engine, config: @config).build
+      @browser ||= BrowserBuilder.build(@engine, @config, spider: self)
     end
 
     def request_to(handler, delay = nil, url:, data: {})
@@ -117,8 +118,8 @@ module Kimurai
       binding.pry
     end
 
-    def logger
-      self.class.logger
-    end
+    # def logger
+    #   self.class.logger
+    # end
   end
 end

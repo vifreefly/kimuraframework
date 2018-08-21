@@ -6,15 +6,6 @@ require_relative 'session/config'
 module Capybara
   class Session
     attr_accessor :spider
-    attr_writer :requests, :responses
-
-    def requests
-      @requests ||= 0
-    end
-
-    def responses
-      @responses ||= 0
-    end
 
     def current_response
       Nokogiri::HTML(body)
@@ -29,7 +20,7 @@ module Capybara
         begin
           check_request_options(visit_uri) unless skip_request_options
 
-          self.requests += 1 and logger.info "Browser: started get request to: #{visit_uri}"
+          driver.requests += 1 and logger.info "Browser: started get request to: #{visit_uri}"
           spider.class.update(:visits, :requests)
           original_visit(visit_uri)
         rescue *config.retry_request_errors => e
@@ -43,41 +34,65 @@ module Capybara
             raise e
           end
         else
-          self.responses += 1 and logger.info "Browser: finished get request to: #{visit_uri}"
+          driver.responses += 1 and logger.info "Browser: finished get request to: #{visit_uri}"
           spider.class.update(:visits, :responses)
-          @driver.visited = true unless @driver.visited
+          driver.visited = true unless driver.visited
         ensure
           logger.info "Info: visits: requests: #{spider.class.visits[:requests]}, responses: #{spider.class.visits[:responses]}"
-          # logger.debug "Browser: current_memory: #{current_memory}" if current_memory
+          if memory = driver.current_memory
+            logger.debug "Browser: driver.current_memory: #{memory}"
+          end
         end
       else
         original_visit(visit_uri)
       end
     end
 
+    def destroy_driver!
+      if @driver
+        @driver.quit
+        @driver = nil
+        logger.info "Browser: driver #{mode} has been destroyed"
+      else
+        logger.warn "Browser: driver #{mode} is not present"
+      end
+    end
+
+    def restart!
+      if mode.match?(/poltergeist/)
+        @driver.browser.restart
+        @driver.requests, @driver.responses = 0, 0
+      else
+        destroy_driver!
+        driver
+      end
+
+      logger.info "Browser: driver has been restarted: name: #{mode}, pid: #{driver.pid}, port: #{driver.port}"
+    end
+
     private
 
     def process_delay(delay)
       interval = (delay.class == Range ? rand(delay) : delay)
-      logger.debug "Browser: sleeping #{interval.round(2)} #{'second'.pluralize(interval)} before request..."
+      logger.debug "Browser: sleep #{interval.round(2)} #{'second'.pluralize(interval)} before request..."
       sleep interval
     end
 
     def check_request_options(url_to_visit)
       # restart_if
-      if mem_limit = config.restart_if[:memory_size]
-        memory = current_memory
-        if memory >= mem_limit
-          logger.warn "Browser: memory limit #{mem_limit} of current_memory #{memory} is exceeded (engine: #{mode})"
-          recreate_driver!
+      if memory_limit = config.restart_if[:memory_limit]
+        memory = driver.current_memory
+        if memory >= memory_limit
+          logger.warn "Browser: memory_limit #{memory_limit} of driver.current_memory (#{memory}) is exceeded (engine: #{mode})"
+          restart!
         end
       end
 
-      if req_limit = config.restart_if[:requests_count]
-        if self.requests >= req_limit
-          logger.warn "Browser: requests limit #{req_limit} of current count #{self.requests} is exceeded (engine: #{mode})"
-          recreate_driver!
-          self.requests, self.responses = 0, 0
+      if requests_limit = config.restart_if[:requests_limit]
+        requests = driver.requests
+        if requests >= requests_limit
+          logger.warn "Browser: requests_limit #{requests_limit} of driver.requests (#{requests}) is exceeded (engine: #{mode})"
+          restart!
         end
       end
 

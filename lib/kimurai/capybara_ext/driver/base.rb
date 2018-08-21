@@ -2,6 +2,15 @@ require 'pathname'
 
 class Capybara::Driver::Base
   attr_accessor :visited
+  attr_writer :requests, :responses
+
+  def requests
+    @requests ||= 0
+  end
+
+  def responses
+    @responses ||= 0
+  end
 
   def current_memory
     driver_pid = pid

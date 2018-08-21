@@ -36,4 +36,11 @@ class Capybara::Mechanize::Driver
   def quit
     browser.agent.shutdown
   end
+
+  ###
+
+  # Reset parent method `current_memory` for mechanize (we can't measure memory of mechanize engine)
+  def current_memory
+    nil
+  end
 end

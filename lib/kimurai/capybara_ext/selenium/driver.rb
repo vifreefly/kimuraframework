@@ -11,4 +11,6 @@ class Capybara::Selenium::Driver
   def clear_cookies
     browser.manage.delete_all_cookies
   end
+
+  ###
 end

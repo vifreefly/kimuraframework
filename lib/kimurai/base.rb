@@ -92,7 +92,7 @@ module Kimurai
     def self.crawl!
       logger.error "Spider: already running" and return if running?
       @run_info = {
-        crawler_name: name, status: :running, environment: Kimurai.env,
+        spider_name: name, status: :running, environment: Kimurai.env,
         start_time: Time.new, stop_time: nil, running_time: nil,
         visits: { requests: 0, responses: 0 }, items: { sent: 0, processed: 0 }, error: nil
       }
@@ -170,7 +170,7 @@ module Kimurai
 
     private
 
-    def in_parallel(handler, urls, threads:, data: {}, delay: nil, engine: self.class.engine, config: {})
+    def in_parallel(handler, urls, threads:, data: {}, delay: nil, engine: @engine, config: {})
       parts = urls.in_sorted_groups(threads, false)
       urls_count = urls.size
 

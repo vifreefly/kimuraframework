@@ -31,7 +31,7 @@ class Capybara::Driver::Base
   end
 
   # https://github.com/schneems/get_process_mem
-  # Note: for Linux takes PSS (not RSS) memory (I think PSS better fit in this case)
+  # Note: for Linux takes PSS (not RSS) memory (I think PSS better fits in this case)
   def get_process_memory(pid)
     case @platform ||= Gem::Platform.local.os
     when "linux"

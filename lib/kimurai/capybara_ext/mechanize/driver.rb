@@ -1,9 +1,10 @@
 require 'mechanize'
 require_relative '../driver/base'
 
-# Extend capybara-mechnize to support Poltergeist-like methods
-# https://www.rubydoc.info/gems/poltergeist/Capybara/Poltergeist/Driver
 class Capybara::Mechanize::Driver
+  # Extend capybara-mechnize to support Poltergeist-like methods
+  # https://www.rubydoc.info/gems/poltergeist/Capybara/Poltergeist/Driver
+
   def set_proxy(ip, port, type, user, password)
     # type is always "http", "socks" is not supported (yet)
     browser.agent.set_proxy(ip, port, user, password)
@@ -41,6 +42,14 @@ class Capybara::Mechanize::Driver
 
   # Reset parent method `current_memory` for mechanize (we can't measure memory of mechanize engine)
   def current_memory
+    nil
+  end
+
+  def pid
+    nil
+  end
+
+  def port
     nil
   end
 end

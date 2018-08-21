@@ -144,7 +144,7 @@ module Capybara
     end
 
     def logger
-      spider&.logger
+      spider.logger
     end
   end
 end

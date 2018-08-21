@@ -1,4 +1,6 @@
 require 'rbcat'
+require_relative 'base/simple_saver'
+require_relative 'base/uniq_checker'
 
 module Kimurai
   class Base
@@ -44,7 +46,7 @@ module Kimurai
     def self.update(type, subtype)
       return unless @run_info
 
-      (@sync_mutex ||= Mutex.new).synchronize do
+      (@update_mutex ||= Mutex.new).synchronize do
         @run_info[type][subtype] += 1
       end
     end
@@ -89,6 +91,24 @@ module Kimurai
 
     ###
 
+    def self.checker
+      @checker ||= UniqChecker.new
+    end
+
+    def unique?(scope, value)
+      self.class.checker.unique?(scope, value)
+    end
+
+    def self.saver
+      @saver ||= SimpleSaver.new
+    end
+
+    def save_to(path, item, format:, position: true)
+      self.class.saver.save(path, item, format: format, position: position)
+    end
+
+    ###
+
     def self.crawl!
       logger.error "Spider: already running" and return if running?
       @run_info = {
@@ -126,7 +146,7 @@ module Kimurai
       message = "Spider: stopped: #{@run_info.merge(running_time: @run_info[:running_time]&.duration)}"
       failed? ? @logger.fatal(message) : @logger.info(message)
 
-      @run_info = nil
+      @run_info, @checker, @saver = nil
     end
 
     def self.parse!(handler, url: nil, data: {})
@@ -136,7 +156,7 @@ module Kimurai
       spider.browser.destroy_driver!
     end
 
-    ### ###
+    ###
 
     attr_reader :logger
     attr_accessor :with_info

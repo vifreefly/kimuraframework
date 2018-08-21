@@ -28,6 +28,10 @@ class Capybara::Mechanize::Driver
     browser.agent.cookie_jar << cookie
   end
 
+  def clear_cookies
+    browser.agent.cookie_jar.clear!
+  end
+
   def quit
     browser.agent.shutdown
   end

@@ -1,6 +1,7 @@
 require 'capybara'
 require 'capybara/mechanize'
 require_relative '../capybara_configuration'
+require_relative '../capybara_ext/driver/base'
 require_relative '../capybara_ext/mechanize/driver'
 require_relative '../capybara_ext/session'
 
@@ -32,12 +33,12 @@ module Kimurai
         # Proxy
         if proxy = @config[:proxy].presence
           proxy_string = (proxy.class == Proc ? proxy.call : proxy).strip
-          type, ip, port = proxy_string.split(":")
+          ip, port, type = proxy_string.split(":")
 
           if type == "socks5"
             logger.error "BrowserBuilder (mechanize): can't set socks5 proxy (not supported), skipped"
           else
-            @browser.set_proxy(proxy_string)
+            @browser.set_proxy(*proxy_string.split(":"))
             logger.debug "BrowserBuilder (mechanize): enabled #{type} proxy, ip: #{ip}, port: #{port}"
           end
         end
@@ -62,20 +63,26 @@ module Kimurai
         if user_agent = @config[:user_agent].presence
           user_agent_string = (user_agent.class == Proc ? user_agent.call : user_agent).strip
 
-          @browser.driver.add_header("User-Agent", user_agent)
+          @browser.driver.add_header("User-Agent", user_agent_string)
           logger.debug "BrowserBuilder (mechanize): enabled custom user-agent"
         end
 
         # Cookies
         if cookies = @config[:cookies].presence
           cookies.each do |cookie|
-            @browser.driver.set_cookie(cookie)
+            @browser.driver.set_cookie(cookie[:name], cookie[:value], cookie)
           end
 
           logger.debug "BrowserBuilder (mechanize): enabled custom cookies"
         end
 
         # Browser instance options
+        # retry_request_errors
+        if errors = @config.dig(:browser, :retry_request_errors).presence
+          @browser.config.retry_request_errors = errors
+          logger.debug "BrowserBuilder (mechanize): enabled `browser retry_request_errors`"
+        end
+
         # restart_if
         if @config.dig(:browser, :restart_if).present?
           logger.error "BrowserBuilder (mechanize): `browser restart_if` options not supported by mechanize engine, skipped"
@@ -120,11 +127,13 @@ module Kimurai
           end
         end
 
+        # before_request delay
         if delay = @config.dig(:session, :before_request, :delay).presence
           @browser.config.before_request[:delay] = delay
           logger.debug "BrowserBuilder (mechanize): enabled `browser before_request delay`"
         end
 
+        # return Capybara session instance
         @browser
       end
     end

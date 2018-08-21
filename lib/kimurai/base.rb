@@ -44,6 +44,14 @@ module Kimurai
       run_info[:status] == :failed
     end
 
+    def self.visits
+      run_info[:visits]
+    end
+
+    def self.items
+      run_info[:items]
+    end
+
     def self.update(type, subtype)
       (@sync_mutex ||= Mutex.new).synchronize do
         run_info[type][subtype] += 1

@@ -64,6 +64,7 @@ module Capybara
     end
 
     def check_request_options(url_to_visit)
+      # restart_if
       if mem_limit = config.restart_if[:memory_size]
         memory = current_memory
         if memory >= mem_limit
@@ -80,6 +81,16 @@ module Capybara
         end
       end
 
+      # cookies
+      # (Selenium only) if config.cookies present and browser was just created,
+      # visit url_to_visit first and only then set cookies:
+      if driver.visited.nil? && config.cookies && mode.match?(/selenium/)
+        visit(url_to_visit, skip_request_options: true)
+        config.cookies.each do |cookie|
+          driver.set_cookie(cookie[:name], cookie[:value], cookie)
+        end
+      end
+
       if config.before_request[:clear_cookies]
         driver.clear_cookies
         logger.debug "Browser: cleared cookies before request"
@@ -88,8 +99,8 @@ module Capybara
       if config.before_request[:clear_and_set_cookies]
         driver.clear_cookies
 
-        # if driver == selenium and browser is not visited yet any page, visit page
-        # first and then set cookies:
+        # (Selenium only) if browser is not visited yet any page, visit page
+        # first and then set cookies (needs after browser restart):
         if driver.visited.nil? && mode.match?(/selenium/)
           visit(url_to_visit, skip_request_options: true)
         end
@@ -101,11 +112,13 @@ module Capybara
         logger.debug "Browser: cleared and set cookies before request"
       end
 
+      # user_agent
       if config.before_request[:change_user_agent]
         driver.add_header("User-Agent", config.user_agent.call)
         logger.debug "Browser: changed user_agent before request"
       end
 
+      # proxy
       if config.before_request[:change_proxy]
         proxy_string = config.proxy.call
         driver.set_proxy(*proxy_string.split(":"))

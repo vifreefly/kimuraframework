@@ -84,7 +84,7 @@ module Kimurai
 
         # restart_if
         if @config.dig(:browser, :restart_if).present?
-          logger.error "BrowserBuilder (mechanize): `browser restart_if` options not supported by mechanize engine, skipped"
+          logger.error "BrowserBuilder (mechanize): `browser restart_if` options not supported by Mechanize, skipped"
         end
 
         # before_request clear_cookies

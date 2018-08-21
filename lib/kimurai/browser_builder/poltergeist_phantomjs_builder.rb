@@ -26,7 +26,7 @@ module Kimurai
           # Window size
           if size = @config[:window_size].presence
             driver_options[:window_size] = size
-            logger.debug "BrowserBuilder (poltergeist_phantomjs): enabled window size"
+            logger.debug "BrowserBuilder (poltergeist_phantomjs): enabled window_size"
           end
 
           # SSL

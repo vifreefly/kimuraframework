@@ -20,8 +20,8 @@ class Capybara::Driver::Base
     all = (get_descendant_processes(driver_pid) << driver_pid).uniq
 
     # fix error, sometimes in get_descendant_processes appears pid of the command
-    # itself (ps -eo pid,ppid). Of course it's gone already when GetProcessMem
-    # tryining to find this process proc
+    # itself (ps -eo pid,ppid). Of course it's gone already when get_process_memory
+    # tryining to find this process /proc
     all.map { |pid| get_process_memory(pid) }.sum
   end
 

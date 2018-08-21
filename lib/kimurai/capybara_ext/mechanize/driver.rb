@@ -40,7 +40,7 @@ class Capybara::Mechanize::Driver
 
   ###
 
-  # Reset parent method `current_memory` for mechanize (we can't measure memory of mechanize engine)
+  # Reset parent method `current_memory` for mechanize (we can't measure memory of Mechanize driver)
   def current_memory
     nil
   end

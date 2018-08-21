@@ -1,6 +1,5 @@
 require 'capybara'
 require 'nokogiri'
-require 'murmurhash3'
 require_relative 'session/config'
 
 module Capybara

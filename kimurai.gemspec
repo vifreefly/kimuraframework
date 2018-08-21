@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Victor Afanasev"]
   spec.email         = ["vicfreefly@gmail.com"]
 
-  spec.summary       = "Modern web scraping and web automation framework written in ruby and based on Capybara"
+  spec.summary       = "Modern web scraping framework written in Ruby and based on Capybara"
   spec.homepage      = "https://github.com/vfreefly/kimurai"
   spec.license       = "MIT"
 

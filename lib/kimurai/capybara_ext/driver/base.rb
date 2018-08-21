@@ -14,14 +14,8 @@ class Capybara::Driver::Base
 
   def current_memory
     driver_pid = pid
-    # if #driver hasn't been called yet, driver_pid will be nil.
-    # In this case we need to set memory to zero
-    # return 0 unless driver_pid
-    all = (get_descendant_processes(driver_pid) << driver_pid).uniq
 
-    # fix error, sometimes in get_descendant_processes appears pid of the command
-    # itself (ps -eo pid,ppid). Of course it's gone already when get_process_memory
-    # tryining to find this process /proc
+    all = (get_descendant_processes(driver_pid) << driver_pid).uniq
     all.map { |pid| get_process_memory(pid) }.sum
   end
 

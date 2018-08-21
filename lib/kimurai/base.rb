@@ -2,24 +2,23 @@ require 'rbcat'
 
 module Kimurai
   class Base
-    LoggerFormatter =
-      proc do |severity, datetime, progname, msg|
-        current_thread_id = Thread.current.object_id
-        thread_type = Thread.main == Thread.current ? "M" : "C"
-        output = "%s, [%s#%d] [%s: %s] %5s -- %s: %s\n"
-          .freeze % [severity[0..0], datetime, $$, thread_type, current_thread_id, severity, progname, msg]
+    LoggerFormatter = proc do |severity, datetime, progname, msg|
+      current_thread_id = Thread.current.object_id
+      thread_type = Thread.main == Thread.current ? "M" : "C"
+      output = "%s, [%s#%d] [%s: %s] %5s -- %s: %s\n"
+        .freeze % [severity[0..0], datetime, $$, thread_type, current_thread_id, severity, progname, msg]
 
-        if Kimurai.configuration.colorize_logger != false && Kimurai.env == "development"
-          Rbcat.colorize(output, predefined: [:jsonhash, :logger])
-        else
-          output
-        end
+      if Kimurai.configuration.colorize_logger != false && Kimurai.env == "development"
+        Rbcat.colorize(output, predefined: [:jsonhash, :logger])
+      else
+        output
       end
+    end
 
     ###
 
     class << self
-      attr_reader :run_info, :logger
+      attr_reader :run_info
     end
 
     def self.running?
@@ -80,8 +79,8 @@ module Kimurai
 
     ###
 
-    def self.get_logger_instance
-      Kimurai.configuration.logger || begin
+    def self.logger
+      @logger ||= Kimurai.configuration.logger || begin
         log_level = (ENV["LOG_LEVEL"] || Kimurai.configuration.log_level || "DEBUG").upcase
         log_level = "Logger::#{log_level}".constantize
         Logger.new(STDOUT, formatter: LoggerFormatter, level: log_level, progname: name)
@@ -90,20 +89,19 @@ module Kimurai
 
     ###
 
-    def self.crawl!(logger: get_logger_instance)
+    def self.crawl!
       logger.error "Spider: already running" and return if running?
-      @logger = logger
-
       @run_info = {
         crawler_name: name, status: :running, environment: Kimurai.env,
         start_time: Time.new, stop_time: nil, running_time: nil,
         visits: { requests: 0, responses: 0 }, items: { sent: 0, processed: 0 }, error: nil
       }
 
-      @logger.info "Spider: started: #{name}"
+      logger.info "Spider: started: #{name}"
       open_spider if self.respond_to? :open_spider
-      spider = self.new(logger: @logger)
 
+      spider = self.new
+      spider.with_info = true
       if start_urls
         start_urls.each do |start_url|
           spider.request_to(:parse, url: start_url)
@@ -138,11 +136,12 @@ module Kimurai
       spider.browser.destroy_driver!
     end
 
-    ######
+    ### ###
 
     attr_reader :logger
+    attr_accessor :with_info
 
-    def initialize(engine = self.class.engine, config: {}, logger: self.class.get_logger_instance)
+    def initialize(engine = self.class.engine, config: {})
       @engine = engine
       @config = self.class.config.deep_merge(config)
       @pipelines = self.class.pipelines.map do |pipeline_name|
@@ -152,17 +151,17 @@ module Kimurai
         [pipeline_name, instance]
       end.to_h
 
-      @logger = logger
+      @logger = self.class.logger
     end
 
     def browser
       @browser ||= BrowserBuilder.build(@engine, @config, spider: self)
     end
 
-    def request_to(handler, delay = nil, url:, data: {})
+    def request_to(handler, url:, data: {})
       request_data = { url: url, data: data }
 
-      delay ? browser.visit(url, delay: delay) : browser.visit(url)
+      browser.visit(url)
       public_send(handler, browser.current_response, request_data)
     end
 

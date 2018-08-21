@@ -17,6 +17,8 @@ module Kimurai
       end
     end
 
+    include BaseHelper
+
     ###
 
     class << self

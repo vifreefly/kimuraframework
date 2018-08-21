@@ -5,11 +5,14 @@ module Kimurai
       self.to_s.sub(/.*?::/, "").underscore.to_sym
     end
 
+    include BaseHelper
     attr_accessor :spider
 
     def name
       self.class.name
     end
+
+    ###
 
     def unique?(scope, value)
       spider.unique?(scope, value)

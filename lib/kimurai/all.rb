@@ -9,5 +9,6 @@ require_relative 'core_ext/string'
 require_relative 'core_ext/array'
 
 require_relative 'browser_builder'
+require_relative 'base_helper'
 require_relative 'pipeline'
 require_relative 'base'

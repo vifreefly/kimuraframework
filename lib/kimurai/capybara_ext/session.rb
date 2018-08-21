@@ -99,7 +99,7 @@ module Capybara
       if config.before_request[:clear_and_set_cookies]
         driver.clear_cookies
 
-        # (Selenium only) if browser is not visited yet any page, visit page
+        # (Selenium only) if browser is not visited yet any page, visit url_to_visit
         # first and then set cookies (needs after browser restart):
         if driver.visited.nil? && mode.match?(/selenium/)
           visit(url_to_visit, skip_request_options: true)

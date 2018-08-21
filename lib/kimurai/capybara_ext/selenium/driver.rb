@@ -13,4 +13,12 @@ class Capybara::Selenium::Driver
   end
 
   ###
+
+  def pid
+    @pid ||= `lsof -i tcp:#{port} -t`.strip.to_i
+  end
+
+  def port
+    @port ||= browser.send(:bridge).instance_variable_get("@http").instance_variable_get("@server_url").port
+  end
 end

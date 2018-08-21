@@ -1,7 +1,6 @@
 require 'capybara'
 require 'capybara/mechanize'
 require_relative '../capybara_configuration'
-require_relative '../capybara_ext/driver/base'
 require_relative '../capybara_ext/mechanize/driver'
 require_relative '../capybara_ext/session'
 

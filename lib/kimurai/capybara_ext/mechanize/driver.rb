@@ -1,4 +1,5 @@
 require 'mechanize'
+require_relative '../driver/base'
 
 # Extend capybara-mechnize to support Poltergeist-like methods
 # https://www.rubydoc.info/gems/poltergeist/Capybara/Poltergeist/Driver

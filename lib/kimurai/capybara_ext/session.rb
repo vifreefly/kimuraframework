@@ -29,7 +29,7 @@ module Capybara
         begin
           check_request_options(visit_uri) unless skip_request_options
 
-          requests += 1 and logger.info "Browser: started get request to: #{visit_uri}"
+          self.requests += 1 and logger.info "Browser: started get request to: #{visit_uri}"
           spider.class.update(:visits, :requests)
           original_visit(visit_uri)
         rescue *config.retry_request_errors => e
@@ -43,7 +43,7 @@ module Capybara
             raise e
           end
         else
-          responses += 1 and logger.info "Browser: finished get request to: #{visit_uri}"
+          self.responses += 1 and logger.info "Browser: finished get request to: #{visit_uri}"
           spider.class.update(:visits, :responses)
           @driver.visited = true unless @driver.visited
         ensure
@@ -73,10 +73,10 @@ module Capybara
       end
 
       if req_limit = config.restart_if[:requests_count]
-        if requests >= req_limit
-          logger.warn "Browser: requests limit #{req_limit} of current count #{requests} is exceeded (engine: #{mode})"
+        if self.requests >= req_limit
+          logger.warn "Browser: requests limit #{req_limit} of current count #{self.requests} is exceeded (engine: #{mode})"
           recreate_driver!
-          requests, responses = 0, 0
+          self.requests, self.responses = 0, 0
         end
       end
 

@@ -12,7 +12,7 @@ module Kimurai
     end
 
     def env
-      ENV.fetch("KIMURAI_ENV", "development")
+      ENV.fetch("KIMURAI_ENV") { "development" }
     end
 
     def time_zone

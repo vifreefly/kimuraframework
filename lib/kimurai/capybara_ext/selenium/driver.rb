@@ -1,3 +1,5 @@
+require_relative '../driver/base'
+
 class Capybara::Selenium::Driver
   def set_cookie(name, value, options = {})
     options[:name]  ||= name

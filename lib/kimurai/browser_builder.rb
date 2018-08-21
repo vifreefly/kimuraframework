@@ -23,6 +23,9 @@ module Kimurai
       when :poltergeist_phantomjs
         require_relative 'browser_builder/poltergeist_phantomjs_builder'
         PoltergeistPhantomJSBuilder.new(config, spider: spider).build
+      when :selenium_firefox
+        require_relative 'browser_builder/selenium_firefox_builder'
+        SeleniumFirefoxBuilder.new(config, spider: spider).build
       end
     end
   end

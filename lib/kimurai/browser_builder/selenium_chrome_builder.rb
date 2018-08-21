@@ -108,10 +108,10 @@ module Kimurai
         logger.debug "BrowserBuilder (selenium_chrome): created browser instance"
 
         # Window size
-        if size = @config[:window_size].presence
-          @browser.current_window.resize_to(*size)
-          logger.debug "BrowserBuilder (selenium_chrome): enabled window_size"
-        end
+        # if size = @config[:window_size].presence
+        #   @browser.current_window.resize_to(*size)
+        #   logger.debug "BrowserBuilder (selenium_chrome): enabled window_size"
+        # end
 
         # Cookies
         if cookies = @config[:cookies].presence

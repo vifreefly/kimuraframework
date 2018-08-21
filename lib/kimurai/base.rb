@@ -158,15 +158,48 @@ module Kimurai
       @browser ||= BrowserBuilder.build(@engine, @config, spider: self)
     end
 
-    def request_to(handler, url:, data: {})
+    def request_to(handler, delay = nil, url:, data: {})
       request_data = { url: url, data: data }
-
-      browser.visit(url)
+      delay ? browser.visit(url, delay: delay) : browser.visit(url)
       public_send(handler, browser.current_response, request_data)
     end
 
     def console(response = nil, url: nil, data: {})
       binding.pry
+    end
+
+    private
+
+    def in_parallel(handler, urls, threads:, data: {}, delay: nil, engine: self.class.engine, config: {})
+      parts = urls.in_sorted_groups(threads, false)
+      urls_count = urls.size
+
+      all = []
+      start_time = Time.now
+      logger.info "Spider: in_parallel: starting processing #{urls_count} urls within #{threads} threads"
+
+      parts.each do |part|
+        all << Thread.new(part) do |part|
+          Thread.current.abort_on_exception = true
+          spider = self.class.new(engine, config: config)
+          spider.with_info = true if self.with_info
+
+          part.each do |url_data|
+            if url_data.class == Hash
+              spider.request_to(handler, delay, url_data)
+            else
+              spider.request_to(handler, delay, url: url_data, data: data)
+            end
+          end
+        ensure
+          spider.browser.destroy_driver!
+        end
+
+        sleep 0.5
+      end
+
+      all.each(&:join)
+      logger.info "Spider: in_parallel: stopped processing #{urls_count} urls within #{threads} threads, total time: #{(Time.now - start_time).duration}"
     end
   end
 end

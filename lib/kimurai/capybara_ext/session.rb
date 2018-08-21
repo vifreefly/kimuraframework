@@ -37,7 +37,10 @@ module Capybara
           spider.class.update(:visits, :responses)
           driver.visited = true unless driver.visited
         ensure
-          logger.info "Info: visits: requests: #{spider.class.visits[:requests]}, responses: #{spider.class.visits[:responses]}"
+          if spider.class.running?
+            logger.info "Info: visits: requests: #{spider.class.visits[:requests]}, responses: #{spider.class.visits[:responses]}"
+          end
+
           if memory = driver.current_memory
             logger.debug "Browser: driver.current_memory: #{memory}"
           end
@@ -81,7 +84,7 @@ module Capybara
       # restart_if
       if memory_limit = config.restart_if[:memory_limit]
         memory = driver.current_memory
-        if memory >= memory_limit
+        if memory && memory >= memory_limit
           logger.warn "Browser: memory_limit #{memory_limit} of driver.current_memory (#{memory}) is exceeded (engine: #{mode})"
           restart!
         end

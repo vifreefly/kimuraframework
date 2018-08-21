@@ -108,7 +108,7 @@ module Capybara
 
       if config.before_request[:change_proxy]
         proxy_string = config.proxy.call
-        @browser.set_proxy(*proxy_string.split(":"))
+        driver.set_proxy(*proxy_string.split(":"))
         logger.debug "Browser: changed proxy before request"
       end
     end

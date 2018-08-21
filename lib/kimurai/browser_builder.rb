@@ -17,6 +17,9 @@ module Kimurai
       when :mechanize
         require_relative 'browser_builder/mechanize_builder'
         MechanizeBuilder.new(config, spider: spider).build
+      when :poltergeist_phantomjs
+        require_relative 'browser_builder/poltergeist_phantomjs_builder'
+        PoltergeistPhantomJSBuilder.new(config, spider: spider).build
       end
     end
   end

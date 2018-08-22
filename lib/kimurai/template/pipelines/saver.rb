@@ -3,8 +3,8 @@ class Saver < Kimurai::Pipeline
     # Here you can save item to the database, send it to a remote API or
     # simply save item to a file format using `save_to` helper:
 
-    # To get the name of current spider: `spider.class.name`
-    save_to "db/#{spider.class.name}.json", format: :json
+    # To get the name of a current spider: `spider.class.name`
+    # save_to "db/#{spider.class.name}.json", item, format: :pretty_json
 
     item
   end

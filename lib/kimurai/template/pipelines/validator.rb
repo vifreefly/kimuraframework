@@ -3,9 +3,9 @@ class Validator < Kimurai::Pipeline
     # Here you can validate item and raise `DropItemError`
     # if one of the validations failed. Examples:
 
-    # Check item stock number for uniqueness using buit-in `unique?` helper:
-    # unless unique?(:stock_number, item[:stock_number])
-    #   raise DropItemError, "Item is not unique"
+    # Check item sku for uniqueness using buit-in `unique?` helper:
+    # unless unique?(:sku, item[:sku])
+    #   raise DropItemError, "Item sku is not unique"
     # end
 
     # Drop item if title length shorter than 5 symbols:

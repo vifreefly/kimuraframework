@@ -18,7 +18,7 @@ class ApplicationSpider < Kimurai::Base
   @config = {
     # Custom headers, format: hash. Example: { "some header" => "some value", "another header" => "another value" }
     # Works only for :mechanize and :poltergeist_phantomjs engines (Selenium doesn't allow to set/get headers)
-    headers: {},
+    # headers: {},
 
     # Custom User Agent, format: string or lambda.
     # Use lambda if you want to rotate user agents before each run:
@@ -46,7 +46,7 @@ class ApplicationSpider < Kimurai::Base
     ignore_ssl_errors: true,
 
     # Custom window size, works for all engines
-    window_size: [1366, 768],
+    # window_size: [1366, 768],
 
     # Skip images downloading if true, works for all engines
     disable_images: true,
@@ -73,7 +73,7 @@ class ApplicationSpider < Kimurai::Base
         # Restart browser if provided memory limit (in kilobytes) is exceeded (works for all engines)
         # memory_limit: 350_000,
 
-        # Restart browser if provided requests count is exceeded (works for all engines)
+        # Restart browser if provided requests limit is exceeded (works for all engines)
         # requests_limit: 100
       },
       before_request: {

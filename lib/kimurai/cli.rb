@@ -67,7 +67,7 @@ module Kimurai
 
     ###
 
-    desc "Crawl", "Run a particular spider by it's name"
+    desc "crawl", "Run a particular spider by it's name"
     def crawl(spider_name)
       raise "Can't find Kimurai project" unless inside_project?
       require './config/boot'

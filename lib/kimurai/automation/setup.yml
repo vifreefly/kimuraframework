@@ -1,0 +1,44 @@
+---
+- hosts: all
+  vars:
+    ruby: 2.5.1
+    rbenv_root_path: /home/{{ ansible_user_id }}/.rbenv
+    rbenv_shims_path: "{{ rbenv_root_path }}/shims"
+    ruby_versions_path: "{{ rbenv_root_path }}/versions"
+    # check latest here http://phantomjs.org/download.html
+    phantomjs: 2.1.1
+    # check latest here https://github.com/mozilla/geckodriver/releases/
+    geckodriver: 0.21.0
+    # check latest here https://sites.google.com/a/chromium.org/chromedriver/downloads
+    chromedriver: 2.39
+
+  tasks:
+    - name: Update apt cache
+      become: true
+      apt: update_cache=yes cache_valid_time=86400
+
+    - name: Install base packages
+      become: true
+      apt:
+        pkg: "{{ item }}"
+        state: present
+      with_items:
+        - xvfb
+        - libsqlite3-dev
+        - sqlite3
+        - mongodb-clients
+        - mysql-client
+        - libmysqlclient-dev
+        - postgresql-client
+        - libpq-dev
+
+    - import_tasks: setup/ruby_environment.yml
+
+    - import_tasks: setup/phantomjs.yml
+      become: true
+
+    - import_tasks: setup/firefox_geckodriver.yml
+      become: true
+
+    - import_tasks: setup/chromium_chromedriver.yml
+      become: true

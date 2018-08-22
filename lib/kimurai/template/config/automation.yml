@@ -1,0 +1,13 @@
+# software versions to install for `setup` command
+setup:
+  ruby: 2.5.1
+  # check latest here http://phantomjs.org/download.html
+  phantomjs: 2.1.1
+  # check latest here https://github.com/mozilla/geckodriver/releases/
+  geckodriver: 0.21.0
+  # check latest here https://sites.google.com/a/chromium.org/chromedriver/downloads
+  chromedriver: 2.39
+# settings for deploy command, you can use cli options as well (--repo-url, --git-key-path)
+deploy:
+  # repo_url: git@bitbucket.org:username/repo_name.git
+  # repo_key_path: ~/.ssh/id_rsa

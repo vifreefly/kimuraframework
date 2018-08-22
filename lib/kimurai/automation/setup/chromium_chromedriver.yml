@@ -1,0 +1,26 @@
+---
+- name: Install chromium browser
+  apt:
+    pkg: chromium-browser
+    state: present
+
+- name: Get current chromedriver version
+  shell: chromedriver --version
+  args:
+    executable: /bin/bash
+  register: current_chromedriver_version
+  changed_when: false
+  ignore_errors: true
+
+- name: Install unzip tool to unarchive chromedriver archive
+  apt:
+    pkg: unzip
+    state: present
+
+- name: Download chromedriver binary archive and unarchive it to /usr/local/bin
+  unarchive:
+    src: https://chromedriver.storage.googleapis.com/{{ chromedriver }}/chromedriver_linux64.zip
+    dest: /usr/local/bin
+    remote_src: true
+    mode: a+x
+  when: chromedriver not in current_chromedriver_version.stdout_lines

@@ -1,0 +1,54 @@
+---
+- hosts: all
+  vars:
+    rbenv_root_path: /home/{{ ansible_user_id }}/.rbenv
+    rbenv_shims_path: "{{ rbenv_root_path }}/shims"
+    repo_url:
+    repo_name:
+    repo_key_path:
+
+  tasks:
+    - name: Copy custom git ssh key to /tmp/private_key (if provided)
+      when: repo_key_path is not none
+      copy:
+        src: "{{ repo_key_path }}"
+        dest: /tmp/private_key
+        mode: 0600
+
+    - name: Clone/pull project repo to ~/{{ repo_name }} user directory (using ssh-agent forwarding or https)
+      when: repo_key_path is none
+      git:
+        repo: "{{ repo_url }}"
+        dest: "~/{{ repo_name }}"
+        force: true
+        accept_hostkey: true
+
+    - name: Clone/pull project repo to ~/{{ repo_name }} user directory (using custom git ssh key)
+      when: repo_key_path is not none
+      git:
+        repo: "{{ repo_url }}"
+        dest: "~/{{ repo_name }}"
+        force: true
+        accept_hostkey: true
+        key_file: /tmp/private_key
+
+    - name: Delete custom git ssh key from /tmp/private_key (if provided)
+      when: repo_key_path is not none
+      file:
+        state: absent
+        path: /tmp/private_key
+
+    - name: Run bundle install
+      command: bundle install
+      args:
+        chdir: ~/{{ repo_name }}
+      environment:
+        PATH: "{{ rbenv_root_path }}/bin:{{ rbenv_root_path }}/shims:{{ ansible_env.PATH }}"
+
+    - name: Run whenever to update crontab
+      command: whenever --update-crontab
+      args:
+        chdir: ~/{{ repo_name }}
+      environment:
+        PATH: "{{ rbenv_root_path }}/bin:{{ rbenv_root_path }}/shims:{{ ansible_env.PATH }}"
+

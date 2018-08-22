@@ -1,0 +1,33 @@
+---
+- name: Install dependencies for PhantomJS
+  apt:
+    pkg: "{{ item }}"
+    state: present
+  with_items:
+    - chrpath
+    - libxft-dev
+    - libfreetype6
+    - libfreetype6-dev
+    - libfontconfig1
+    - libfontconfig1-dev
+
+- name: Get current phantomjs version
+  shell: phantomjs -v
+  args:
+    executable: /bin/bash
+  register: current_phantomjs_version
+  changed_when: false
+  ignore_errors: true
+
+- name: Download phantomJS archive and unarchive it to /usr/local/lib
+  unarchive:
+    src: https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-{{ phantomjs }}-linux-x86_64.tar.bz2
+    dest: /usr/local/lib
+    remote_src: true
+  when: phantomjs not in current_phantomjs_version.stdout
+
+- name: Link PhantomJS binary to /usr/local/bin/phantomjs
+  file:
+    src: /usr/local/lib/phantomjs-{{ phantomjs }}-linux-x86_64/bin/phantomjs
+    dest: /usr/local/bin/phantomjs
+    state: link

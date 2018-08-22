@@ -1,0 +1,20 @@
+---
+- name: Install firefox
+  apt:
+    pkg: firefox
+    state: present
+
+- name: Get current geckodriver version
+  shell: geckodriver --version
+  args:
+    executable: /bin/bash
+  register: current_geckodriver_version
+  changed_when: false
+  ignore_errors: true
+
+- name: Download geckodriver binary archive and unarchive it to /usr/local/bin
+  unarchive:
+    src: https://github.com/mozilla/geckodriver/releases/download/v{{ geckodriver }}/geckodriver-v{{ geckodriver }}-linux64.tar.gz
+    dest: /usr/local/bin
+    remote_src: true
+  when: geckodriver not in current_geckodriver_version.stdout

@@ -1,0 +1,20 @@
+source 'https://rubygems.org'
+git_source(:github) { |repo| "https://github.com/#{repo}.git" }
+
+ruby '2.5.1'
+
+# Framework
+gem 'kimurai', '~> 0.4'
+
+# Require files in directory and child directories recursively
+gem 'require_all'
+
+# Dotenv
+gem 'dotenv'
+
+# To debug spiders:
+group :development do
+  gem 'byebug', platforms: :mri
+  gem 'pry'
+end
+

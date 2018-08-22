@@ -1,5 +1,19 @@
 require 'ostruct'
+require 'logger'
+require 'active_support'
+require 'active_support/core_ext'
+require 'rbcat'
+
 require_relative 'kimurai/version'
+
+require_relative 'kimurai/core_ext/numeric'
+require_relative 'kimurai/core_ext/string'
+require_relative 'kimurai/core_ext/array'
+
+require_relative 'kimurai/browser_builder'
+require_relative 'kimurai/base_helper'
+require_relative 'kimurai/pipeline'
+require_relative 'kimurai/base'
 
 module Kimurai
   class << self
@@ -36,5 +50,3 @@ module Kimurai
     end
   end
 end
-
-# require_relative 'kimurai/default_configuration'

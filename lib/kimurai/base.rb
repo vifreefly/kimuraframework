@@ -1,4 +1,3 @@
-require 'rbcat'
 require_relative 'base/simple_saver'
 require_relative 'base/uniq_checker'
 
@@ -151,9 +150,9 @@ module Kimurai
       @run_info, @checker, @saver = nil
     end
 
-    def self.parse!(handler, url: nil, data: {})
-      spider = self.new
-      url ? spider.request_to(handler, url: url, data: data) : spider.public_send(handler)
+    def self.parse!(handler, engine = nil, url: nil, data: {})
+      spider = engine ? self.new(engine) : self.new
+      url.present? ? spider.request_to(handler, url: url, data: data) : spider.public_send(handler)
     ensure
       spider.browser.destroy_driver!
     end

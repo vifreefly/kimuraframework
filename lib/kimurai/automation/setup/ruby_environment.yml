@@ -1,0 +1,124 @@
+---
+- name: Install dependencies for ruby-build
+  become: true
+  apt:
+    pkg: "{{ item }}"
+    state: present
+  with_items:
+    - zlib1g-dev
+    - build-essential
+    - libssl-dev
+    - libreadline-dev
+    - libreadline6-dev
+    - libyaml-dev
+    - libxml2-dev
+    - libxslt1-dev
+    - libcurl4-openssl-dev
+    - libffi-dev
+
+- name: Clone Rbenv repository to the {{ ansible_user_id }} user directory
+  git:
+    repo: https://github.com/sstephenson/rbenv.git
+    dest: "{{ rbenv_root_path }}"
+
+- name: Clone ruby-build repo to the {{ ansible_user_id }} user directory
+  git:
+    repo: https://github.com/sstephenson/ruby-build.git
+    dest: "{{ rbenv_root_path }}/plugins/ruby-build"
+
+- name: Add Rbenv path to the .bashrc
+  lineinfile:
+    dest: ~/.bashrc
+    regexp: '^export PATH="\$HOME\/\.rbenv'
+    line: export PATH="$HOME/.rbenv/bin:$PATH"
+    state: present
+
+- name: Add Rbenv init to the .bashrc
+  lineinfile:
+    dest: ~/.bashrc
+    regexp: '^eval "\$\(rbenv'
+    line: eval "$(rbenv init -)"
+    state: present
+
+- name: Check if desired Ruby version already installed
+  stat:
+    path: "{{ ruby_versions_path }}/{{ ruby }}"
+  register: ruby_present
+
+- name: Install desired Ruby version using ruby-build (this can take a while)
+  command: rbenv install {{ ruby }}
+  when: not ruby_present.stat.exists
+  environment:
+    CONFIGURE_OPTS: "--disable-install-doc"
+    PATH: "{{ rbenv_root_path }}/bin:{{ rbenv_root_path }}/shims:{{ ansible_env.PATH }}"
+
+- name: Get current Ruby version
+  command: "ruby -v"
+  register: current_ruby_version
+  changed_when: false
+  ignore_errors: true
+  environment:
+    PATH: "{{ rbenv_root_path }}/bin:{{ rbenv_root_path }}/shims:{{ ansible_env.PATH }}"
+
+- name: Set desired Ruby version as a global version
+  command: "rbenv global {{ ruby }}"
+  when: ruby not in current_ruby_version.stdout
+  environment:
+    PATH: "{{ rbenv_root_path }}/bin:{{ rbenv_root_path }}/shims:{{ ansible_env.PATH }}"
+  register: set_ruby
+
+- name: Execute `rbenv rehash` command
+  command: rbenv rehash
+  when: set_ruby.changed
+  environment:
+    PATH: "{{ rbenv_root_path }}/bin:{{ rbenv_root_path }}/shims:{{ ansible_env.PATH }}"
+
+- name: Create ~/.gemrc file to skip docs
+  copy:
+    dest: ~/.gemrc
+    content: "gem: --no-ri --no-rdoc"
+
+- name: Create ~/.bundle directory
+  file:
+    dest: ~/.bundle
+    state: directory
+
+- name: Create ~/.bundle/config file with default settings `BUNDLE_GIT__ALLOW_INSECURE true` and `BUNDLE_JOBS 4`
+  copy:
+    dest: ~/.bundle/config
+    content: |
+      BUNDLE_GIT__ALLOW_INSECURE: "true"
+      BUNDLE_JOBS: "4"
+
+- name: Check if Bundler gem installed
+  stat:
+    path: "{{ ruby_versions_path }}/{{ ruby }}/bin/bundler"
+  register: bundler_gem_present
+
+- name: Install Bundler gem
+  command: gem install bundler
+  when: not bundler_gem_present.stat.exists
+  environment:
+    PATH: "{{ rbenv_root_path }}/bin:{{ rbenv_root_path }}/shims:{{ ansible_env.PATH }}"
+
+- name: Check if Whenever gem installed
+  stat:
+    path: "{{ ruby_versions_path }}/{{ ruby }}/bin/whenever"
+  register: whenever_gem_present
+
+- name: Install Whenever gem
+  command: gem install whenever
+  when: not whenever_gem_present.stat.exists
+  environment:
+    PATH: "{{ rbenv_root_path }}/bin:{{ rbenv_root_path }}/shims:{{ ansible_env.PATH }}"
+
+- name: Check if Kimurai gem installed
+  stat:
+    path: "{{ ruby_versions_path }}/{{ ruby }}/bin/kimurai"
+  register: kimurai_gem_present
+
+- name: Install Kimurai gem
+  command: gem install kimurai
+  when: not kimurai_gem_present.stat.exists
+  environment:
+    PATH: "{{ rbenv_root_path }}/bin:{{ rbenv_root_path }}/shims:{{ ansible_env.PATH }}"

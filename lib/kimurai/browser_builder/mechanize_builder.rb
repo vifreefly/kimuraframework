@@ -127,7 +127,7 @@ module Kimurai
         end
 
         # before_request delay
-        if delay = @config.dig(:session, :before_request, :delay).presence
+        if delay = @config.dig(:browser, :before_request, :delay).presence
           @browser.config.before_request[:delay] = delay
           logger.debug "BrowserBuilder (mechanize): enabled `browser before_request delay`"
         end

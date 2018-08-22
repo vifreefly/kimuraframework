@@ -111,7 +111,7 @@ module Kimurai
     ###
 
     def self.crawl!
-      logger.error "Spider: already running" and return if running?
+      logger.error "Spider: already running: #{name}" and return if running?
       @run_info = {
         spider_name: name, status: :running, environment: Kimurai.env,
         start_time: Time.new, stop_time: nil, running_time: nil,
@@ -222,6 +222,7 @@ module Kimurai
       parts.each do |part|
         all << Thread.new(part) do |part|
           Thread.current.abort_on_exception = true
+
           spider = self.class.new(engine, config: config)
           spider.with_info = true if self.with_info
 

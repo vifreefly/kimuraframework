@@ -1,5 +1,6 @@
 require 'ostruct'
 require 'logger'
+require 'json'
 require 'active_support'
 require 'active_support/core_ext'
 require 'rbcat'

@@ -191,6 +191,26 @@ module Kimurai
 
     private
 
+    def send_item(item, options = {})
+      logger.debug "Pipeline: starting processing item through #{@pipelines.size} #{'pipeline'.pluralize(@pipelines.size)}..."
+      self.class.update(:items, :sent) if self.with_info
+
+      @pipelines.each do |name, instance|
+        item = options[name] ? instance.process_item(item, options: options[name]) : instance.process_item(item)
+      end
+    rescue => e
+      logger.error "Pipeline: dropped: #{e.inspect}, item: #{item}"
+      false
+    else
+      self.class.update(:items, :processed) if self.with_info
+      logger.info "Pipeline: processed: #{JSON.generate(item)}"
+      true
+    ensure
+      if self.with_info
+        logger.info "Info: items: sent: #{self.class.items[:sent]}, processed: #{self.class.items[:processed]}"
+      end
+    end
+
     def in_parallel(handler, urls, threads:, data: {}, delay: nil, engine: @engine, config: {})
       parts = urls.in_sorted_groups(threads, false)
       urls_count = urls.size

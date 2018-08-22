@@ -2,7 +2,7 @@ module Kimurai
   class Base
     class UniqChecker
       def initialize
-        @database = []
+        @database = {}
         @mutex = Mutex.new
       end
 

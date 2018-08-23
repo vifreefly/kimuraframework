@@ -4,15 +4,13 @@ module Kimurai
   class CLI < Thor
     map %w[--version -v] => :__print_version
 
-    desc "new", "Create a new Kimurai project"
-    def new(project_name)
-      Generator.new.generate_project(project_name)
-      puts "New Kimurai project has been successfully created!"
-    end
-
-    desc "generate", "Generator, available types: spider, schedule"
+    desc "generate", "Generator, available types: project, spider, schedule"
     def generate(generator_type, *args)
       case generator_type
+      when "project"
+        project_name = args.shift
+        raise "Provide project name to generate a new project" unless project_name.present?
+        Generator.new.generate_project(project_name)
       when "spider"
         spider_name = args.shift
         raise "Provide spider name to generate a spider" unless spider_name.present?

@@ -217,7 +217,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 * [Kimurai](#kimurai)
   * [Features](#features)
   * [Table of Contents](#table-of-contents)
-  * [Note about v1.0.0 version](#note-about-v1-0-0-version)
+  * [Note about v1.0.0 version](#note-about-v100-version)
   * [Installation](#installation)
   * [Getting to Know](#getting-to-know)
     * [Interactive console](#interactive-console)

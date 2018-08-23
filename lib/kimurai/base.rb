@@ -111,7 +111,7 @@ module Kimurai
     ###
 
     def self.crawl!
-      logger.error "Spider: already running: #{name}" and return if running?
+      logger.error "Spider: already running: #{name}" and return false if running?
       @run_info = {
         spider_name: name, status: :running, environment: Kimurai.env,
         start_time: Time.new, stop_time: nil, running_time: nil,
@@ -137,17 +137,19 @@ module Kimurai
       @run_info[:status] = :completed
       @run_info
     ensure
-      spider.browser.destroy_driver!
+      if spider
+        spider.browser.destroy_driver!
 
-      stop_time  = Time.now
-      total_time = (stop_time - @run_info[:start_time]).round(3)
-      @run_info.merge!(stop_time: stop_time, running_time: total_time)
+        stop_time  = Time.now
+        total_time = (stop_time - @run_info[:start_time]).round(3)
+        @run_info.merge!(stop_time: stop_time, running_time: total_time)
 
-      close_spider if self.respond_to? :close_spider
-      message = "Spider: stopped: #{@run_info.merge(running_time: @run_info[:running_time]&.duration)}"
-      failed? ? @logger.fatal(message) : @logger.info(message)
+        close_spider if self.respond_to? :close_spider
+        message = "Spider: stopped: #{@run_info.merge(running_time: @run_info[:running_time]&.duration)}"
+        failed? ? @logger.fatal(message) : @logger.info(message)
 
-      @run_info, @checker, @saver = nil
+        @run_info, @checker, @saver = nil
+      end
     end
 
     def self.parse!(handler, engine = nil, url: nil, data: {})

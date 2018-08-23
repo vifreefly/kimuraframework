@@ -84,7 +84,7 @@ module Kimurai
 
     def self.logger
       @logger ||= Kimurai.configuration.logger || begin
-        log_level = (ENV["LOG_LEVEL"] || Kimurai.configuration.log_level || "DEBUG").upcase
+        log_level = (ENV["LOG_LEVEL"] || Kimurai.configuration.log_level || "DEBUG").to_s.upcase
         log_level = "Logger::#{log_level}".constantize
         Logger.new(STDOUT, formatter: LoggerFormatter, level: log_level, progname: name)
       end

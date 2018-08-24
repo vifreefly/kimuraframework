@@ -259,6 +259,8 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 * The code was massively refactored for a [support](#using-kimurai-inside-existing-ruby-application) to run spiders multiple times from inside a single process. Now it's possible to run Kimurai spiders using background jobs like Sidekiq.
 * `require 'kimurai'` doesn't require any gems except Active Support. Only when a particular spider [starts](#crawl-method), Capybara will be required with a specific driver.
 * Although Kimurai [extends](lib/kimurai/capybara_ext) Capybara (all the magic happens inside [extended](lib/kimurai/capybara_ext/session.rb) `Capybara::Session#visit` method), session instances which were created manually will behave normally.
+* No spaghetti code with `case/when/end` blocks anymore. All drivers [were extended](lib/kimurai/capybara_ext) to support unified methods for cookies, proxies, headers, etc.
+* `selenium_url_to_set_cookies` @config option don't need anymore if you're use Selenium-like engine with custom cookies setting.
 * Small changes in design (check the readme again to see what was changed)
 * Again, massive refactor. Code now looks much better than it was before.
 
@@ -1604,7 +1606,7 @@ To generate a new spider in the project, run:
 
 ```bash
 $ kimurai generate spider example_spider
-      create  crawlers/example_spider.rb
+      create  spiders/example_spider.rb
 ```
 
 Command will generate a new spider class inherited from `ApplicationSpider`:

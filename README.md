@@ -6,6 +6,18 @@
   <h1>Kimura Framework</h1>
 </div>
 
+> **Note about v1.0.0 version:**
+> * The code was massively refactored for a [support](#using-kimurai-inside-existing-ruby-application) to run spiders multiple times from inside a single process. Now it's possible to run Kimurai spiders using background jobs like Sidekiq.
+> * `require 'kimurai'` doesn't require any gems except Active Support. Only when a particular spider [starts](#crawl-method), Capybara will be required with a specific driver.
+> * Although Kimurai [extends](lib/kimurai/capybara_ext) Capybara (all the magic happens inside [extended](lib/kimurai/capybara_ext/session.rb) `Capybara::Session#visit` method), session instances which were created manually will behave normally.
+> * No spaghetti code with `case/when/end` blocks anymore. All drivers [were extended](lib/kimurai/capybara_ext) to support unified methods for cookies, proxies, headers, etc.
+> * `selenium_url_to_set_cookies` @config option don't need anymore if you're use Selenium-like engine with custom cookies setting.
+> * Small changes in design (check the readme again to see what was changed)
+> * Stats database with a web dashboard were removed
+> * Again, massive refactor. Code now looks much better than it was before.
+
+<br>
+
 Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
 Kimurai based on well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Lets see:
@@ -217,7 +229,6 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 * [Kimurai](#kimurai)
   * [Features](#features)
   * [Table of Contents](#table-of-contents)
-  * [Note about v1.0.0 version](#note-about-v100-version)
   * [Installation](#installation)
   * [Getting to Know](#getting-to-know)
     * [Interactive console](#interactive-console)
@@ -255,14 +266,6 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
   * [Chat Support and Feedback](#chat-support-and-feedback)
   * [License](#license)
 
-## Note about v1.0.0 version
-* The code was massively refactored for a [support](#using-kimurai-inside-existing-ruby-application) to run spiders multiple times from inside a single process. Now it's possible to run Kimurai spiders using background jobs like Sidekiq.
-* `require 'kimurai'` doesn't require any gems except Active Support. Only when a particular spider [starts](#crawl-method), Capybara will be required with a specific driver.
-* Although Kimurai [extends](lib/kimurai/capybara_ext) Capybara (all the magic happens inside [extended](lib/kimurai/capybara_ext/session.rb) `Capybara::Session#visit` method), session instances which were created manually will behave normally.
-* No spaghetti code with `case/when/end` blocks anymore. All drivers [were extended](lib/kimurai/capybara_ext) to support unified methods for cookies, proxies, headers, etc.
-* `selenium_url_to_set_cookies` @config option don't need anymore if you're use Selenium-like engine with custom cookies setting.
-* Small changes in design (check the readme again to see what was changed)
-* Again, massive refactor. Code now looks much better than it was before.
 
 ## Installation
 Kimurai requires Ruby version `>= 2.5.0`. Supported platforms: `Linux` and `Mac OS X`.

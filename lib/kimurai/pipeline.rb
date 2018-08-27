@@ -21,5 +21,9 @@ module Kimurai
     def save_to(path, item, format:, position: true)
       spider.save_to(path, item, format: format, position: position)
     end
+
+    def logger
+      spider.logger
+    end
   end
 end

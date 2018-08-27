@@ -37,7 +37,7 @@ module Kimurai
           if type == "socks5"
             logger.error "BrowserBuilder (mechanize): can't set socks5 proxy (not supported), skipped"
           else
-            @browser.set_proxy(*proxy_string.split(":"))
+            @browser.driver.set_proxy(*proxy_string.split(":"))
             logger.debug "BrowserBuilder (mechanize): enabled #{type} proxy, ip: #{ip}, port: #{port}"
           end
         end
@@ -84,7 +84,7 @@ module Kimurai
 
         # restart_if
         if @config.dig(:browser, :restart_if).present?
-          logger.error "BrowserBuilder (mechanize): `browser restart_if` options not supported by Mechanize, skipped"
+          logger.warn "BrowserBuilder (mechanize): `browser restart_if` options not supported by Mechanize, skipped"
         end
 
         # before_request clear_cookies

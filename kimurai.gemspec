@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["vicfreefly@gmail.com"]
 
   spec.summary       = "Modern web scraping framework written in Ruby and based on Capybara/Nokogiri"
-  spec.homepage      = "https://github.com/vifreefly/kimurai"
+  spec.homepage      = "https://github.com/vifreefly/kimuraframework"
   spec.license       = "MIT"
 
   # Specify which files should be added to the gem when it is released.

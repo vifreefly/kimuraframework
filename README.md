@@ -1,5 +1,5 @@
 <div align="center">
-  <a href="https://github.com/vfreefly/kimurai">
+  <a href="https://github.com/vifreefly/kimuraframework">
     <img width="312" height="200" src="https://hsto.org/webt/_v/mt/tp/_vmttpbpzbt-y2aook642d9wpz0.png">
   </a>
 
@@ -451,19 +451,19 @@ brew install mongodb
 Before you get to know all Kimurai features, there is `$ kimurai console` command which is an interactive console where you can try and debug your scraping code very quickly, without having to run any spider (yes, it's like [Scrapy shell](https://doc.scrapy.org/en/latest/topics/shell.html#topics-shell)).
 
 ```bash
-$ kimurai console --engine selenium_chrome --url https://github.com/vfreefly/kimurai
+$ kimurai console --engine selenium_chrome --url https://github.com/vifreefly/kimuraframework
 ```
 
 <details/>
   <summary>Show output</summary>
 
 ```
-$ kimurai console --engine selenium_chrome --url https://github.com/vfreefly/kimurai
+$ kimurai console --engine selenium_chrome --url https://github.com/vifreefly/kimuraframework
 
 D, [2018-08-22 13:42:32 +0400#26079] [M: 47461994677760] DEBUG -- : BrowserBuilder (selenium_chrome): created browser instance
 D, [2018-08-22 13:42:32 +0400#26079] [M: 47461994677760] DEBUG -- : BrowserBuilder (selenium_chrome): enabled native headless_mode
-I, [2018-08-22 13:42:32 +0400#26079] [M: 47461994677760]  INFO -- : Browser: started get request to: https://github.com/vfreefly/kimurai
-I, [2018-08-22 13:42:35 +0400#26079] [M: 47461994677760]  INFO -- : Browser: finished get request to: https://github.com/vfreefly/kimurai
+I, [2018-08-22 13:42:32 +0400#26079] [M: 47461994677760]  INFO -- : Browser: started get request to: https://github.com/vifreefly/kimuraframework
+I, [2018-08-22 13:42:35 +0400#26079] [M: 47461994677760]  INFO -- : Browser: finished get request to: https://github.com/vifreefly/kimuraframework
 D, [2018-08-22 13:42:35 +0400#26079] [M: 47461994677760] DEBUG -- : Browser: driver.current_memory: 201701
 
 From: /home/victor/code/kimurai/lib/kimurai/base.rb @ line 189 Kimurai::Base#console:
@@ -473,7 +473,7 @@ From: /home/victor/code/kimurai/lib/kimurai/base.rb @ line 189 Kimurai::Base#con
     190: end
 
 [1] pry(#<Kimurai::Base>)> response.xpath("//title").text
-=> "GitHub - vfreefly/kimurai: Kimurai is a modern web scraping framework written in Ruby which works out of box with Headless Chromium/Firefox, PhantomJS, or simple HTTP requests and allows to scrape and interact with JavaScript rendered websites"
+=> "GitHub - vifreefly/kimuraframework: Modern web scraping framework written in Ruby which works out of box with Headless Chromium/Firefox, PhantomJS, or simple HTTP requests and allows to scrape and interact with JavaScript rendered websites"
 
 [2] pry(#<Kimurai::Base>)> ls
 Kimurai::Base#methods: browser  console  logger  request_to  save_to  unique?

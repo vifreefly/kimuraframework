@@ -201,7 +201,7 @@ module Kimurai
         item = options[name] ? instance.process_item(item, options: options[name]) : instance.process_item(item)
       end
     rescue => e
-      logger.error "Pipeline: dropped: #{e.inspect}, item: #{item}"
+      logger.error "Pipeline: dropped: #{e.inspect} (#{e.backtrace.first}), item: #{item}"
       false
     else
       self.class.update(:items, :processed) if self.with_info

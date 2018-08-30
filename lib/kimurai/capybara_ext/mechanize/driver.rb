@@ -5,7 +5,7 @@ class Capybara::Mechanize::Driver
   # Extend capybara-mechnize to support Poltergeist-like methods
   # https://www.rubydoc.info/gems/poltergeist/Capybara/Poltergeist/Driver
 
-  def set_proxy(ip, port, type, user, password)
+  def set_proxy(ip, port, type, user = nil, password = nil)
     # type is always "http", "socks" is not supported (yet)
     browser.agent.set_proxy(ip, port, user, password)
   end

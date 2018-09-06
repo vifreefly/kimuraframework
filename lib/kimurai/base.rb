@@ -1,5 +1,5 @@
 require_relative 'base/simple_saver'
-require_relative 'base/uniq_checker'
+require_relative 'base/storage'
 
 module Kimurai
   class Base
@@ -21,7 +21,7 @@ module Kimurai
     ###
 
     class << self
-      attr_reader :run_info
+      attr_reader :run_info, :storage, :saver
     end
 
     def self.running?
@@ -58,8 +58,6 @@ module Kimurai
     @pipelines = []
     @config = {}
 
-    ###
-
     def self.name
       @name
     end
@@ -90,28 +88,12 @@ module Kimurai
       end
     end
 
-    ###
-
-    def self.checker
-      @checker ||= UniqChecker.new
-    end
-
-    def unique?(scope, value)
-      self.class.checker.unique?(scope, value)
-    end
-
-    def self.saver
-      @saver ||= SimpleSaver.new
-    end
-
-    def save_to(path, item, format:, position: true)
-      self.class.saver.save(path, item, format: format, position: position)
-    end
-
-    ###
-
     def self.crawl!
       logger.error "Spider: already running: #{name}" and return false if running?
+
+      @storage = Storage.new
+      @saver = SimpleSaver.new
+
       @run_info = {
         spider_name: name, status: :running, environment: Kimurai.env,
         start_time: Time.new, stop_time: nil, running_time: nil,
@@ -148,7 +130,7 @@ module Kimurai
         message = "Spider: stopped: #{@run_info.merge(running_time: @run_info[:running_time]&.duration)}"
         failed? ? @logger.fatal(message) : @logger.info(message)
 
-        @run_info, @checker, @saver = nil
+        @run_info, @storage, @saver = nil
       end
     end
 
@@ -183,8 +165,7 @@ module Kimurai
 
     def request_to(handler, delay = nil, url:, data: {})
       if @config[:skip_duplicate_requests] && !unique?(:requests_urls, url)
-        logger.warn "Spider: request_to: url is not unique: #{url}, skipped"
-        return
+        logger.warn "Spider: request_to: url is not unique: #{url}, skipped" and return
       end
 
       request_data = { url: url, data: data }
@@ -195,6 +176,25 @@ module Kimurai
     def console(response = nil, url: nil, data: {})
       binding.pry
     end
+
+    ###
+
+    def storage
+      # Note: for `.crawl!` uses shared thread safe Storage instance,
+      # otherwise, each spider instance will have it's own Storage
+      @storage ||= self.with_info ? self.class.storage : Storage.new
+    end
+
+    def unique?(scope, value)
+      storage.unique?(scope, value)
+    end
+
+    def save_to(path, item, format:, position: true)
+      @saver ||= self.with_info ? self.class.saver : SimpleSaver.new
+      @saver.save(path, item, format: format, position: position)
+    end
+
+    ###
 
     private
 

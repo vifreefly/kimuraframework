@@ -64,14 +64,20 @@ class ApplicationSpider < Kimurai::Base
     # Option to provide custom SSL certificate. Works only for :poltergeist_phantomjs and :mechanize
     # ssl_cert_path: "path/to/ssl_cert",
 
+    # Inject some JavaScript code to the browser.
+    # Format: array of strings, where each string is a path to JS file.
+    # Works only for poltergeist_phantomjs engine (Selenium doesn't support JS code injection)
+    # extensions: ["lib/code_to_inject.js"],
+
     # Automatically skip duplicated (already visited) urls when using `request_to` method,
     # works for all drivers
-    skip_duplicate_requests: true,
+    # skip_duplicate_requests: true,
 
     # Browser (Capybara session instance) options:
     browser: {
       # Array of errors to retry while processing a request
       # retry_request_errors: [Net::ReadTimeout],
+
       # Restart browser if one of the options is true:
       restart_if: {
         # Restart browser if provided memory limit (in kilobytes) is exceeded (works for all engines)

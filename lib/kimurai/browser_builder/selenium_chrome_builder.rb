@@ -107,11 +107,9 @@ module Kimurai
         @browser.spider = spider
         logger.debug "BrowserBuilder (selenium_chrome): created browser instance"
 
-        # Window size
-        # if size = @config[:window_size].presence
-        #   @browser.current_window.resize_to(*size)
-        #   logger.debug "BrowserBuilder (selenium_chrome): enabled window_size"
-        # end
+        if @config[:extensions].present?
+          logger.error "BrowserBuilder (selenium_chrome): `extensions` option not supported by Selenium, skipped"
+        end
 
         # Cookies
         if cookies = @config[:cookies].presence

@@ -114,6 +114,10 @@ module Kimurai
         @browser.spider = spider
         logger.debug "BrowserBuilder (selenium_firefox): created browser instance"
 
+        if @config[:extensions].present?
+          logger.error "BrowserBuilder (selenium_firefox): `extensions` option not supported by Selenium, skipped"
+        end
+
         # Window size
         if size = @config[:window_size].presence
           @browser.current_window.resize_to(*size)

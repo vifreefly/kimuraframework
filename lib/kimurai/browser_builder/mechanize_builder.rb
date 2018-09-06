@@ -29,6 +29,10 @@ module Kimurai
         @browser.spider = spider
         logger.debug "BrowserBuilder (mechanize): created browser instance"
 
+        if @config[:extensions].present?
+          logger.error "BrowserBuilder (mechanize): `extensions` option not supported, skipped"
+        end
+
         # Proxy
         if proxy = @config[:proxy].presence
           proxy_string = (proxy.class == Proc ? proxy.call : proxy).strip

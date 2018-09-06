@@ -23,6 +23,11 @@ module Kimurai
             js_errors: false, debug: false, inspector: false, phantomjs_options: []
           }
 
+          if extensions = @config[:extensions].presence
+            driver_options[:extensions] = extensions
+            logger.debug "BrowserBuilder (poltergeist_phantomjs): enabled extensions"
+          end
+
           # Window size
           if size = @config[:window_size].presence
             driver_options[:window_size] = size

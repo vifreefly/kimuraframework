@@ -156,7 +156,7 @@ module Kimurai
       spider = engine ? self.new(engine) : self.new
       url.present? ? spider.request_to(handler, url: url, data: data) : spider.public_send(handler)
     ensure
-      spider.browser.destroy_driver!
+      spider.browser.destroy_driver! if spider.instance_variable_get("@browser")
     end
 
     ###

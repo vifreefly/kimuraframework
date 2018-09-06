@@ -6,10 +6,6 @@ module Capybara
   class Session
     attr_accessor :spider
 
-    def current_response
-      Nokogiri::HTML(body)
-    end
-
     alias_method :original_visit, :visit
     def visit(visit_uri, delay: config.before_request[:delay], skip_request_options: false, max_retries: 3)
       if spider
@@ -77,6 +73,43 @@ module Capybara
 
       logger.info "Browser: driver has been restarted: name: #{mode}, pid: #{driver.pid}, port: #{driver.port}"
     end
+
+    def current_response
+      Nokogiri::HTML(body)
+    end
+
+    ###
+
+    # Handy method to perform some processing in the new tab within block and then automatically close this tab:
+    # Usage (url):
+    # browser.within_new_window_by(url: "https://google.com") do
+      # do some stuff and then automatically close this tab and return back to the first tab
+    # end
+    # Usage (action) (when new tab opening by some action, for example by clicking
+    # on a particular element):
+    # action = -> { browser.find("//some/element/path").click }
+    # browser.within_new_window_by(action: action) do
+      # do some stuff and then automatically close this tab and return back to the first tab
+    # end
+    def within_new_window_by(action: nil, url: nil)
+      case
+      when action
+        opened_window = window_opened_by { action.call }
+        within_window(opened_window) do
+          yield
+          current_window.close
+        end
+      when url
+        within_window(open_new_window) do
+          visit(url)
+
+          yield
+          current_window.close
+        end
+      end
+    end
+
+    ###
 
     private
 

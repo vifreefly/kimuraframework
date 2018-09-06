@@ -64,6 +64,10 @@ class ApplicationSpider < Kimurai::Base
     # Option to provide custom SSL certificate. Works only for :poltergeist_phantomjs and :mechanize
     # ssl_cert_path: "path/to/ssl_cert",
 
+    # Automatically skip duplicated (already visited) urls when using `request_to` method,
+    # works for all drivers
+    skip_duplicate_requests: true,
+
     # Browser (Capybara session instance) options:
     browser: {
       # Array of errors to retry while processing a request

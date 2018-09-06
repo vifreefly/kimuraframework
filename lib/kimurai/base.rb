@@ -182,6 +182,11 @@ module Kimurai
     end
 
     def request_to(handler, delay = nil, url:, data: {})
+      if @config[:skip_duplicate_requests] && !unique?(:requests_urls, url)
+        logger.warn "Spider: request_to: url is not unique: #{url}, skipped"
+        return
+      end
+
       request_data = { url: url, data: data }
       delay ? browser.visit(url, delay: delay) : browser.visit(url)
       public_send(handler, browser.current_response, request_data)

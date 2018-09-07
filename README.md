@@ -18,6 +18,8 @@
 
 <br>
 
+> Note: **readme below is for master branch.** Readme for the latest gem version (`1.0.1`) [located here.](https://github.com/vifreefly/kimuraframework/tree/930cc388f6d65705850fb26310bfe3e2370c05c3)
+
 Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
 Kimurai based on well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Lets see:

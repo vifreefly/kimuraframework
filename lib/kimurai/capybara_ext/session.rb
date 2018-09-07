@@ -20,6 +20,7 @@ module Capybara
           original_visit(visit_uri)
         rescue *config.retry_request_errors => e
           logger.error "Browser: request visit error: #{e.inspect}, url: #{visit_uri}"
+          spider.add_event(:requests_errors, e.inspect) if spider.with_info
 
           if (retries += 1) < max_retries
             logger.info "Browser: sleep #{(sleep_interval += 15)} seconds and process retry № #{retries} to the url: #{visit_uri}"

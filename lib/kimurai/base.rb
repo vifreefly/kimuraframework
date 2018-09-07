@@ -46,10 +46,12 @@ module Kimurai
 
     def self.update(type, subtype)
       return unless @run_info
+      @update_mutex.synchronize { @run_info[type][subtype] += 1 }
+    end
 
-      (@update_mutex ||= Mutex.new).synchronize do
-        @run_info[type][subtype] += 1
-      end
+    def self.add_event(scope, event)
+      return unless @run_info
+      @update_mutex.synchronize { @run_info[:events][scope][event] += 1 }
     end
 
     ###
@@ -91,13 +93,12 @@ module Kimurai
     def self.crawl!
       logger.error "Spider: already running: #{name}" and return false if running?
 
-      @storage = Storage.new
-      @saver = SimpleSaver.new
-
+      @storage, @saver, @update_mutex = Storage.new, SimpleSaver.new, Mutex.new
       @run_info = {
-        spider_name: name, status: :running, environment: Kimurai.env,
+        spider_name: name, status: :running, error: nil, environment: Kimurai.env,
         start_time: Time.new, stop_time: nil, running_time: nil,
-        visits: { requests: 0, responses: 0 }, items: { sent: 0, processed: 0 }, error: nil
+        visits: { requests: 0, responses: 0 }, items: { sent: 0, processed: 0 },
+        events: { requests_errors: Hash.new(0), drop_items_errors: Hash.new(0), custom: Hash.new(0) }
       }
 
       logger.info "Spider: started: #{name}"
@@ -112,12 +113,11 @@ module Kimurai
       else
         spider.parse
       end
-    rescue StandardError, SignalException => e
+    rescue StandardError, SignalException, SystemExit => e
       @run_info.merge!(status: :failed, error: e.inspect)
       raise e
     else
-      @run_info[:status] = :completed
-      @run_info
+      @run_info.merge!(status: :completed)
     ensure
       if spider
         spider.browser.destroy_driver!
@@ -130,7 +130,7 @@ module Kimurai
         message = "Spider: stopped: #{@run_info.merge(running_time: @run_info[:running_time]&.duration)}"
         failed? ? @logger.fatal(message) : @logger.info(message)
 
-        @run_info, @storage, @saver = nil
+        @run_info, @storage, @saver, @update_mutex = nil
       end
     end
 
@@ -165,6 +165,7 @@ module Kimurai
 
     def request_to(handler, delay = nil, url:, data: {})
       if @config[:skip_duplicate_requests] && !unique?(:requests_urls, url)
+        add_event(:duplicate_requests) if self.with_info
         logger.warn "Spider: request_to: url is not unique: #{url}, skipped" and return
       end
 
@@ -196,6 +197,16 @@ module Kimurai
 
     ###
 
+    def add_event(scope = :custom, event)
+      unless self.with_info
+        raise "It's allowed to use `add_event` only while performing a full run (`.crawl!` method)"
+      end
+
+      self.class.add_event(scope, event)
+    end
+
+    ###
+
     private
 
     def send_item(item, options = {})
@@ -207,6 +218,7 @@ module Kimurai
       end
     rescue => e
       logger.error "Pipeline: dropped: #{e.inspect} (#{e.backtrace.first}), item: #{item}"
+      add_event(:drop_items_errors, e.inspect) if self.with_info
       false
     else
       self.class.update(:items, :processed) if self.with_info

@@ -22,11 +22,11 @@ module Capybara
           logger.error "Browser: request visit error: #{e.inspect}, url: #{visit_uri}"
           spider.add_event(:requests_errors, e.inspect) if spider.with_info
 
-          if (retries += 1) < max_retries
+          if (retries += 1) <= max_retries
             logger.info "Browser: sleep #{(sleep_interval += 15)} seconds and process retry № #{retries} to the url: #{visit_uri}"
             sleep sleep_interval and retry
           else
-            logger.error "Browser: all retries (#{retries}) to the url `#{visit_uri}` are gone"
+            logger.error "Browser: all retries (#{retries - 1}) to the url `#{visit_uri}` are gone"
             raise e
           end
         else

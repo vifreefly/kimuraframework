@@ -23,6 +23,6 @@ end
 # gem 'pg'
 # gem 'mysql2'
 
-# And use your preffered ORM/database connector:
+# And use your preferred ORM/database connector:
 # gem 'activerecord', require: 'active_record'
 # gem 'sequel'

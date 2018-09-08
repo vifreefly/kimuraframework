@@ -18,3 +18,11 @@ group :development do
   gem 'pry'
 end
 
+# If you want to save items to the database, require one of these gems:
+# gem 'sqlite3'
+# gem 'pg'
+# gem 'mysql2'
+
+# And use your preffered ORM/database connector:
+# gem 'activerecord', require: 'active_record'
+# gem 'sequel'

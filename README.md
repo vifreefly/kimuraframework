@@ -19,6 +19,7 @@
 <br>
 
 > Note: **readme below is for master branch.** Readme for the latest gem version (`1.0.1`) [located here.](https://github.com/vifreefly/kimuraframework/tree/930cc388f6d65705850fb26310bfe3e2370c05c3)
+> Changelog is [here](CHANGELOG.md)
 
 Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
@@ -34,9 +35,7 @@ class GithubSpider < Kimurai::Base
   @start_urls = ["https://github.com/search?q=Ruby%20Web%20Scraping"]
   @config = {
     user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36",
-    browser: {
-      before_request: { delay: 4..7 }
-    }
+    before_request: { delay: 4..7 }
   }
 
   def parse(response, url:, data: {})
@@ -805,7 +804,7 @@ unique?(:custom, "Lorem Ipsum")
 
 #### Automatically skip all duplicated requests urls
 
-It is possible to automatically skip all already visited urls while calling `request_to` method, using [@config](#all-available-config-options) option `skip_duplicate_requests: true`. With this option, all already visited urls will be automatically skipped. Also check the [@config](#all-available-config-options) for an additional options for this setting.
+It is possible to automatically skip all already visited urls while calling `request_to` method, using [@config](#all-available-config-options) option `skip_duplicate_requests: true`. With this option, all already visited urls will be automatically skipped. Also check the [@config](#all-available-config-options) for an additional options of this setting.
 
 #### `storage` object
 
@@ -1502,21 +1501,19 @@ class Spider < Kimurai::Base
     proxy: -> { PROXIES.sample },
     window_size: [1366, 768],
     disable_images: true,
-    browser: {
-      restart_if: {
-        # Restart browser if provided memory limit (in kilobytes) is exceeded:
-        memory_limit: 350_000
-      },
-      before_request: {
-        # Change user agent before each request:
-        change_user_agent: true,
-        # Change proxy before each request:
-        change_proxy: true,
-        # Clear all cookies and set default cookies (if provided) before each request:
-        clear_and_set_cookies: true,
-        # Process delay before each request:
-        delay: 1..3
-      }
+    restart_if: {
+      # Restart browser if provided memory limit (in kilobytes) is exceeded:
+      memory_limit: 350_000
+    },
+    before_request: {
+      # Change user agent before each request:
+      change_user_agent: true,
+      # Change proxy before each request:
+      change_proxy: true,
+      # Clear all cookies and set default cookies (if provided) before each request:
+      clear_and_set_cookies: true,
+      # Process delay before each request:
+      delay: 1..3
     }
   }
 
@@ -1595,42 +1592,39 @@ end
   # works for all drivers
   skip_duplicate_requests: true,
 
-  # Browser (Capybara session instance) options:
-  browser: {
-    # Array of errors to retry while processing a request
-    retry_request_errors: [Net::ReadTimeout],
+  # Array of possible errors to retry while processing a request:
+  retry_request_errors: [Net::ReadTimeout],
 
-    # Restart browser if one of the options is true:
-    restart_if: {
-      # Restart browser if provided memory limit (in kilobytes) is exceeded (works for all engines)
-      memory_limit: 350_000,
+  # Restart browser if one of the options is true:
+  restart_if: {
+    # Restart browser if provided memory limit (in kilobytes) is exceeded (works for all engines)
+    memory_limit: 350_000,
 
-      # Restart browser if provided requests limit is exceeded (works for all engines)
-      requests_limit: 100
-    },
-    before_request: {
-      # Change proxy before each request. The `proxy:` option above should be presented
-      # and has lambda format. Works only for poltergeist and mechanize engines
-      # (Selenium doesn't support proxy rotation).
-      change_proxy: true,
+    # Restart browser if provided requests limit is exceeded (works for all engines)
+    requests_limit: 100
+  },
+  before_request: {
+    # Change proxy before each request. The `proxy:` option above should be presented
+    # and has lambda format. Works only for poltergeist and mechanize engines
+    # (Selenium doesn't support proxy rotation).
+    change_proxy: true,
 
-      # Change user agent before each request. The `user_agent:` option above should be presented
-      # and has lambda format. Works only for poltergeist and mechanize engines
-      # (selenium doesn't support to get/set headers).
-      change_user_agent: true,
+    # Change user agent before each request. The `user_agent:` option above should be presented
+    # and has lambda format. Works only for poltergeist and mechanize engines
+    # (selenium doesn't support to get/set headers).
+    change_user_agent: true,
 
-      # Clear all cookies before each request, works for all engines
-      clear_cookies: true,
+    # Clear all cookies before each request, works for all engines
+    clear_cookies: true,
 
-      # If you want to clear all cookies + set custom cookies (`cookies:` option above should be presented)
-      # use this option instead (works for all engines)
-      clear_and_set_cookies: true,
+    # If you want to clear all cookies + set custom cookies (`cookies:` option above should be presented)
+    # use this option instead (works for all engines)
+    clear_and_set_cookies: true,
 
-      # Global option to set delay between requests.
-      # Delay can be `Integer`, `Float` or `Range` (`2..5`). In case of a range,
-      # delay number will be chosen randomly for each request: `rand (2..5) # => 3`
-      delay: 1..3
-    }
+    # Global option to set delay between requests.
+    # Delay can be `Integer`, `Float` or `Range` (`2..5`). In case of a range,
+    # delay number will be chosen randomly for each request: `rand (2..5) # => 3`
+    delay: 1..3
   }
 }
 ```
@@ -1646,10 +1640,8 @@ class ApplicationSpider < Kimurai::Base
   @config = {
     user_agent: "Firefox",
     disable_images: true,
-    browser: {
-      restart_if: { memory_limit: 350_000 },
-      before_request: { delay: 1..2 }
-    }
+    restart_if: { memory_limit: 350_000 },
+    before_request: { delay: 1..2 }
   }
 end
 
@@ -1657,7 +1649,7 @@ class CustomSpider < ApplicationSpider
   @name = "custom_spider"
   @start_urls = ["https://example.com/"]
   @config = {
-    browser: { before_request: { delay: 4..6 }}
+    before_request: { delay: 4..6 }
   }
 
   def parse(response, url:, data: {})
@@ -1748,6 +1740,8 @@ end
 
 ### Crawl
 To run a particular spider in the project, run: `$ bundle exec kimurai crawl example_spider`. Don't forget to add `bundle exec` before command to load required environment.
+
+You can provide an additional option `--continue` to use [persistence storage database](#persistence-database-for-the-storage) feature.
 
 ### List
 To list all project spiders, run: `$ bundle exec kimurai list`
@@ -1907,7 +1901,7 @@ class GithubSpider < ApplicationSpider
   @start_urls = ["https://github.com/search?q=Ruby%20Web%20Scraping"]
   @config = {
     user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36",
-    browser: { before_request: { delay: 4..7 } }
+    before_request: { delay: 4..7 }
   }
 
   def parse(response, url:, data: {})

@@ -13,6 +13,12 @@ module Kimurai
         raise "BrowserBuilder: wrong name of engine, available engines: #{AVAILABLE_ENGINES.join(', ')}"
       end
 
+      if config[:browser].present?
+        raise "BrowserBuilder: browser option is depricated. Now all sub-options inside " \
+          "`browser` should be placed right into `@config` hash, without `browser` parent key.\n" \
+          "See more here: "
+      end
+
       case engine
       when :mechanize
         require_relative 'browser_builder/mechanize_builder'

@@ -69,7 +69,15 @@ class ApplicationSpider < Kimurai::Base
     # Works only for poltergeist_phantomjs engine (Selenium doesn't support JS code injection)
     # extensions: ["lib/code_to_inject.js"],
 
-    # Automatically skip duplicated (already visited) urls when using `request_to` method,
+    # Automatically skip duplicated (already visited) urls when using `request_to` method.
+    # Possible values: `true` or `hash` with options.
+    # In case of `true`, all visited urls will be added to the storage's scope `:requests_urls`
+    # and if url already contains in this scope, request will be skipped.
+    # You can configure this setting by providing additional options as hash:
+    # `skip_duplicate_requests: { scope: :custom_scope, check_only: true }`, where:
+    # `scope:` - use custom scope than `:requests_urls`
+    # `check_only:` - if true, then scope will be only checked for url, url will not
+    # be added to the scope if scope doesn't contains it.
     # works for all drivers
     # skip_duplicate_requests: true,
 

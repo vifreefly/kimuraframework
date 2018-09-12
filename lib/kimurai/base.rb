@@ -138,10 +138,13 @@ module Kimurai
 
         close_spider if self.respond_to? :close_spider
 
-        if @storage.path && completed?
-          @storage.delete!
-          logger.debug "Spider: storage: persistence database #{@storage.path} was " \
-            "removed (successful run)"
+        if @storage.path
+          if completed?
+            @storage.delete!
+            logger.debug "Spider: storage: persistence database #{@storage.path} was removed (successful run)"
+          else
+            logger.debug "Spider: storage: persistence database #{@storage.path} wasn't removed (failed run)"
+          end
         end
 
         message = "Spider: stopped: #{@run_info.merge(running_time: @run_info[:running_time]&.duration)}"
@@ -236,13 +239,16 @@ module Kimurai
     private
 
     def unique_request?(url)
-      skip = @config[:skip_duplicate_requests]
-      if skip.class == Hash
-        if check_only = skip[:check_only]
-          storage.include?(:requests_urls, url) ? false : true
+      options = @config[:skip_duplicate_requests]
+      if options.class == Hash
+        scope = options[:scope] || :requests_urls
+        if options[:check_only]
+          storage.include?(scope, url) ? false : true
+        else
+          storage.unique?(scope, url) ? true : false
         end
       else
-        unique?(:requests_urls, url) ? true : false
+        storage.unique?(:requests_urls, url) ? true : false
       end
     end
 

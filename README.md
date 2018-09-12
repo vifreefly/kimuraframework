@@ -240,7 +240,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
     * [browser object](#browser-object)
     * [request_to method](#request_to-method)
     * [save_to helper](#save_to-helper)
-    * [Skip duplicates, unique? helper](#skip-duplicates-unique-helper)
+    * [Skip duplicates](#skip-duplicates)
     * [open_spider and close_spider callbacks](#open_spider-and-close_spider-callbacks)
     * [KIMURAI_ENV](#kimurai_env)
     * [Parallel crawling using in_parallel](#parallel-crawling-using-in_parallel)
@@ -733,11 +733,13 @@ By default `save_to` add position key to an item hash. You can disable it with `
 
 **How helper works:**
 
-Until spider stops, each new item will be appended to a file. At the next run, helper will clear the content of a file first, and then start again appending items to it. If you don't want file to be cleared before each run, add option `append: true`: `save_to "scraped_products.json", item, format: :json, append: true`
+Until spider stops, each new item will be appended to a file. At the next run, helper will clear the content of a file first, and then start again appending items to it.
 
-### Skip duplicates, `unique?` helper
+> If you don't want file to be cleared before each run, add option `append: true`: `save_to "scraped_products.json", item, format: :json, append: true`
 
-It's pretty common when websites have duplicated pages. For example when an e-commerce shop has the same products in different categories. To skip duplicates, there is `unique?` helper:
+### Skip duplicates
+
+It's pretty common when websites have duplicated pages. For example when an e-commerce shop has the same products in different categories. To skip duplicates, there is simple `unique?` helper:
 
 ```ruby
 class ProductsSpider < Kimurai::Base
@@ -797,6 +799,98 @@ unique?(:id, 324234232)
 # `custom` scope
 unique?(:custom, "Lorem Ipsum")
 ```
+
+#### Automatically skip all duplicated requests urls
+
+It is possible to automatically skip all already visited urls while calling `request_to` method, using [@config](#all-available-config-options) option `skip_duplicate_requests: true`. With this option, all already visited urls will be automatically skipped. Also check the [@config](#all-available-config-options) for an additional options for this setting.
+
+#### `storage` object
+
+`unique?` method it's just an alias for `storage#unique?`. Storage has several methods:
+
+* `#all` - display storage hash where keys are existing scopes.
+* `#include?(scope, value)` - return `true` if value in the scope exists, and `false` if not
+* `#add(scope, value)` - add value to the scope
+* `unique?(scope, value)` - method already described above, will return `false` if value in the scope exists, or return `true` + add value to the scope if value in the scope not exists.
+* `clear!` - reset the whole storage by deleting all values from all scopes.
+
+#### Persistence database for the storage
+
+It's pretty common that spider can fail (IP blocking, etc.) while crawling a huge website with +5k listings. In this case, it's not convenient to start everything over again. Kimurai can use persistence database for a `storage` using Ruby built-in (PStore)[https://ruby-doc.org/stdlib-2.5.1/libdoc/pstore/rdoc/PStore.html] database. With this option, you can automatically skip already visited urls in the next run _if previous run was failed_, otherwise _(if run was successful)_ storage database will be removed before spider stops.
+
+Also, with persistence storage enabled, [save_to](#save_to-helper) method will keep adding items to an existing file (it will not be cleared before each run).
+
+To use persistence storage, provide `continue: true` option to the `.crawl!` method: `SomeSpider.crawl!(continue: true)`.
+
+There are two approaches how to use persistence storage and skip already processed items pages. First, is to manually add required urls to the storage:
+
+```ruby
+class ProductsSpider < Kimurai::Base
+  @start_urls = ["https://example-shop.com/"]
+
+  def parse(response, url:, data: {})
+    response.xpath("//categories/path").each do |category|
+      request_to :parse_category, url: category[:href]
+    end
+  end
+
+  def parse_category(response, url:, data: {})
+    response.xpath("//products/path").each do |product|
+      # check if product url already contains in the scope `:product_urls`, if so, skip the request:
+      next if storage.contains?(:product_urls, product[:href])
+      # Otherwise process it:
+      request_to :parse_product, url: product[:href]
+    end
+  end
+
+  def parse_product(response, url:, data: {})
+    # Add visited item to the storage:
+    storage.add(:product_urls, url)
+
+    # ...
+  end
+end
+
+# Run the spider with persistence database option:
+ProductsSpider.crawl!(continue: true)
+```
+
+Second approach is to automatically skip already processed items urls using `@config` `skip_duplicate_requests:` option:
+
+```ruby
+class ProductsSpider < Kimurai::Base
+  @start_urls = ["https://example-shop.com/"]
+  @config = {
+    # Configure skip_duplicate_requests option:
+    skip_duplicate_requests: { scope: :product_urls, check_only: true }
+  }
+
+  def parse(response, url:, data: {})
+    response.xpath("//categories/path").each do |category|
+      request_to :parse_category, url: category[:href]
+    end
+  end
+
+  def parse_category(response, url:, data: {})
+    response.xpath("//products/path").each do |product|
+      # Before visiting the url, `request_to` will check if it already contains
+      # in the storage scope `:product_urls`, if so, request will be skipped:
+      request_to :parse_product, url: product[:href]
+    end
+  end
+
+  def parse_product(response, url:, data: {})
+    # Add visited item url to the storage scope `:product_urls`:
+    storage.add(:product_urls, url)
+
+    # ...
+  end
+end
+
+# Run the spider with persistence database option:
+ProductsSpider.crawl!(continue: true)
+```
+
 
 ### `open_spider` and `close_spider` callbacks
 
@@ -1318,6 +1412,8 @@ end # =>
 # "reddit: the front page of the internetHotHot"
 ```
 
+Keep in mind, that [save_to](#save_to-helper) and [unique?](#skip-duplicates) helpers are not thread-safe while using `.parse!` method.
+
 #### `Kimurai.list` and `Kimurai.find_by_name()`
 
 ```ruby
@@ -1482,7 +1578,15 @@ end
   # Works only for poltergeist_phantomjs engine (Selenium doesn't support JS code injection)
   extensions: ["lib/code_to_inject.js"],
 
-  # Automatically skip duplicated (already visited) urls when using `request_to` method,
+  # Automatically skip duplicated (already visited) urls when using `request_to` method.
+  # Possible values: `true` or `hash` with options.
+  # In case of `true`, all visited urls will be added to the storage's scope `:requests_urls`
+  # and if url already contains in this scope, request will be skipped.
+  # You can configure this setting by providing additional options as hash:
+  # `skip_duplicate_requests: { scope: :custom_scope, check_only: true }`, where:
+  # `scope:` - use custom scope than `:requests_urls`
+  # `check_only:` - if true, then scope will be only checked for url, url will not
+  # be added to the scope if scope doesn't contains it.
   # works for all drivers
   skip_duplicate_requests: true,
 

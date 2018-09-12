@@ -733,7 +733,7 @@ By default `save_to` add position key to an item hash. You can disable it with `
 
 **How helper works:**
 
-Until spider stops, each new item will be appended to a file. At the next run, helper will clear the content of a file first, and then start again appending items to it.
+Until spider stops, each new item will be appended to a file. At the next run, helper will clear the content of a file first, and then start again appending items to it. If you don't want file to be cleared before each run, add option `append: true`: `save_to "scraped_products.json", item, format: :json, append: true`
 
 ### Skip duplicates, `unique?` helper
 

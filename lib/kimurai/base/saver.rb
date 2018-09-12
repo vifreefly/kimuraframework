@@ -3,38 +3,46 @@ require 'csv'
 
 module Kimurai
   class Base
-    class SimpleSaver
-      def initialize
+    class Saver
+      attr_reader :format, :path, :position, :append
+
+      def initialize(path, format:, position: true, append: false)
+        unless %i(json pretty_json jsonlines csv).include?(format)
+          raise "SimpleSaver: wrong type of format: #{format}"
+        end
+
+        @path = path
+        @format = format
+        @position = position
         @index = 0
+        @append = append
         @mutex = Mutex.new
       end
 
-      def save(path, item, format:, position:)
+      def save(item)
         @mutex.synchronize do
           @index += 1
           item[:position] = @index if position
 
           case format
           when :json
-            save_to_json(item, path)
+            save_to_json(item)
           when :pretty_json
-            save_to_pretty_json(item, path)
+            save_to_pretty_json(item)
           when :jsonlines
-            save_to_jsonlines(item, path)
+            save_to_jsonlines(item)
           when :csv
-            save_to_csv(item, path)
-          else
-            raise "SimpleSaver: wrong type of format: #{format}"
+            save_to_csv(item)
           end
         end
       end
 
       private
 
-      def save_to_json(item, path)
+      def save_to_json(item)
         data = JSON.generate([item])
 
-        if @index > 1
+        if append || @index > 1
           file_content = File.read(path).sub(/\}\]\Z/, "\}\,")
           File.open(path, "w") do |f|
             f.write(file_content + data.sub(/\A\[/, ""))
@@ -44,10 +52,10 @@ module Kimurai
         end
       end
 
-      def save_to_pretty_json(item, path)
+      def save_to_pretty_json(item)
         data = JSON.pretty_generate([item])
 
-        if @index > 1
+        if append || @index > 1
           file_content = File.read(path).sub(/\}\n\]\Z/, "\}\,\n")
           File.open(path, "w") do |f|
             f.write(file_content + data.sub(/\A\[\n/, ""))
@@ -57,20 +65,20 @@ module Kimurai
         end
       end
 
-      def save_to_jsonlines(item, path)
+      def save_to_jsonlines(item)
         data = JSON.generate(item)
 
-        if @index > 1
+        if append || @index > 1
           File.open(path, "a") { |file| file.write("\n" + data) }
         else
           File.open(path, "w") { |file| file.write(data) }
         end
       end
 
-      def save_to_csv(item, path)
+      def save_to_csv(item)
         data = flatten_hash(item)
 
-        if @index > 1
+        if append || @index > 1
           CSV.open(path, "a+", force_quotes: true) do |csv|
             csv << data.values
           end

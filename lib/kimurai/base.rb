@@ -1,4 +1,4 @@
-require_relative 'base/simple_saver'
+require_relative 'base/saver'
 require_relative 'base/storage'
 
 module Kimurai
@@ -21,7 +21,7 @@ module Kimurai
     ###
 
     class << self
-      attr_reader :run_info, :storage, :saver
+      attr_reader :run_info, :savers, :storage
     end
 
     def self.running?
@@ -90,16 +90,26 @@ module Kimurai
       end
     end
 
-    def self.crawl!
+    def self.crawl!(continue: false)
       logger.error "Spider: already running: #{name}" and return false if running?
 
-      @storage, @saver, @update_mutex = Storage.new, SimpleSaver.new, Mutex.new
+      storage_path =
+        if continue
+          Dir.exists?("tmp") ? "tmp/#{name}.pstore" : "#{name}.pstore"
+        end
+
+      @storage = Storage.new(storage_path)
+      @savers = {}
+      @update_mutex = Mutex.new
+
       @run_info = {
         spider_name: name, status: :running, error: nil, environment: Kimurai.env,
         start_time: Time.new, stop_time: nil, running_time: nil,
         visits: { requests: 0, responses: 0 }, items: { sent: 0, processed: 0 },
         events: { requests_errors: Hash.new(0), drop_items_errors: Hash.new(0), custom: Hash.new(0) }
       }
+
+      ###
 
       logger.info "Spider: started: #{name}"
       open_spider if self.respond_to? :open_spider
@@ -127,10 +137,17 @@ module Kimurai
         @run_info.merge!(stop_time: stop_time, running_time: total_time)
 
         close_spider if self.respond_to? :close_spider
-        message = "Spider: stopped: #{@run_info.merge(running_time: @run_info[:running_time]&.duration)}"
-        failed? ? @logger.fatal(message) : @logger.info(message)
 
-        @run_info, @storage, @saver, @update_mutex = nil
+        if @storage.path && completed?
+          @storage.delete!
+          logger.debug "Spider: storage: persistence database #{@storage.path} was " \
+            "removed (successful run)"
+        end
+
+        message = "Spider: stopped: #{@run_info.merge(running_time: @run_info[:running_time]&.duration)}"
+        failed? ? logger.fatal(message) : logger.info(message)
+
+        @run_info, @storage, @savers, @update_mutex = nil
       end
     end
 
@@ -157,6 +174,7 @@ module Kimurai
       end.to_h
 
       @logger = self.class.logger
+      @savers = {}
     end
 
     def browser
@@ -164,7 +182,7 @@ module Kimurai
     end
 
     def request_to(handler, delay = nil, url:, data: {})
-      if @config[:skip_duplicate_requests] && !unique?(:requests_urls, url)
+      if @config[:skip_duplicate_requests] && !unique_request?(url)
         add_event(:duplicate_requests) if self.with_info
         logger.warn "Spider: request_to: url is not unique: #{url}, skipped" and return
       end
@@ -191,8 +209,16 @@ module Kimurai
     end
 
     def save_to(path, item, format:, position: true)
-      @saver ||= self.with_info ? self.class.saver : SimpleSaver.new
-      @saver.save(path, item, format: format, position: position)
+      @savers[path] ||= begin
+        options = { format: format, position: position, append: storage.path ? true : false }
+        if self.with_info
+          self.class.savers[path] ||= Saver.new(path, options)
+        else
+          Saver.new(path, options)
+        end
+      end
+
+      @savers[path].save(item)
     end
 
     ###
@@ -208,6 +234,17 @@ module Kimurai
     ###
 
     private
+
+    def unique_request?(url)
+      skip = @config[:skip_duplicate_requests]
+      if skip.class == Hash
+        if check_only = skip[:check_only]
+          storage.include?(:requests_urls, url) ? false : true
+        end
+      else
+        unique?(:requests_urls, url) ? true : false
+      end
+    end
 
     def send_item(item, options = {})
       logger.debug "Pipeline: starting processing item through #{@pipelines.size} #{'pipeline'.pluralize(@pipelines.size)}..."

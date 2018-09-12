@@ -241,6 +241,9 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
     * [request_to method](#request_to-method)
     * [save_to helper](#save_to-helper)
     * [Skip duplicates](#skip-duplicates)
+      * [Automatically skip all duplicated requests urls](#automatically-skip-all-duplicated-requests-urls)
+      * [Storage object](#storage-object)
+      * [Persistence database for the storage](#persistence-database-for-the-storage)
     * [open_spider and close_spider callbacks](#open_spider-and-close_spider-callbacks)
     * [KIMURAI_ENV](#kimurai_env)
     * [Parallel crawling using in_parallel](#parallel-crawling-using-in_parallel)
@@ -816,7 +819,9 @@ It is possible to automatically skip all already visited urls while calling `req
 
 #### Persistence database for the storage
 
-It's pretty common that spider can fail (IP blocking, etc.) while crawling a huge website with +5k listings. In this case, it's not convenient to start everything over again. Kimurai can use persistence database for a `storage` using Ruby built-in (PStore)[https://ruby-doc.org/stdlib-2.5.1/libdoc/pstore/rdoc/PStore.html] database. With this option, you can automatically skip already visited urls in the next run _if previous run was failed_, otherwise _(if run was successful)_ storage database will be removed before spider stops.
+It's pretty common that spider can fail (IP blocking, etc.) while crawling a huge website with +5k listings. In this case, it's not convenient to start everything over again.
+
+Kimurai can use persistence database for a `storage` using Ruby built-in [PStore](https://ruby-doc.org/stdlib-2.5.1/libdoc/pstore/rdoc/PStore.html) database. With this option, you can automatically skip already visited urls in the next run _if previous run was failed_, otherwise _(if run was successful)_ storage database will be removed before spider stops.
 
 Also, with persistence storage enabled, [save_to](#save_to-helper) method will keep adding items to an existing file (it will not be cleared before each run).
 

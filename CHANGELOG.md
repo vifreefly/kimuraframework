@@ -1,6 +1,6 @@
 # CHANGELOG
 ## 1.1.0
-### Breaking changes 1.0.1
+### Breaking changes 1.1.0
 `browser` config option depricated. Now all sub-options inside `browser` should be placed right into `@config` hash, without `browser` parent key. Example:
 
 ```ruby

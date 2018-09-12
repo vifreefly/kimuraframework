@@ -3,7 +3,7 @@
     <img width="312" height="200" src="https://hsto.org/webt/_v/mt/tp/_vmttpbpzbt-y2aook642d9wpz0.png">
   </a>
 
-  <h1>Kimura Framework</h1>
+  <h1>Kimurai Scraping Framework</h1>
 </div>
 
 > **Note about v1.0.0 version:**
@@ -18,8 +18,7 @@
 
 <br>
 
-> Note: **readme below is for master branch.** Readme for the latest gem version (`1.0.1`) [located here.](https://github.com/vifreefly/kimuraframework/tree/930cc388f6d65705850fb26310bfe3e2370c05c3)
-> Changelog is [here](CHANGELOG.md)
+> Note: this readme is for `1.1.0` gem version. CHANGELOG [here](CHANGELOG.md).
 
 Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 

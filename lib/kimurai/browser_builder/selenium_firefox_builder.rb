@@ -82,7 +82,7 @@ module Kimurai
           if user_agent = @config[:user_agent].presence
             user_agent_string = (user_agent.class == Proc ? user_agent.call : user_agent).strip
             driver_options.profile["general.useragent.override"] = user_agent_string
-            logger.debug "BrowserBuilder (selenium_firefox): enabled custom user-agent"
+            logger.debug "BrowserBuilder (selenium_firefox): enabled custom user_agent"
           end
 
           # Headless mode
@@ -132,53 +132,53 @@ module Kimurai
 
         # Browser instance options
         # retry_request_errors
-        if errors = @config.dig(:browser, :retry_request_errors).presence
+        if errors = @config[:retry_request_errors].presence
           @browser.config.retry_request_errors = errors
-          logger.debug "BrowserBuilder (selenium_firefox): enabled `browser retry_request_errors`"
+          logger.debug "BrowserBuilder (selenium_firefox): enabled retry_request_errors"
         end
 
         # restart_if
-        if requests_limit = @config.dig(:browser, :restart_if, :requests_limit).presence
+        if requests_limit = @config.dig(:restart_if, :requests_limit).presence
           @browser.config.restart_if[:requests_limit] = requests_limit
-          logger.debug "BrowserBuilder (selenium_firefox): enabled `browser restart_if requests_limit` >= #{requests_limit}"
+          logger.debug "BrowserBuilder (selenium_firefox): enabled restart_if.requests_limit >= #{requests_limit}"
         end
 
-        if memory_limit = @config.dig(:browser, :restart_if, :memory_limit).presence
+        if memory_limit = @config.dig(:restart_if, :memory_limit).presence
           @browser.config.restart_if[:memory_limit] = memory_limit
-          logger.debug "BrowserBuilder (selenium_firefox): enabled `browser restart_if memory_limit` >= #{memory_limit}"
+          logger.debug "BrowserBuilder (selenium_firefox): enabled restart_if.memory_limit >= #{memory_limit}"
         end
 
         # before_request clear_cookies
-        if @config.dig(:browser, :before_request, :clear_cookies)
+        if @config.dig(:before_request, :clear_cookies)
           @browser.config.before_request[:clear_cookies] = true
-          logger.debug "BrowserBuilder (selenium_firefox): enabled `browser before_request clear_cookies`"
+          logger.debug "BrowserBuilder (selenium_firefox): enabled before_request.clear_cookies"
         end
 
         # before_request clear_and_set_cookies
-        if @config.dig(:browser, :before_request, :clear_and_set_cookies)
+        if @config.dig(:before_request, :clear_and_set_cookies)
           if cookies = @config[:cookies].presence
             @browser.config.cookies = cookies
             @browser.config.before_request[:clear_and_set_cookies] = true
-            logger.debug "BrowserBuilder (selenium_firefox): enabled `browser before_request clear_and_set_cookies`"
+            logger.debug "BrowserBuilder (selenium_firefox): enabled before_request.clear_and_set_cookies"
           else
-            logger.error "BrowserBuilder (selenium_firefox): `cookies` should be present to enable `browser before_request clear_and_set_cookies`, skipped"
+            logger.error "BrowserBuilder (selenium_firefox): cookies should be present to enable before_request.clear_and_set_cookies, skipped"
           end
         end
 
         # before_request change_user_agent
-        if @config.dig(:browser, :before_request, :change_user_agent)
-          logger.error "BrowserBuilder (selenium_firefox): `browser before_request change_user_agent` option not supported by Selenium, skipped"
+        if @config.dig(:before_request, :change_user_agent)
+          logger.error "BrowserBuilder (selenium_firefox): before_request.change_user_agent option not supported by Selenium, skipped"
         end
 
         # before_request change_proxy
-        if @config.dig(:browser, :before_request, :change_proxy)
-          logger.error "BrowserBuilder (selenium_firefox): `browser before_request change_proxy` option not supported by Selenium, skipped"
+        if @config.dig(:before_request, :change_proxy)
+          logger.error "BrowserBuilder (selenium_firefox): before_request.change_proxy option not supported by Selenium, skipped"
         end
 
         # before_request delay
-        if delay = @config.dig(:browser, :before_request, :delay).presence
+        if delay = @config.dig(:before_request, :delay).presence
           @browser.config.before_request[:delay] = delay
-          logger.debug "BrowserBuilder (selenium_firefox): enabled `browser before_request delay`"
+          logger.debug "BrowserBuilder (selenium_firefox): enabled before_request.delay"
         end
 
         # return Capybara session instance

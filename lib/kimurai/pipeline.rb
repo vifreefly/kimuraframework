@@ -14,12 +14,16 @@ module Kimurai
 
     ###
 
+    def storage
+      spider.storage
+    end
+
     def unique?(scope, value)
       spider.unique?(scope, value)
     end
 
-    def save_to(path, item, format:, position: true)
-      spider.save_to(path, item, format: format, position: position)
+    def save_to(path, item, format:, position: true, append: false)
+      spider.save_to(path, item, format: format, position: position, append: append)
     end
 
     def logger

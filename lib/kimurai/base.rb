@@ -141,9 +141,9 @@ module Kimurai
         if @storage.path
           if completed?
             @storage.delete!
-            logger.debug "Spider: storage: persistence database #{@storage.path} was removed (successful run)"
+            logger.info "Spider: storage: persistence database #{@storage.path} was removed (successful run)"
           else
-            logger.debug "Spider: storage: persistence database #{@storage.path} wasn't removed (failed run)"
+            logger.info "Spider: storage: persistence database #{@storage.path} wasn't removed (failed run)"
           end
         end
 
@@ -211,9 +211,9 @@ module Kimurai
       storage.unique?(scope, value)
     end
 
-    def save_to(path, item, format:, position: true)
+    def save_to(path, item, format:, position: true, append: false)
       @savers[path] ||= begin
-        options = { format: format, position: position, append: storage.path ? true : false }
+        options = { format: format, position: position, append: storage.path ? true : append }
         if self.with_info
           self.class.savers[path] ||= Saver.new(path, options)
         else

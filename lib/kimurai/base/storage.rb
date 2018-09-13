@@ -40,11 +40,21 @@ module Kimurai
           if path
             database.transaction do
               database[scope] ||= []
-              database[scope].push(value) unless database[scope].include?(value)
+              if value.class == Array
+                database[scope] += value
+                database[scope].uniq!
+              else
+                database[scope].push(value) unless database[scope].include?(value)
+              end
             end
           else
             database[scope] ||= []
-            database[scope].push(value) unless database[scope].include?(value)
+            if value.class == Array
+              database[scope] += value
+              database[scope].uniq!
+            else
+              database[scope].push(value) unless database[scope].include?(value)
+            end
           end
         end
       end

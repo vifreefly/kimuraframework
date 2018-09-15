@@ -146,10 +146,23 @@ module Kimurai
       puts VERSION
     end
 
+    desc "dashboard", "Run dashboard"
+    def dashboard
+      raise "Can't find Kimurai project" unless inside_project?
+
+      require './config/boot'
+      if Object.const_defined?("Kimurai::Dashboard")
+        require 'kimurai/dashboard/app'
+        Kimurai::Dashboard::App.run!
+      else
+        raise "Kimurai::Dashboard is not defined"
+      end
+    end
+
     private
 
     def inside_project?
-      Dir.exists? "spiders"
+      Dir.exists?("spiders") && File.exists?("./config/boot.rb")
     end
   end
 end

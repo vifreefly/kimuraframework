@@ -90,7 +90,7 @@ module Kimurai
       end
     end
 
-    def self.crawl!(continue: false)
+    def self.crawl!(continue: false, exception_on_fail: true)
       logger.error "Spider: already running: #{name}" and return false if running?
 
       storage_path =
@@ -125,7 +125,7 @@ module Kimurai
       end
     rescue StandardError, SignalException, SystemExit => e
       @run_info.merge!(status: :failed, error: e.inspect)
-      raise e
+      exception_on_fail ? raise(e) : [@run_info, e]
     else
       @run_info.merge!(status: :completed)
     ensure

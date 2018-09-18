@@ -118,9 +118,15 @@ module Kimurai
         end
 
         # Browser instance options
+        # skip_request_errors
+        if skip_errors = @config[:skip_request_errors].presence
+          @browser.config.skip_request_errors = skip_errors
+          logger.debug "BrowserBuilder (selenium_chrome): enabled skip_request_errors"
+        end
+
         # retry_request_errors
-        if errors = @config[:retry_request_errors].presence
-          @browser.config.retry_request_errors = errors
+        if retry_errors = @config[:retry_request_errors].presence
+          @browser.config.retry_request_errors = retry_errors
           logger.debug "BrowserBuilder (selenium_chrome): enabled retry_request_errors"
         end
 

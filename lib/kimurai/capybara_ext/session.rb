@@ -1,5 +1,6 @@
 require 'capybara'
 require 'nokogiri'
+require 'json'
 require_relative 'session/config'
 
 module Capybara
@@ -18,21 +19,29 @@ module Capybara
           spider.class.update(:visits, :requests) if spider.with_info
 
           original_visit(visit_uri)
-        rescue *config.retry_request_errors => e
-          logger.error "Browser: request visit error: #{e.inspect}, url: #{visit_uri}"
-          spider.add_event(:requests_errors, e.inspect) if spider.with_info
+        rescue => e
+          if match_error?(e, type: :to_skip)
+            logger.error "Browser: skip request error: #{e.inspect}, url: #{visit_uri}"
+            false
+          elsif match_error?(e, type: :to_retry)
+            logger.error "Browser: retry request error: #{e.inspect}, url: #{visit_uri}"
+            spider.add_event(:requests_errors, e.inspect) if spider.with_info
 
-          if (retries += 1) <= max_retries
-            logger.info "Browser: sleep #{(sleep_interval += 15)} seconds and process retry № #{retries} to the url: #{visit_uri}"
-            sleep sleep_interval and retry
+            if (retries += 1) <= max_retries
+              logger.info "Browser: sleep #{(sleep_interval += 15)} seconds and process retry № #{retries} to the url: #{visit_uri}"
+              sleep sleep_interval and retry
+            else
+              logger.error "Browser: all retries (#{retries - 1}) to the url #{visit_uri} are gone"
+              raise e
+            end
           else
-            logger.error "Browser: all retries (#{retries - 1}) to the url `#{visit_uri}` are gone"
             raise e
           end
         else
           driver.responses += 1 and logger.info "Browser: finished get request to: #{visit_uri}"
           spider.class.update(:visits, :responses) if spider.with_info
           driver.visited = true unless driver.visited
+          true
         ensure
           if spider.with_info
             logger.info "Info: visits: requests: #{spider.class.visits[:requests]}, responses: #{spider.class.visits[:responses]}"
@@ -75,8 +84,13 @@ module Capybara
       logger.info "Browser: driver has been restarted: name: #{mode}, pid: #{driver.pid}, port: #{driver.port}"
     end
 
-    def current_response
-      Nokogiri::HTML(body)
+    def current_response(response_type = :html)
+      case response_type
+      when :html
+        Nokogiri::HTML(body)
+      when :json
+        JSON.parse(body)
+      end
     end
 
     ###
@@ -113,6 +127,27 @@ module Capybara
     ###
 
     private
+
+    def match_error?(e, type:)
+      errors = (type == :to_retry ? config.retry_request_errors : config.skip_request_errors)
+      if errors.present?
+        errors.any? do |error|
+          if error.class == Hash
+            match = if error[:message].class == Regexp
+              e.message&.match?(error[:message])
+            else
+              e.message&.include?(error[:message])
+            end
+
+            e.class == error[:error] && match
+          else
+            e.class == error
+          end
+        end
+      else
+        false
+      end
+    end
 
     def process_delay(delay)
       interval = (delay.class == Range ? rand(delay) : delay)

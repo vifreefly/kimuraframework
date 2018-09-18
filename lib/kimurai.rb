@@ -10,6 +10,7 @@ require_relative 'kimurai/version'
 require_relative 'kimurai/core_ext/numeric'
 require_relative 'kimurai/core_ext/string'
 require_relative 'kimurai/core_ext/array'
+require_relative 'kimurai/core_ext/hash'
 
 require_relative 'kimurai/browser_builder'
 require_relative 'kimurai/base_helper'

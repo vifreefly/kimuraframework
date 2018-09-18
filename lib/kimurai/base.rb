@@ -3,6 +3,9 @@ require_relative 'base/storage'
 
 module Kimurai
   class Base
+    # don't deep merge config's headers hash option
+    DMERGE_EXCLUDE = [:headers]
+
     LoggerFormatter = proc do |severity, datetime, progname, msg|
       current_thread_id = Thread.current.object_id
       thread_type = Thread.main == Thread.current ? "M" : "C"
@@ -77,7 +80,11 @@ module Kimurai
     end
 
     def self.config
-      superclass.equal?(::Object) ? @config : superclass.config.deep_merge(@config || {})
+      if superclass.equal?(::Object)
+        @config
+      else
+        superclass.config.deep_merge_excl(@config || {}, DMERGE_EXCLUDE)
+      end
     end
 
     ###
@@ -118,7 +125,11 @@ module Kimurai
       spider.with_info = true
       if start_urls
         start_urls.each do |start_url|
-          spider.request_to(:parse, url: start_url)
+          if start_url.class == Hash
+            spider.request_to(:parse, start_url)
+          else
+            spider.request_to(:parse, url: start_url)
+          end
         end
       else
         spider.parse
@@ -130,7 +141,7 @@ module Kimurai
       @run_info.merge!(status: :completed)
     ensure
       if spider
-        spider.browser.destroy_driver!
+        spider.browser.destroy_driver! if spider.instance_variable_get("@browser")
 
         stop_time  = Time.now
         total_time = (stop_time - @run_info[:start_time]).round(3)
@@ -168,7 +179,7 @@ module Kimurai
 
     def initialize(engine = self.class.engine, config: {})
       @engine = engine
-      @config = self.class.config.deep_merge(config)
+      @config = self.class.config.deep_merge_excl(config, DMERGE_EXCLUDE)
       @pipelines = self.class.pipelines.map do |pipeline_name|
         klass = Pipeline.descendants.find { |kl| kl.name == pipeline_name }
         instance = klass.new
@@ -184,15 +195,16 @@ module Kimurai
       @browser ||= BrowserBuilder.build(@engine, @config, spider: self)
     end
 
-    def request_to(handler, delay = nil, url:, data: {})
+    def request_to(handler, delay = nil, url:, data: {}, response_type: :html)
       if @config[:skip_duplicate_requests] && !unique_request?(url)
         add_event(:duplicate_requests) if self.with_info
-        logger.warn "Spider: request_to: url is not unique: #{url}, skipped" and return
+        logger.warn "Spider: request_to: not unique url: #{url}, skipped" and return
       end
 
-      request_data = { url: url, data: data }
-      delay ? browser.visit(url, delay: delay) : browser.visit(url)
-      public_send(handler, browser.current_response, request_data)
+      visited = delay ? browser.visit(url, delay: delay) : browser.visit(url)
+      return unless visited
+
+      public_send(handler, browser.current_response(response_type), { url: url, data: data })
     end
 
     def console(response = nil, url: nil, data: {})
@@ -285,18 +297,22 @@ module Kimurai
         all << Thread.new(part) do |part|
           Thread.current.abort_on_exception = true
 
-          spider = self.class.new(engine, config: config)
+          spider = self.class.new(engine, config: @config.deep_merge_excl(config, DMERGE_EXCLUDE))
           spider.with_info = true if self.with_info
 
           part.each do |url_data|
             if url_data.class == Hash
-              spider.request_to(handler, delay, url_data)
+              if url_data[:url].present? && url_data[:data].present?
+                spider.request_to(handler, delay, url_data)
+              else
+                spider.public_send(handler, url_data)
+              end
             else
               spider.request_to(handler, delay, url: url_data, data: data)
             end
           end
         ensure
-          spider.browser.destroy_driver!
+          spider.browser.destroy_driver! if spider.instance_variable_get("@browser")
         end
 
         sleep 0.5

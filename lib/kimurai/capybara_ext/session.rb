@@ -22,6 +22,7 @@ module Capybara
         rescue => e
           if match_error?(e, type: :to_skip)
             logger.error "Browser: skip request error: #{e.inspect}, url: #{visit_uri}"
+            spider.add_event(:requests_errors, e.inspect) if spider.with_info
             false
           elsif match_error?(e, type: :to_retry)
             logger.error "Browser: retry request error: #{e.inspect}, url: #{visit_uri}"

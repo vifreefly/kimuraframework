@@ -1,4 +1,20 @@
 # CHANGELOG
+## 1.2.0
+### New
+* Add possibility to add array of values to the storage (`Base::Storage#add`)
+* Add `exception_on_fail` option to `Base.crawl!`
+* Add possibility to pass request hash to the `start_urls` (You can use array of hashes as well, like: `@start_urls = [{ url: "https://example.com/cat?id=1", data: { category: "First Category" } }]`)
+* Implement `skip_request_errors` config feature
+* Add option to choose response type for `Session#current_response` (`:html` default, or `:json`)
+* Add option to provide custom chrome and chromedriver paths
+
+### Improvements
+* Refactor `Runner`
+
+### Fixes
+* Fix `Base#Saver` (automatically create file if it doesn't exists in case of persistence database)
+* Do not deep merge config's `headers:` option
+
 ## 1.1.0
 ### Breaking changes 1.1.0
 `browser` config option depricated. Now all sub-options inside `browser` should be placed right into `@config` hash, without `browser` parent key. Example:

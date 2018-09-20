@@ -23,8 +23,15 @@ module Kimurai
         # Register driver
         Capybara.register_driver :selenium_chrome do |app|
           # Create driver options
-          default_args = %w[--disable-gpu --no-sandbox --disable-translate]
-          driver_options = Selenium::WebDriver::Chrome::Options.new(args: default_args)
+          opts = { args: %w[--disable-gpu --no-sandbox --disable-translate] }
+
+          # Provide custom chrome browser path:
+          if chrome_path = Kimurai.configuration.selenium_chrome_path
+            opts.merge!(binary: chrome_path)
+          end
+
+          # See all options here: https://seleniumhq.github.io/selenium/docs/api/rb/Selenium/WebDriver/Chrome/Options.html
+          driver_options = Selenium::WebDriver::Chrome::Options.new(opts)
 
           # Window size
           if size = @config[:window_size].presence
@@ -99,7 +106,8 @@ module Kimurai
             end
           end
 
-          Capybara::Selenium::Driver.new(app, browser: :chrome, options: driver_options, driver_path: "/usr/local/bin/chromedriver")
+          chromedriver_path = Kimurai.configuration.chromedriver_path || "/usr/local/bin/chromedriver"
+          Capybara::Selenium::Driver.new(app, browser: :chrome, options: driver_options, driver_path: chromedriver_path)
         end
 
         # Create browser instance (Capybara session)

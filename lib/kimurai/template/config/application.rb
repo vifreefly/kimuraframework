@@ -29,4 +29,9 @@ Kimurai.configure do |config|
   #   json = JSON.pretty_generate(info)
   #   Sender.send_notification("Stopped session: #{json}")
   # end
+
+  # Provide custom chrome binary path (default is any available chrome/chromium in the PATH):
+  # config.selenium_chrome_path = "/usr/bin/chromium-browser"
+  # Provide custom selenium chromedriver path (default is "/usr/local/bin/chromedriver"):
+  # config.chromedriver_path = "/usr/local/bin/chromedriver"
 end

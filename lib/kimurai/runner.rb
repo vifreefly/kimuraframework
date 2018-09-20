@@ -35,7 +35,10 @@ module Kimurai
         at_start_callback.call(session_info)
       end
 
+      running = true
       spiders.peach_with_index(jobs) do |spider, i|
+        next unless running
+
         spider_name = spider[0]
         puts "> Runner: started spider: #{spider_name}, index: #{i}"
 
@@ -47,14 +50,16 @@ module Kimurai
         puts "< Runner: stopped spider: #{spider_name}, index: #{i}"
       end
     rescue StandardError, SignalException, SystemExit => e
+      running = false
       session_info.merge!(status: :failed, error: e.inspect, stop_time: Time.now)
       exception_on_fail ? raise(e) : [session_info, e]
     else
       session_info.merge!(status: :completed, stop_time: Time.now)
     ensure
-      # Prevent queue to process new intems while executing at_exit body
+      running = false
       Thread.list.each { |t| t.kill if t != Thread.main }
-      # Kill currently running spiders
+
+      # Kill currently running spiders (if any, in case of fail)
       running_pids.each { |pid| Process.kill("INT", pid) }
 
       if at_stop_callback = Kimurai.configuration.runner_at_stop_callback

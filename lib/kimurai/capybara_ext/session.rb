@@ -130,17 +130,30 @@ module Capybara
     private
 
     def match_error?(e, type:)
-      errors = (type == :to_retry ? config.retry_request_errors : config.skip_request_errors)
+      errors =
+        case type
+        when :to_retry then config.retry_request_errors
+        when :to_skip then config.skip_request_errors
+        end
+
       if errors.present?
         errors.any? do |error|
           if error.class == Hash
-            match = if error[:message].class == Regexp
-              e.message&.match?(error[:message])
+            match_class = if error[:descendants] == true
+              e.class.ancestors.include?(error[:error])
             else
-              e.message&.include?(error[:message])
+              e.class == error[:error]
             end
 
-            e.class == error[:error] && match
+            if error[:message].present?
+              if error[:message].class == Regexp
+                e.message&.match?(error[:message])
+              else
+                e.message&.include?(error[:message])
+              end && match_class
+            else
+              match_class
+            end
           else
             e.class == error
           end

@@ -4,7 +4,7 @@
 * Add possibility to add array of values to the storage (`Base::Storage#add`)
 * Add `exception_on_fail` option to `Base.crawl!`
 * Add possibility to pass request hash to the `start_urls` (You can use array of hashes as well, like: `@start_urls = [{ url: "https://example.com/cat?id=1", data: { category: "First Category" } }]`)
-* Implement `skip_request_errors` config feature
+* Implement `skip_request_errors` config feature. Added [Handle request errors](https://github.com/vifreefly/kimuraframework#handle-request-errors) chapter to the README.
 * Add option to choose response type for `Session#current_response` (`:html` default, or `:json`)
 * Add option to provide custom chrome and chromedriver paths
 

@@ -18,7 +18,7 @@
 
 <br>
 
-> Note: this readme is for `master` branch. Readme for the latest `1.1.0` version [located here](https://github.com/vifreefly/kimuraframework/tree/d6098b18927fc25fca73ee0772e9d82b2126a0fe). CHANGELOG [here](CHANGELOG.md).
+> Note: this readme is for `1.2.0` gem version. CHANGELOG [here](CHANGELOG.md).
 
 Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
@@ -216,7 +216,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 * All the power of [Capybara](https://github.com/teamcapybara/capybara): use methods like `click_on`, `fill_in`, `select`, `choose`, `set`, `go_back`, etc. to interact with web pages
 * Rich [configuration](#spider-config): **set default headers, cookies, delay between requests, enable proxy/user-agents rotation**
 * Built-in helpers to make scraping easy, like [save_to](#save_to-helper) (save items to JSON, JSON lines, or CSV formats) or [unique?](#skip-duplicates-unique-helper) to skip duplicates
-* Automatically [retry failed requests](#configuration-options) with delay
+* Automatically [handle requests errors](#handle-request-errors)
 * Automatically restart browsers when reaching memory limit [**(memory control)**](#spider-config) or requests limit
 * Easily [schedule spiders](#schedule-spiders-using-cron) within cron using [Whenever](https://github.com/javan/whenever) (no need to know cron syntax)
 * [Parallel scraping](#parallel-crawling-using-in_parallel) using simple method `in_parallel`
@@ -242,6 +242,9 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
       * [Automatically skip all duplicated requests urls](#automatically-skip-all-duplicated-requests-urls)
       * [Storage object](#storage-object)
       * [Persistence database for the storage](#persistence-database-for-the-storage)
+    * [Handle request errors](#handle-request-errors)
+      * [skip_request_errors](#skip_request_errors)
+      * [retry_request_errors](#retry_request_errors)
     * [open_spider and close_spider callbacks](#open_spider-and-close_spider-callbacks)
     * [KIMURAI_ENV](#kimurai_env)
     * [Parallel crawling using in_parallel](#parallel-crawling-using-in_parallel)
@@ -860,6 +863,9 @@ ProductsSpider.crawl!(continue: true)
 
 Second approach is to automatically skip already processed items urls using `@config` `skip_duplicate_requests:` option:
 
+<details/>
+  <summary>Check the code</summary>
+
 ```ruby
 class ProductsSpider < Kimurai::Base
   @start_urls = ["https://example-shop.com/"]
@@ -893,7 +899,29 @@ end
 # Run the spider with persistence database option:
 ProductsSpider.crawl!(continue: true)
 ```
+</details>
 
+### Handle request errors
+It is quite common that some pages of crawling website can return different response code than `200 ok`. In such cases, method `request_to` (or `browser.visit`) can raise an exception. Kimurai provides `skip_request_errors` and `retry_request_errors` [config](#spider-config) options to handle such errors:
+
+#### skip_request_errors
+You can automatically skip some of errors while requesting a page using `skip_request_errors` [config](#spider-config) option. If raised error matches one of the errors in the list, then this error will be caught, and request will be skipped. It is a good idea to skip errors like NotFound(404), etc.
+
+Format for the option: array where elements are error classes or/and hashes. You can use _hash_ format for more flexibility:
+
+```ruby
+@config = {
+  skip_request_errors: [{ error: "RuntimeError", message: "404 => Net::HTTPNotFound" }]
+}
+```
+In this case, provided `message:` will be compared with a full error message using `String#include?`. Also you can use regex instead: `{ error: "RuntimeError", message: /404|403/ }`.
+
+#### retry_request_errors
+You can automatically retry some of errors with a few attempts while requesting a page using `retry_request_errors` [config](#spider-config) option. If raised error matches one of the errors in the list, then this error will be caught and the request will be processed again within a delay.
+
+There are 3 attempts: first: delay _15 sec_, second: delay _30 sec_, third: delay _45 sec_. If after 3 attempts there is still an exception, then the exception will be raised. It is a good idea to try to retry errros like `ReadTimeout`, `HTTPBadGateway`, etc.
+
+Format for the option: same like for `skip_request_errors` option.
 
 ### `open_spider` and `close_spider` callbacks
 
@@ -1596,7 +1624,23 @@ end
   # works for all drivers
   skip_duplicate_requests: true,
 
-  # Array of possible errors to retry while processing a request:
+  # Automatically skip provided errors while requesting a page.
+  # If raised error matches one of the errors in the list, then this error will be caught,
+  # and request will be skipped.
+  # It is a good idea to skip errors like NotFound(404), etc.
+  # Format: array where elements are error classes or/and hashes. You can use hash format
+  # for more flexibility: `{ error: "RuntimeError", message: "404 => Net::HTTPNotFound" }`.
+  # Provided `message:` will be compared with a full error message using `String#include?`. Also
+  # you can use regex instead: `{ error: "RuntimeError", message: /404|403/ }`.
+  skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }],
+
+  # Automatically retry provided errors with a few attempts while requesting a page.
+  # If raised error matches one of the errors in the list, then this error will be caught
+  # and the request will be processed again within a delay. There are 3 attempts:
+  # first: delay 15 sec, second: delay 30 sec, third: delay 45 sec.
+  # If after 3 attempts there is still an exception, then the exception will be raised.
+  # It is a good idea to try to retry errros like `ReadTimeout`, `HTTPBadGateway`, etc.
+  # Format: same like for `skip_request_errors` option.
   retry_request_errors: [Net::ReadTimeout],
 
   # Restart browser if one of the options is true:
@@ -1607,6 +1651,8 @@ end
     # Restart browser if provided requests limit is exceeded (works for all engines)
     requests_limit: 100
   },
+
+  # Perform several actions before each request:
   before_request: {
     # Change proxy before each request. The `proxy:` option above should be presented
     # and has lambda format. Works only for poltergeist and mechanize engines

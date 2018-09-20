@@ -81,7 +81,23 @@ class ApplicationSpider < Kimurai::Base
     # works for all drivers
     # skip_duplicate_requests: true,
 
-    # Array of errors to retry while processing a request
+    # Automatically skip provided errors while requesting a page.
+    # If raised error matches one of the errors in the list, then this error will be caught,
+    # and request will be skipped.
+    # It is a good idea to skip errors like NotFound(404), etc.
+    # Format: array where elements are error classes or/and hashes. You can use hash format
+    # for more flexibility: `{ error: "RuntimeError", message: "404 => Net::HTTPNotFound" }`.
+    # Provided `message:` will be compared with a full error message using `String#include?`. Also
+    # you can use regex instead: `{ error: "RuntimeError", message: /404|403/ }`.
+    # skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }],
+
+    # Automatically retry provided errors with a few attempts while requesting a page.
+    # If raised error matches one of the errors in the list, then this error will be caught
+    # and the request will be processed again within a delay. There are 3 attempts:
+    # first: delay 15 sec, second: delay 30 sec, third: delay 45 sec.
+    # If after 3 attempts there is still an exception, then the exception will be raised.
+    # It is a good idea to try to retry errros like `ReadTimeout`, `HTTPBadGateway`, etc.
+    # Format: same like for `skip_request_errors` option.
     # retry_request_errors: [Net::ReadTimeout],
 
     # Restart browser if one of the options is true:
@@ -92,6 +108,8 @@ class ApplicationSpider < Kimurai::Base
       # Restart browser if provided requests limit is exceeded (works for all engines)
       # requests_limit: 100
     },
+
+    # Perform several actions before each request:
     before_request: {
       # Change proxy before each request. The `proxy:` option above should be presented
       # and has lambda format. Works only for poltergeist and mechanize engines

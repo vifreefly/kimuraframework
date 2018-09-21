@@ -909,7 +909,7 @@ You can automatically skip some of errors while requesting a page using `skip_re
 
 Format for the option: array where elements are error classes or/and hashes. You can use _hash_ format for more flexibility:
 
-```ruby
+```
 @config = {
   skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }]
 }

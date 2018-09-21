@@ -1483,6 +1483,8 @@ You can automatically setup [required environment](#installation) for Kimurai on
 
 > To perform remote server setup, [Ansible](https://github.com/ansible/ansible) is required **on the desktop** machine (to install: Ubuntu: `$ sudo apt install ansible`, Mac OS X: `$ brew install ansible`)
 
+> It's recommended to use regular user to setup the server, not `root`. To create a new user, login to the server `$ ssh root@your_server_ip`, type `$ adduser username` to create a user, and `$ gpasswd -a username sudo` to add new user to a sudo group.
+
 Example:
 
 ```bash

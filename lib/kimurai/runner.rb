@@ -28,8 +28,6 @@ module Kimurai
     end
 
     def run!(exception_on_fail: true)
-      running_pids = []
-
       puts ">>> Runner: started: #{session_info}"
       if at_start_callback = Kimurai.configuration.runner_at_start_callback
         at_start_callback.call(session_info)
@@ -43,25 +41,18 @@ module Kimurai
         puts "> Runner: started spider: #{spider_name}, index: #{i}"
 
         pid = spawn("bundle", "exec", "kimurai", "crawl", spider_name, [:out, :err] => "log/#{spider_name}.log")
-        running_pids << pid
         Process.wait pid
 
-        running_pids.delete(pid)
         puts "< Runner: stopped spider: #{spider_name}, index: #{i}"
       end
     rescue StandardError, SignalException, SystemExit => e
       running = false
+
       session_info.merge!(status: :failed, error: e.inspect, stop_time: Time.now)
       exception_on_fail ? raise(e) : [session_info, e]
     else
       session_info.merge!(status: :completed, stop_time: Time.now)
     ensure
-      running = false
-      Thread.list.each { |t| t.kill if t != Thread.main }
-
-      # Kill currently running spiders (if any, in case of fail)
-      running_pids.each { |pid| Process.kill("INT", pid) }
-
       if at_stop_callback = Kimurai.configuration.runner_at_stop_callback
         at_stop_callback.call(session_info)
       end

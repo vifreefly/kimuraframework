@@ -911,10 +911,10 @@ Format for the option: array where elements are error classes or/and hashes. You
 
 ```ruby
 @config = {
-  skip_request_errors: [{ error: "RuntimeError", message: "404 => Net::HTTPNotFound" }]
+  skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }]
 }
 ```
-In this case, provided `message:` will be compared with a full error message using `String#include?`. Also you can use regex instead: `{ error: "RuntimeError", message: /404|403/ }`.
+In this case, provided `message:` will be compared with a full error message using `String#include?`. Also you can use regex instead: `{ error: RuntimeError, message: /404|403/ }`.
 
 #### retry_request_errors
 You can automatically retry some of errors with a few attempts while requesting a page using `retry_request_errors` [config](#spider-config) option. If raised error matches one of the errors in the list, then this error will be caught and the request will be processed again within a delay.

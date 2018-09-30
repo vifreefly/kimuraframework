@@ -4,9 +4,9 @@ module Kimurai
   class Runner
     attr_reader :jobs, :spiders, :session_info
 
-    def initialize(parallel_jobs:)
+    def initialize(spiders, parallel_jobs)
       @jobs = parallel_jobs
-      @spiders = Kimurai.list
+      @spiders = spiders
       @start_time = Time.now
 
       @session_info = {
@@ -37,13 +37,11 @@ module Kimurai
       spiders.peach_with_index(jobs) do |spider, i|
         next unless running
 
-        spider_name = spider[0]
-        puts "> Runner: started spider: #{spider_name}, index: #{i}"
-
-        pid = spawn("bundle", "exec", "kimurai", "crawl", spider_name, [:out, :err] => "log/#{spider_name}.log")
+        puts "> Runner: started spider: #{spider}, index: #{i}"
+        pid = spawn("bundle", "exec", "kimurai", "crawl", spider, [:out, :err] => "log/#{spider}.log")
         Process.wait pid
 
-        puts "< Runner: stopped spider: #{spider_name}, index: #{i}"
+        puts "< Runner: stopped spider: #{spider}, index: #{i}"
       end
     rescue StandardError, SignalException, SystemExit => e
       running = false

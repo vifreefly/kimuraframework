@@ -16,7 +16,7 @@ module Kimurai
         stop_time: nil,
         environment: Kimurai.env,
         concurrent_jobs: @jobs,
-        spiders: @spiders.keys
+        spiders: @spiders
       }
 
       if time_zone = Kimurai.configuration.time_zone

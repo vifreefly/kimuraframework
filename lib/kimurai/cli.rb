@@ -129,7 +129,8 @@ module Kimurai
     end
 
     desc "runner", "Run all spiders in the project in queue"
-    option :spiders, type: :array, default: [], banner: "List of spiders to run"
+    option :include, type: :array, default: [], banner: "List of spiders to run"
+    option :exclude, type: :array, default: [], banner: "List of spiders to exclude from run"
     option :jobs, aliases: :j, type: :numeric, default: 1, banner: "The number of concurrent jobs"
     def runner
       raise "Can't find Kimurai project" unless inside_project?
@@ -140,7 +141,9 @@ module Kimurai
       require './config/boot'
       require 'kimurai/runner'
 
-      spiders = options["spiders"].presence || Kimurai.list.keys
+      spiders = options["include"].presence || Kimurai.list.keys
+      spiders -= options["exclude"]
+
       Runner.new(spiders, jobs).run!
     end
 

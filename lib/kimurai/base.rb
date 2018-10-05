@@ -244,6 +244,7 @@ module Kimurai
       end
 
       self.class.add_event(scope, event)
+      logger.info "Spider: new event (scope: #{scope}): #{event}"
     end
 
     ###

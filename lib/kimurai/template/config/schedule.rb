@@ -16,7 +16,7 @@ set :chronic_options, hours24: true
 #   crawl "google_spider.com", output: "log/google_spider.com.log"
 # end
 def local_to_utc(time_string, zone:)
-  TZInfo::Timezone.get(zone).local_to_utc(Time.parse(time))
+  TZInfo::Timezone.get(zone).local_to_utc(Time.parse(time_string))
 end
 
 # Note: by default Whenever exports cron commands with :environment == "production".

@@ -1,7 +1,7 @@
 class Numeric
   # https://stackoverflow.com/a/1679963
   def duration
-    secs  = self.to_int
+    secs  = to_int
     mins  = secs / 60
     hours = mins / 60
     days  = hours / 24

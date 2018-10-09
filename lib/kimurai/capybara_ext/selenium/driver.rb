@@ -19,6 +19,6 @@ class Capybara::Selenium::Driver
   end
 
   def port
-    @port ||= browser.send(:bridge).instance_variable_get("@http").instance_variable_get("@server_url").port
+    @port ||= browser.send(:bridge).instance_variable_get('@http').instance_variable_get('@server_url').port
   end
 end

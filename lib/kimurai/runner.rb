@@ -23,8 +23,8 @@ module Kimurai
         Kimurai.time_zone = time_zone
       end
 
-      ENV.store("SESSION_ID", @start_time.to_i.to_s)
-      ENV.store("RBCAT_COLORIZER", "false")
+      ENV.store('SESSION_ID', @start_time.to_i.to_s)
+      ENV.store('RBCAT_COLORIZER', 'false')
     end
 
     def run!(exception_on_fail: true)
@@ -38,7 +38,7 @@ module Kimurai
         next unless running
 
         puts "> Runner: started spider: #{spider}, index: #{i}"
-        pid = spawn("bundle", "exec", "kimurai", "crawl", spider, [:out, :err] => "log/#{spider}.log")
+        pid = spawn('bundle', 'exec', 'kimurai', 'crawl', spider, %i[out err] => "log/#{spider}.log")
         Process.wait pid
 
         puts "< Runner: stopped spider: #{spider}, index: #{i}"

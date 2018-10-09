@@ -1,12 +1,12 @@
 module Kimurai
   class BrowserBuilder
-    AVAILABLE_ENGINES = [
-      :mechanize,
-      :mechanize_standalone,
-      :poltergeist_phantomjs,
-      :selenium_firefox,
-      :selenium_chrome
-    ]
+    AVAILABLE_ENGINES = %i[
+      mechanize
+      mechanize_standalone
+      poltergeist_phantomjs
+      selenium_firefox
+      selenium_chrome
+    ].freeze
 
     def self.build(engine, config = {}, spider:)
       unless AVAILABLE_ENGINES.include? engine
@@ -14,9 +14,9 @@ module Kimurai
       end
 
       if config[:browser].present?
-        raise "++++++ BrowserBuilder: browser option is depricated. Now all sub-options inside " \
+        raise '++++++ BrowserBuilder: browser option is depricated. Now all sub-options inside ' \
           "`browser` should be placed right into `@config` hash, without `browser` parent key.\n" \
-          "See more here: https://github.com/vifreefly/kimuraframework/blob/master/CHANGELOG.md#breaking-changes-110 ++++++"
+          'See more here: https://github.com/vifreefly/kimuraframework/blob/master/CHANGELOG.md#breaking-changes-110 ++++++'
       end
 
       case engine

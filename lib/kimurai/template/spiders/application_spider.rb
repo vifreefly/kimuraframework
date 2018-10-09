@@ -11,7 +11,7 @@ class ApplicationSpider < Kimurai::Base
 
   # Pipelines list, by order.
   # To process item through pipelines pass item to the `send_item` method
-  @pipelines = [:validator, :saver]
+  @pipelines = %i[validator saver]
 
   # Default config. Set here options which are default for all spiders inherited
   # from ApplicationSpider. Child's class config will be deep merged with this one

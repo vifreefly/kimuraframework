@@ -34,7 +34,7 @@ class Capybara::Driver::Base
   # Note: for Linux takes PSS (not RSS) memory (I think PSS better fits in this case)
   def get_process_memory(pid)
     case @platform ||= Gem::Platform.local.os
-    when "linux"
+    when 'linux'
       begin
         file = Pathname.new "/proc/#{pid}/smaps"
         return 0 unless file.exist?
@@ -52,7 +52,7 @@ class Capybara::Driver::Base
       rescue Errno::EACCES
         0
       end
-    when "darwin"
+    when 'darwin'
       mem = `ps -o rss= -p #{pid}`.strip
       mem.empty? ? 0 : mem.to_i
     else

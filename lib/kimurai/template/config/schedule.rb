@@ -2,7 +2,7 @@
 require 'tzinfo'
 
 # Export current PATH to the cron
-env :PATH, ENV["PATH"]
+env :PATH, ENV['PATH']
 
 # Use 24 hour format when using `at:` option
 set :chronic_options, hours24: true
@@ -25,13 +25,13 @@ end
 # crawl "google_spider.com", output: -> { "> log/google_spider.com.log 2>&1" }
 
 # Project job types
-job_type :crawl,  "cd :path && KIMURAI_ENV=:environment bundle exec kimurai crawl :task :output"
-job_type :runner, "cd :path && KIMURAI_ENV=:environment bundle exec kimurai runner --jobs :task :output"
+job_type :crawl,  'cd :path && KIMURAI_ENV=:environment bundle exec kimurai crawl :task :output'
+job_type :runner, 'cd :path && KIMURAI_ENV=:environment bundle exec kimurai runner --jobs :task :output'
 
 # Single file job type
-job_type :single, "cd :path && KIMURAI_ENV=:environment ruby :task :output"
+job_type :single, 'cd :path && KIMURAI_ENV=:environment ruby :task :output'
 # Single with bundle exec
-job_type :single_bundle, "cd :path && KIMURAI_ENV=:environment bundle exec ruby :task :output"
+job_type :single_bundle, 'cd :path && KIMURAI_ENV=:environment bundle exec ruby :task :output'
 
 ### Schedule ###
 # Usage (check examples here https://github.com/javan/whenever#example-schedulerb-file):

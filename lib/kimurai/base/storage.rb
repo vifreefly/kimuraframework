@@ -14,7 +14,9 @@ module Kimurai
       def all(scope = nil)
         @mutex.synchronize do
           if path
-            database.transaction { scope ? database.fetch(scope, []) : database }
+            database.transaction do
+              scope ? database.fetch(scope, []) : database
+            end
           else
             scope ? database.fetch(scope, []) : database
           end

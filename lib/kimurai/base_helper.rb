@@ -12,7 +12,7 @@ module Kimurai
     rescue URI::InvalidURIError => e
       URI.parse(URI.escape url).to_s rescue url
     else
-      uri
+      url
     end
 
     def normalize_url(url, base:)

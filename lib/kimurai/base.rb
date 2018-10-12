@@ -165,9 +165,16 @@ module Kimurai
       end
     end
 
-    def self.parse!(handler, engine = nil, url: nil, data: {})
-      spider = engine ? self.new(engine) : self.new
-      url.present? ? spider.request_to(handler, url: url, data: data) : spider.public_send(handler)
+    def self.parse!(handler, *args, **request)
+      spider = self.new
+
+      if args.present?
+        spider.public_send(handler, *args)
+      elsif request.present?
+        spider.request_to(handler, request)
+      else
+        spider.public_send(handler)
+      end
     ensure
       spider.browser.destroy_driver! if spider.instance_variable_get("@browser")
     end

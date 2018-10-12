@@ -10,6 +10,8 @@ class Capybara::Mechanize::Driver
     browser.agent.set_proxy(ip, port, user, password)
   end
 
+  ###
+
   def headers
     browser.agent.request_headers
   end
@@ -22,6 +24,12 @@ class Capybara::Mechanize::Driver
     browser.agent.request_headers[name] = value
   end
 
+  ###
+
+  def get_cookies
+    browser.agent.cookies
+  end
+
   def set_cookie(name, value, options = {})
     options[:name]  ||= name
     options[:value] ||= value
@@ -30,9 +38,17 @@ class Capybara::Mechanize::Driver
     browser.agent.cookie_jar << cookie
   end
 
+  def set_cookies(cookies)
+    cookies.each do |cookie|
+      set_cookie(cookie[:name], cookie[:value], cookie)
+    end
+  end
+
   def clear_cookies
     browser.agent.cookie_jar.clear!
   end
+
+  ###
 
   def quit
     browser.agent.shutdown

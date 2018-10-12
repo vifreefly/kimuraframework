@@ -84,7 +84,7 @@ module Kimurai
               database.roots.each { |key| database.delete key }
             end
           else
-            database = {}
+            @database = {}
           end
         end
       end
@@ -92,7 +92,7 @@ module Kimurai
       def delete!
         @mutex.synchronize do
           if path
-            File.delete path if File.exists? path
+            File.delete path if File.exist? path
           end
         end
       end

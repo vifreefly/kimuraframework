@@ -127,6 +127,10 @@ module Capybara
 
     ###
 
+    def scroll_to_bottom
+      execute_script("window.scrollBy(0,10000)")
+    end
+
     private
 
     def match_error?(e, type:)

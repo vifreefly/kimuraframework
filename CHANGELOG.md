@@ -1,4 +1,21 @@
 # CHANGELOG
+## 1.3.0
+### Breaking changes 1.3.0
+* Remove persistence database feature (because it's slow and makes things complicated)
+
+### New
+* Add `--include` and `--exclude` options to CLI#runner
+* Add Base `#create_browser` method to easily create additional browser instances
+* Add Capybara::Session `#scroll_to_bottom`
+* Add skip_on_failure feature to `retry_request_errors` config option
+* Add info about `add_event` method to the README
+
+### Fixes and improvements
+* Improve Runner
+* Fix time helper in schedule.rb
+* Add proxy validation to browser builders
+* Allow to pass different arguments to the `Base.parse` method
+
 ## 1.2.0
 ### New
 * Add possibility to add array of values to the storage (`Base::Storage#add`)

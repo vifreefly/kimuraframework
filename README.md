@@ -18,7 +18,7 @@
 
 <br>
 
-> Note: this readme is for `1.2.0` gem version. CHANGELOG [here](CHANGELOG.md).
+> Note: this readme is for `1.3.0` gem version. CHANGELOG [here](CHANGELOG.md).
 
 Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
@@ -244,6 +244,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
     * [Handle request errors](#handle-request-errors)
       * [skip_request_errors](#skip_request_errors)
       * [retry_request_errors](#retry_request_errors)
+    * [Logging custom events](#logging-custom-events)
     * [open_spider and close_spider callbacks](#open_spider-and-close_spider-callbacks)
     * [KIMURAI_ENV](#kimurai_env)
     * [Parallel crawling using in_parallel](#parallel-crawling-using-in_parallel)

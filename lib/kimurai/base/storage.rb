@@ -1,7 +1,7 @@
 module Kimurai
   class Base
     class Storage
-      attr_reader :database, :path
+      attr_reader :database
 
       def initialize
         @mutex = Mutex.new

@@ -33,7 +33,7 @@ module Capybara
               sleep sleep_interval and retry
             else
               logger.error "Browser: all retries (#{retries - 1}) to the url #{visit_uri} are gone"
-              raise e
+              raise e unless skip_error_on_failure?(e)
             end
           else
             raise e
@@ -133,6 +133,12 @@ module Capybara
 
     private
 
+    def skip_error_on_failure?(e)
+      config.retry_request_errors.any? do |error|
+        error[:skip_on_failure] && e.class.ancestors.include?(error[:error]) if error.kind_of?(Hash)
+      end
+    end
+
     def match_error?(e, type:)
       errors =
         case type
@@ -140,30 +146,21 @@ module Capybara
         when :to_skip then config.skip_request_errors
         end
 
-      if errors.present?
-        errors.any? do |error|
-          if error.class == Hash
-            match_class = if error[:descendants] == true
-              e.class.ancestors.include?(error[:error])
+      errors.any? do |error|
+        if error.kind_of?(Hash)
+          match_class = e.class.ancestors.include?(error[:error])
+          if error[:message].present?
+            if error[:message].kind_of?(Regexp)
+              e.message&.match?(error[:message])
             else
-              e.class == error[:error]
-            end
-
-            if error[:message].present?
-              if error[:message].class == Regexp
-                e.message&.match?(error[:message])
-              else
-                e.message&.include?(error[:message])
-              end && match_class
-            else
-              match_class
-            end
+              e.message&.include?(error[:message])
+            end && match_class
           else
-            e.class == error
+            match_class
           end
+        else
+          e.class.ancestors.include?(error)
         end
-      else
-        false
       end
     end
 

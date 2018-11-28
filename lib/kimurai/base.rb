@@ -144,15 +144,6 @@ module Kimurai
 
         close_spider if self.respond_to? :close_spider
 
-        if @storage.path
-          if completed?
-            @storage.delete!
-            logger.info "Spider: storage: persistence database #{@storage.path} was removed (successful run)"
-          else
-            logger.info "Spider: storage: persistence database #{@storage.path} wasn't removed (failed run)"
-          end
-        end
-
         message = "Spider: stopped: #{@run_info.merge(running_time: @run_info[:running_time]&.duration)}"
         failed? ? logger.fatal(message) : logger.info(message)
 

@@ -241,7 +241,6 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
     * [Skip duplicates](#skip-duplicates)
       * [Automatically skip all duplicated requests urls](#automatically-skip-all-duplicated-requests-urls)
       * [Storage object](#storage-object)
-      * [Persistence database for the storage](#persistence-database-for-the-storage)
     * [Handle request errors](#handle-request-errors)
       * [skip_request_errors](#skip_request_errors)
       * [retry_request_errors](#retry_request_errors)
@@ -840,6 +839,35 @@ You can automatically retry some of errors with a few attempts while requesting 
 There are 3 attempts: first: delay _15 sec_, second: delay _30 sec_, third: delay _45 sec_. If after 3 attempts there is still an exception, then the exception will be raised. It is a good idea to try to retry errros like `ReadTimeout`, `HTTPBadGateway`, etc.
 
 Format for the option: same like for `skip_request_errors` option.
+
+If you would like to skip (not raise) error after all retries gone, you can specify `skip_on_failure: true` option:
+
+```ruby
+@config = {
+  retry_request_errors: [{ error: RuntimeError, skip_on_failure: true }]
+}
+```
+
+### Logging custom events
+
+It is possible to save custom messages to the [run_info](#open_spider-and-close_spider-callbacks) hash using `add_event('Some message')` method. This feature helps you to keep track on important things which happened during crawling without checking the whole spider log (in case if you're logging these messages using `logger`). Example:
+
+```ruby
+def parse_product(response, url:, data: {})
+  unless response.at_xpath("//path/to/add_to_card_button")
+    add_event("Product is sold") and return
+  end
+
+  # ...
+end
+```
+
+```
+...
+I, [2018-11-28 22:20:19 +0400#7402] [M: 47156576560640]  INFO -- example_spider: Spider: new event (scope: custom): Product is sold
+...
+I, [2018-11-28 22:20:19 +0400#7402] [M: 47156576560640]  INFO -- example_spider: Spider: stopped: {:events=>{:custom=>{"Product is sold"=>1}}}
+```
 
 ### `open_spider` and `close_spider` callbacks
 
@@ -2000,6 +2028,16 @@ $ bundle exec kimurai runner -j 3
 ```
 
 Each spider runs in a separate process. Spiders logs available at `log/` folder. Pass `-j` option to specify how many spiders should be processed at the same time (default is 1).
+
+You can provide additional arguments like `--include` or `--exclude` to specify which spiders to run:
+
+```bash
+# Run only custom_spider and example_spider:
+$ bundle exec kimurai runner --include custom_spider example_spider
+
+# Run all except github_spider:
+$ bundle exec kimurai runner --exclude github_spider
+```
 
 #### Runner callbacks
 

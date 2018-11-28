@@ -40,13 +40,18 @@ module Kimurai
                 driver_options.profile["network.proxy.http_port"] = port.to_i
                 driver_options.profile["network.proxy.ssl"] = ip
                 driver_options.profile["network.proxy.ssl_port"] = port.to_i
+
+                logger.debug "BrowserBuilder (selenium_firefox): enabled http proxy, ip: #{ip}, port: #{port}"
               elsif type == "socks5"
                 driver_options.profile["network.proxy.socks"] = ip
                 driver_options.profile["network.proxy.socks_port"] = port.to_i
                 driver_options.profile["network.proxy.socks_version"] = 5
                 driver_options.profile["network.proxy.socks_remote_dns"] = true
+
+                logger.debug "BrowserBuilder (selenium_firefox): enabled socks5 proxy, ip: #{ip}, port: #{port}"
+              else
+                logger.error "BrowserBuilder (selenium_firefox): wrong type of proxy: #{type}, skipped"
               end
-              logger.debug "BrowserBuilder (selenium_firefox): enabled #{type} proxy, ip: #{ip}, port: #{port}"
             else
               logger.error "BrowserBuilder (selenium_firefox): proxy with authentication doesn't supported by selenium, skipped"
             end

@@ -44,11 +44,15 @@ module Kimurai
             proxy_string = (proxy.class == Proc ? proxy.call : proxy).strip
             ip, port, type, user, password = proxy_string.split(":")
 
-            if user.nil? && password.nil?
-              driver_options.args << "--proxy-server=#{type}://#{ip}:#{port}"
-              logger.debug "BrowserBuilder (selenium_chrome): enabled #{type} proxy, ip: #{ip}, port: #{port}"
+            if %w(http socks5).include?(type)
+              if user.nil? && password.nil?
+                driver_options.args << "--proxy-server=#{type}://#{ip}:#{port}"
+                logger.debug "BrowserBuilder (selenium_chrome): enabled #{type} proxy, ip: #{ip}, port: #{port}"
+              else
+                logger.error "BrowserBuilder (selenium_chrome): proxy with authentication doesn't supported by selenium, skipped"
+              end
             else
-              logger.error "BrowserBuilder (selenium_chrome): proxy with authentication doesn't supported by selenium, skipped"
+              logger.error "BrowserBuilder (selenium_chrome): wrong type of proxy: #{type}, skipped"
             end
           end
 

@@ -64,8 +64,12 @@ module Kimurai
           proxy_string = (proxy.class == Proc ? proxy.call : proxy).strip
           ip, port, type = proxy_string.split(":")
 
-          @browser.driver.set_proxy(*proxy_string.split(":"))
-          logger.debug "BrowserBuilder (poltergeist_phantomjs): enabled #{type} proxy, ip: #{ip}, port: #{port}"
+          if %w(http socks5).include?(type)
+            @browser.driver.set_proxy(*proxy_string.split(":"))
+            logger.debug "BrowserBuilder (poltergeist_phantomjs): enabled #{type} proxy, ip: #{ip}, port: #{port}"
+          else
+            logger.error "BrowserBuilder (poltergeist_phantomjs): wrong type of proxy: #{type}, skipped"
+          end
         end
 
         # Headers

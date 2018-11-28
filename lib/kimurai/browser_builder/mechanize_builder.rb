@@ -38,11 +38,11 @@ module Kimurai
           proxy_string = (proxy.class == Proc ? proxy.call : proxy).strip
           ip, port, type = proxy_string.split(":")
 
-          if type == "socks5"
-            logger.error "BrowserBuilder (mechanize): can't set socks5 proxy (not supported), skipped"
-          else
+          if type == "http"
             @browser.driver.set_proxy(*proxy_string.split(":"))
-            logger.debug "BrowserBuilder (mechanize): enabled #{type} proxy, ip: #{ip}, port: #{port}"
+            logger.debug "BrowserBuilder (mechanize): enabled http proxy, ip: #{ip}, port: #{port}"
+          else
+            logger.error "BrowserBuilder (mechanize): can't set #{type} proxy (not supported), skipped"
           end
         end
 

@@ -297,8 +297,8 @@ echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
 exec $SHELL
 
 # Install latest Ruby
-rbenv install 2.5.1
-rbenv global 2.5.1
+rbenv install 2.5.3
+rbenv global 2.5.3
 
 gem install bundler
 ```
@@ -317,8 +317,8 @@ echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_pr
 source ~/.bash_profile
 
 # Install latest Ruby
-rbenv install 2.5.1
-rbenv global 2.5.1
+rbenv install 2.5.3
+rbenv global 2.5.3
 
 gem install bundler
 ```
@@ -349,17 +349,17 @@ sudo apt install -q -y xvfb
 # Install chromium-browser and firefox
 sudo apt install -q -y chromium-browser firefox
 
-# Instal chromedriver (2.39 version)
+# Instal chromedriver (2.44 version)
 # All versions located here https://sites.google.com/a/chromium.org/chromedriver/downloads
-cd /tmp && wget https://chromedriver.storage.googleapis.com/2.39/chromedriver_linux64.zip
+cd /tmp && wget https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip
 sudo unzip chromedriver_linux64.zip -d /usr/local/bin
 rm -f chromedriver_linux64.zip
 
-# Install geckodriver (0.21.0 version)
+# Install geckodriver (0.23.0 version)
 # All versions located here https://github.com/mozilla/geckodriver/releases/
-cd /tmp && wget https://github.com/mozilla/geckodriver/releases/download/v0.21.0/geckodriver-v0.21.0-linux64.tar.gz
-sudo tar -xvzf geckodriver-v0.21.0-linux64.tar.gz -C /usr/local/bin
-rm -f geckodriver-v0.21.0-linux64.tar.gz
+cd /tmp && wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz
+sudo tar -xvzf geckodriver-v0.23.0-linux64.tar.gz -C /usr/local/bin
+rm -f geckodriver-v0.23.0-linux64.tar.gz
 
 # Install PhantomJS (2.1.1)
 # All versions located here http://phantomjs.org/download.html

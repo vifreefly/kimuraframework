@@ -66,7 +66,6 @@ module Kimurai
     ###
 
     desc "crawl", "Run a particular spider by it's name"
-    option :continue, aliases: :c, type: :boolean, default: false, banner: "Continue previous crawling"
     def crawl(spider_name)
       raise "Can't find Kimurai project" unless inside_project?
       require './config/boot'
@@ -81,7 +80,7 @@ module Kimurai
         Kimurai.time_zone = time_zone
       end
 
-      klass.crawl!(continue: options["continue"])
+      klass.crawl!
     end
 
     desc "parse", "Parse url in the particular spider method"

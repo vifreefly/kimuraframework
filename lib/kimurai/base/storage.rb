@@ -1,60 +1,34 @@
-require 'pstore'
-
 module Kimurai
   class Base
     class Storage
       attr_reader :database, :path
 
-      def initialize(path = nil)
-        @path = path
+      def initialize
         @mutex = Mutex.new
-        @database = path ? PStore.new(path) : {}
+        @database = {}
       end
 
       def all(scope = nil)
         @mutex.synchronize do
-          if path
-            database.transaction { scope ? database.fetch(scope, []) : database }
-          else
-            scope ? database.fetch(scope, []) : database
-          end
+          scope ? database.fetch(scope, []) : database
         end
       end
 
       def include?(scope, value)
         @mutex.synchronize do
-          if path
-            database.transaction do
-              database[scope] ||= []
-              database[scope].include?(value)
-            end
-          else
-            database[scope] ||= []
-            database[scope].include?(value)
-          end
+          database[scope] ||= []
+          database[scope].include?(value)
         end
       end
 
       def add(scope, value)
         @mutex.synchronize do
-          if path
-            database.transaction do
-              database[scope] ||= []
-              if value.class == Array
-                database[scope] += value
-                database[scope].uniq!
-              else
-                database[scope].push(value) unless database[scope].include?(value)
-              end
-            end
+          database[scope] ||= []
+          if value.kind_of?(Array)
+            database[scope] += value
+            database[scope].uniq!
           else
-            database[scope] ||= []
-            if value.class == Array
-              database[scope] += value
-              database[scope].uniq!
-            else
-              database[scope].push(value) unless database[scope].include?(value)
-            end
+            database[scope].push(value) unless database[scope].include?(value)
           end
         end
       end
@@ -63,15 +37,8 @@ module Kimurai
 
       def unique?(scope, value)
         @mutex.synchronize do
-          if path
-            database.transaction do
-              database[scope] ||= []
-              database[scope].include?(value) ? false : database[scope].push(value) and true
-            end
-          else
-            database[scope] ||= []
-            database[scope].include?(value) ? false : database[scope].push(value) and true
-          end
+          database[scope] ||= []
+          database[scope].include?(value) ? false : database[scope].push(value) and true
         end
       end
 
@@ -79,21 +46,7 @@ module Kimurai
 
       def clear!
         @mutex.synchronize do
-          if path
-            database.transaction do
-              database.roots.each { |key| database.delete key }
-            end
-          else
-            @database = {}
-          end
-        end
-      end
-
-      def delete!
-        @mutex.synchronize do
-          if path
-            File.delete path if File.exist? path
-          end
+          @database = {}
         end
       end
     end

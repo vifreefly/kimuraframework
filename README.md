@@ -815,91 +815,9 @@ It is possible to automatically skip all already visited urls while calling `req
 * `#all` - display storage hash where keys are existing scopes.
 * `#include?(scope, value)` - return `true` if value in the scope exists, and `false` if not
 * `#add(scope, value)` - add value to the scope
-* `unique?(scope, value)` - method already described above, will return `false` if value in the scope exists, or return `true` + add value to the scope if value in the scope not exists.
-* `clear!` - reset the whole storage by deleting all values from all scopes.
+* `#unique?(scope, value)` - method already described above, will return `false` if value in the scope exists, or return `true` + add value to the scope if value in the scope not exists.
+* `#clear!` - reset the whole storage by deleting all values from all scopes.
 
-#### Persistence database for the storage
-
-It's pretty common that spider can fail (IP blocking, etc.) while crawling a huge website with +5k listings. In this case, it's not convenient to start everything over again.
-
-Kimurai can use persistence database for a `storage` using Ruby built-in [PStore](https://ruby-doc.org/stdlib-2.5.1/libdoc/pstore/rdoc/PStore.html) database. With this option, you can automatically skip already visited urls in the next run _if previous run was failed_, otherwise _(if run was successful)_ storage database will be removed before spider stops.
-
-Also, with persistence storage enabled, [save_to](#save_to-helper) method will keep adding items to an existing file (it will not be cleared before each run).
-
-To use persistence storage, provide `continue: true` option to the `.crawl!` method: `SomeSpider.crawl!(continue: true)`.
-
-There are two approaches how to use persistence storage and skip already processed items pages. First, is to manually add required urls to the storage:
-
-```ruby
-class ProductsSpider < Kimurai::Base
-  @start_urls = ["https://example-shop.com/"]
-
-  def parse(response, url:, data: {})
-    response.xpath("//categories/path").each do |category|
-      request_to :parse_category, url: category[:href]
-    end
-  end
-
-  def parse_category(response, url:, data: {})
-    response.xpath("//products/path").each do |product|
-      # check if product url already contains in the scope `:product_urls`, if so, skip the request:
-      next if storage.contains?(:product_urls, product[:href])
-      # Otherwise process it:
-      request_to :parse_product, url: product[:href]
-    end
-  end
-
-  def parse_product(response, url:, data: {})
-    # Add visited item to the storage:
-    storage.add(:product_urls, url)
-
-    # ...
-  end
-end
-
-# Run the spider with persistence database option:
-ProductsSpider.crawl!(continue: true)
-```
-
-Second approach is to automatically skip already processed items urls using `@config` `skip_duplicate_requests:` option:
-
-<details/>
-  <summary>Check the code</summary>
-
-```ruby
-class ProductsSpider < Kimurai::Base
-  @start_urls = ["https://example-shop.com/"]
-  @config = {
-    # Configure skip_duplicate_requests option:
-    skip_duplicate_requests: { scope: :product_urls, check_only: true }
-  }
-
-  def parse(response, url:, data: {})
-    response.xpath("//categories/path").each do |category|
-      request_to :parse_category, url: category[:href]
-    end
-  end
-
-  def parse_category(response, url:, data: {})
-    response.xpath("//products/path").each do |product|
-      # Before visiting the url, `request_to` will check if it already contains
-      # in the storage scope `:product_urls`, if so, request will be skipped:
-      request_to :parse_product, url: product[:href]
-    end
-  end
-
-  def parse_product(response, url:, data: {})
-    # Add visited item url to the storage scope `:product_urls`:
-    storage.add(:product_urls, url)
-
-    # ...
-  end
-end
-
-# Run the spider with persistence database option:
-ProductsSpider.crawl!(continue: true)
-```
-</details>
 
 ### Handle request errors
 It is quite common that some pages of crawling website can return different response code than `200 ok`. In such cases, method `request_to` (or `browser.visit`) can raise an exception. Kimurai provides `skip_request_errors` and `retry_request_errors` [config](#spider-config) options to handle such errors:

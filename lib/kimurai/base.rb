@@ -97,15 +97,10 @@ module Kimurai
       end
     end
 
-    def self.crawl!(continue: false, exception_on_fail: true)
+    def self.crawl!(exception_on_fail: true)
       logger.error "Spider: already running: #{name}" and return false if running?
 
-      storage_path =
-        if continue
-          Dir.exists?("tmp") ? "tmp/#{name}.pstore" : "#{name}.pstore"
-        end
-
-      @storage = Storage.new(storage_path)
+      @storage = Storage.new
       @savers = {}
       @update_mutex = Mutex.new
 

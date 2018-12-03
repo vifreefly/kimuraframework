@@ -1,4 +1,8 @@
 # CHANGELOG
+## 1.3.1
+### Fixes
+* Fixed bug in Base#save_to
+
 ## 1.3.0
 ### Breaking changes 1.3.0
 * Remove persistence database feature (because it's slow and makes things complicated)

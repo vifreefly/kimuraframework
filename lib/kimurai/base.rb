@@ -218,7 +218,7 @@ module Kimurai
 
     def save_to(path, item, format:, position: true, append: false)
       @savers[path] ||= begin
-        options = { format: format, position: position, append: storage.path ? true : append }
+        options = { format: format, position: position, append: append }
         if self.with_info
           self.class.savers[path] ||= Saver.new(path, options)
         else

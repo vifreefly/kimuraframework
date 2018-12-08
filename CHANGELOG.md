@@ -1,4 +1,9 @@
 # CHANGELOG
+## 1.3.2
+### Fixes
+* In the project template, set Ruby version as >= 2.5 (before was hard-coded to 2.5.1)
+* Remove .ruby-version file (was hard-coded to 2.5.1) from the project template
+
 ## 1.3.1
 ### Fixes
 * Fixed bug in Base#save_to

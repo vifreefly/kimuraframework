@@ -1740,8 +1740,6 @@ end
 ### Crawl
 To run a particular spider in the project, run: `$ bundle exec kimurai crawl example_spider`. Don't forget to add `bundle exec` before command to load required environment.
 
-You can provide an additional option `--continue` to use [persistence storage database](#persistence-database-for-the-storage) feature.
-
 ### List
 To list all project spiders, run: `$ bundle exec kimurai list`
 

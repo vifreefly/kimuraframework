@@ -5,7 +5,7 @@ require_relative '../capybara_ext/poltergeist/driver'
 require_relative '../capybara_ext/session'
 
 module Kimurai::BrowserBuilder
-  class PoltergeistPhantomJSBuilder
+  class PoltergeistPhantomjsBuilder
     attr_reader :logger, :spider
 
     def initialize(config, spider:)

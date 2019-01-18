@@ -3,6 +3,8 @@ require_relative 'base/storage'
 
 module Kimurai
   class Base
+    class InvalidUrlError < StandardError; end
+
     # don't deep merge config's headers hash option
     DMERGE_EXCLUDE = [:headers]
 
@@ -189,6 +191,8 @@ module Kimurai
     end
 
     def request_to(handler, delay = nil, url:, data: {}, response_type: :html)
+      raise InvalidUrlError, "Requested url is invalid: #{url}" unless URI.parse(url).kind_of?(URI::HTTP)
+
       if @config[:skip_duplicate_requests] && !unique_request?(url)
         add_event(:duplicate_requests) if self.with_info
         logger.warn "Spider: request_to: not unique url: #{url}, skipped" and return

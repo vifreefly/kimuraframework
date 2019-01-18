@@ -185,6 +185,12 @@ module Kimurai::BrowserBuilder
         logger.debug "BrowserBuilder (selenium_chrome): enabled before_request.delay"
       end
 
+      # encoding
+      if encoding = @config[:encoding]
+        @browser.config.encoding = encoding
+        logger.debug "BrowserBuilder (selenium_chrome): enabled encoding: #{encoding}"
+      end
+
       # return Capybara session instance
       @browser
     end

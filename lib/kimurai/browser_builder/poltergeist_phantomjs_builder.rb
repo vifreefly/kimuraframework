@@ -162,6 +162,12 @@ module Kimurai::BrowserBuilder
         logger.debug "BrowserBuilder (poltergeist_phantomjs): enabled before_request.delay"
       end
 
+      # encoding
+      if encoding = @config[:encoding]
+        @browser.config.encoding = encoding
+        logger.debug "BrowserBuilder (poltergeist_phantomjs): enabled encoding: #{encoding}"
+      end
+
       # return Capybara session instance
       @browser
     end

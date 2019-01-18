@@ -88,7 +88,16 @@ module Capybara
     def current_response(response_type = :html)
       case response_type
       when :html
-        Nokogiri::HTML(body)
+        if config.encoding
+          if config.encoding == :auto
+            charset = body.force_encoding("ISO-8859-1").encode("UTF-8")[/<meta.*?charset=["]?([\w+\d+\-]*)/i, 1]
+            Nokogiri::HTML(body, nil, charset)
+          else
+            Nokogiri::HTML(body, nil, config.encoding)
+          end
+        else
+          Nokogiri::HTML(body)
+        end
       when :json
         JSON.parse(body)
       end

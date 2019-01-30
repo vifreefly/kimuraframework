@@ -116,7 +116,11 @@ module Kimurai
       end
 
       engine = options["engine"]&.delete(":")&.to_sym
-      klass.parse!(:console, engine, url: options["url"])
+      if url = options["url"]
+        klass.new(engine).request_to(:console, url: options["url"])
+      else
+        klass.new(engine).public_send(:console)
+      end
     end
 
     desc "list", "List all available spiders in the current project"

@@ -173,7 +173,7 @@ module Kimurai
     attr_accessor :with_info
 
     def initialize(engine = self.class.engine, config: {})
-      @engine = engine
+      @engine = engine || self.class.engine
       @config = self.class.config.deep_merge_excl(config, DMERGE_EXCLUDE)
       @pipelines = self.class.pipelines.map do |pipeline_name|
         klass = Pipeline.descendants.find { |kl| kl.name == pipeline_name }

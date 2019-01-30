@@ -4,7 +4,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 ruby '>= 2.5'
 
 # Framework
-gem 'kimurai', '~> 1.0'
+gem 'kimurai', '~> 1.4'
 
 # Require files in directory and child directories recursively
 gem 'require_all'

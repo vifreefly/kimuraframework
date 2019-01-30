@@ -10,15 +10,12 @@
 > * The code was massively refactored for a [support](#using-kimurai-inside-existing-ruby-application) to run spiders multiple times from inside a single process. Now it's possible to run Kimurai spiders using background jobs like Sidekiq.
 > * `require 'kimurai'` doesn't require any gems except Active Support. Only when a particular spider [starts](#crawl-method), Capybara will be required with a specific driver.
 > * Although Kimurai [extends](lib/kimurai/capybara_ext) Capybara (all the magic happens inside [extended](lib/kimurai/capybara_ext/session.rb) `Capybara::Session#visit` method), session instances which were created manually will behave normally.
-> * No spaghetti code with `case/when/end` blocks anymore. All drivers [were extended](lib/kimurai/capybara_ext) to support unified methods for cookies, proxies, headers, etc.
-> * `selenium_url_to_set_cookies` @config option don't need anymore if you're use Selenium-like engine with custom cookies setting.
 > * Small changes in design (check the readme again to see what was changed)
 > * Stats database with a web dashboard were removed
-> * Again, massive refactor. Code now looks much better than it was before.
 
 <br>
 
-> Note: this readme is for `1.3.2` gem version. CHANGELOG [here](CHANGELOG.md).
+> Note: this readme is for `1.4.0` gem version. CHANGELOG [here](CHANGELOG.md).
 
 Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
@@ -1591,6 +1588,12 @@ end
   # It is a good idea to try to retry errros like `ReadTimeout`, `HTTPBadGateway`, etc.
   # Format: same like for `skip_request_errors` option.
   retry_request_errors: [Net::ReadTimeout],
+
+  # Handle page encoding while parsing html response using Nokogiri. There are two modes:
+  # Auto (`:auto`) (try to fetch correct encoding from <meta http-equiv="Content-Type"> or <meta charset> tags)
+  # Set required encoding manually, example: `encoding: "GB2312"` (Set required encoding manually)
+  # Default this option is unset.
+  encoding: nil,
 
   # Restart browser if one of the options is true:
   restart_if: {

@@ -1,4 +1,12 @@
 # CHANGELOG
+## 1.4.0
+### New
+* Add `encoding` config option (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))
+* Validate url before processing a request (Base#request_to)
+
+### Fixes
+* Fix console command bug (see [issue 21](https://github.com/vifreefly/kimuraframework/issues/21))
+
 ## 1.3.2
 ### Fixes
 * In the project template, set Ruby version as >= 2.5 (before was hard-coded to 2.5.1)

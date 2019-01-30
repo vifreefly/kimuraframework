@@ -100,6 +100,12 @@ class ApplicationSpider < Kimurai::Base
     # Format: same like for `skip_request_errors` option.
     # retry_request_errors: [Net::ReadTimeout],
 
+    # Handle page encoding while parsing html response using Nokogiri. There are two modes:
+    # Auto (`:auto`) (try to fetch correct encoding from <meta http-equiv="Content-Type"> or <meta charset> tags)
+    # Set required encoding manually, example: `encoding: "GB2312"` (Set required encoding manually)
+    # Default this option is unset.
+    # encoding: nil,
+
     # Restart browser if one of the options is true:
     restart_if: {
       # Restart browser if provided memory limit (in kilobytes) is exceeded (works for all engines)

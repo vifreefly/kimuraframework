@@ -236,11 +236,10 @@ module Kimurai
     ###
 
     def add_event(scope = :custom, event)
-      unless self.with_info
-        raise "It's allowed to use `add_event` only while performing a full run (`.crawl!` method)"
+      if self.with_info
+        self.class.add_event(scope, event)
       end
 
-      self.class.add_event(scope, event)
       logger.info "Spider: new event (scope: #{scope}): #{event}" if scope == :custom
     end
 

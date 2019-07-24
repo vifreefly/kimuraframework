@@ -23,6 +23,7 @@
         pkg: "{{ item }}"
         state: present
       with_items:
+        - git
         - xvfb
         - libsqlite3-dev
         - sqlite3

@@ -43,13 +43,16 @@ module Kimurai
     option "ssh-key-path", type: :string, banner: "Auth using ssh key"
     option "repo-url", type: :string, banner: "Repo url"
     option "repo-key-path", type: :string, banner: "SSH key for a git repo"
+    option "skip-check", type: :boolean, default: false, banner: "Skip git repository checks"
     def deploy(user_host)
-      if !`git status --short`.empty?
-        raise "Deploy: Please commit your changes first"
-      elsif `git remote`.empty?
-        raise "Deploy: Please add remote origin repository to your repo first"
-      elsif !`git rev-list master...origin/master`.empty?
-        raise "Deploy: Please push your commits to the remote origin repo first"
+      unless options["skip-check"]
+        if !`git status --short`.empty?
+          raise "Deploy: Please commit your changes first"
+        elsif `git remote`.empty?
+          raise "Deploy: Please add remote origin repository to your repo first"
+        elsif !`git rev-list master...origin/master`.empty?
+          raise "Deploy: Please push your commits to the remote origin repo first"
+        end
       end
 
       repo_url = options["repo-url"] ? options["repo-url"] : `git remote get-url origin`.strip

@@ -131,7 +131,7 @@ module Kimurai
       raise "Can't find Kimurai project" unless inside_project?
       require './config/boot'
 
-      Kimurai.list.keys.each { |name| puts name }
+      Kimurai.list.keys.sort.each { |name| puts name }
     end
 
     desc "runner", "Run all spiders in the project in queue"

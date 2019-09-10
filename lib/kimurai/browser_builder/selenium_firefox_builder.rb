@@ -111,9 +111,9 @@ module Kimurai::BrowserBuilder
         end
 
         # Additional arguments
-        if @config[:additional_arguments].present?
-          driver_options.args <<  @config[:additional_arguments].join(' ')
-          logger.debug "BrowserBuilder (selenium_firefox): additional arguments have been added"
+        if @config[:browser_cmd_line_arguments].present?
+          driver_options.args <<  @config[:browser_cmd_line_arguments].join(' ')
+          logger.debug "BrowserBuilder (selenium_firefox): additional browser command line arguments have been added"
         end
 
         Capybara::Selenium::Driver.new(app, browser: :firefox, options: driver_options)

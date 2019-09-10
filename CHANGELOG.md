@@ -1,4 +1,7 @@
 # CHANGELOG
+## 1.6.0
+* Rename `additional_arguments` config option to `browser_cmd_line_arguments` (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))
+
 ## 1.5.0
 ### New
 * Add `additional_arguments` config option (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))

@@ -110,9 +110,9 @@ module Kimurai::BrowserBuilder
         end
 
         # Additional arguments
-        if @config[:additional_arguments].present?
-          driver_options.args << @config[:additional_arguments].join(' ')
-          logger.debug "BrowserBuilder (selenium_chrome): additional arguments have been added"
+        if @config[:browser_cmd_line_arguments].present?
+          driver_options.args << @config[:browser_cmd_line_arguments].join(' ')
+          logger.debug "BrowserBuilder (selenium_chrome): additional browser command line arguments have been added"
         end
 
         chromedriver_path = Kimurai.configuration.chromedriver_path || "/usr/local/bin/chromedriver"

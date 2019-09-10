@@ -1,4 +1,8 @@
 # CHANGELOG
+## 1.5.0
+### New
+* Add `additional_arguments` config option (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))
+
 ## 1.4.0
 ### New
 * Add `encoding` config option (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))

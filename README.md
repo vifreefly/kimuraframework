@@ -15,7 +15,7 @@
 
 <br>
 
-> Note: this readme is for `1.4.0` gem version. CHANGELOG [here](CHANGELOG.md).
+> Note: this readme is for `1.5.0` gem version. CHANGELOG [here](CHANGELOG.md).
 
 Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
@@ -1317,6 +1317,9 @@ Kimurai.configure do |config|
   # config.selenium_chrome_path = "/usr/bin/chromium-browser"
   # Provide custom selenium chromedriver path (default is "/usr/local/bin/chromedriver"):
   # config.chromedriver_path = "~/.local/bin/chromedriver"
+
+  # Provide additional command line arguments that will passed to the browser
+  # config.additional_arguments = %w[--disable-gpu]
 end
 ```
 

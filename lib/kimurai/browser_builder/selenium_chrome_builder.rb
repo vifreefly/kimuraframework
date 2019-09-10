@@ -109,6 +109,12 @@ module Kimurai::BrowserBuilder
           end
         end
 
+        # Additional arguments
+        if @config[:additional_arguments].present?
+          driver_options.args << @config[:additional_arguments].join(' ')
+          logger.debug "BrowserBuilder (selenium_chrome): additional arguments have been added"
+        end
+
         chromedriver_path = Kimurai.configuration.chromedriver_path || "/usr/local/bin/chromedriver"
         service = Selenium::WebDriver::Service.chrome(path: chromedriver_path)
         Capybara::Selenium::Driver.new(app, browser: :chrome, options: driver_options, service: service)

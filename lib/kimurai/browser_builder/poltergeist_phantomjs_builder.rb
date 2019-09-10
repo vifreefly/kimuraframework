@@ -51,9 +51,9 @@ module Kimurai::BrowserBuilder
         end
 
         # Additional arguments
-        if @config[:additional_arguments].present?
-          driver_options[:phantomjs_options] += @config[:additional_arguments]
-          logger.debug "BrowserBuilder (poltergeist_phantomjs): additional arguments have been added"
+        if @config[:browser_cmd_line_arguments].present?
+          driver_options[:phantomjs_options] += @config[:browser_cmd_line_arguments]
+          logger.debug "BrowserBuilder (poltergeist_phantomjs): additional browser command line arguments have been added"
         end
 
         Capybara::Poltergeist::Driver.new(app, driver_options)

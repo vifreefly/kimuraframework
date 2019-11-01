@@ -35,7 +35,7 @@ class GithubSpider < Kimurai::Base
   }
 
   def parse(response, url:, data: {})
-    response.xpath("//ul[@class='repo-list']/div//h3/a").each do |a|
+    response.xpath("//ul[@class='repo-list']//a[@class='v-align-middle']").each do |a|
       request_to :parse_repo_page, url: absolute_url(a[:href], base: url)
     end
 
@@ -51,7 +51,7 @@ class GithubSpider < Kimurai::Base
     item[:repo_name] = response.xpath("//h1/strong[@itemprop='name']/a").text
     item[:repo_url] = url
     item[:description] = response.xpath("//span[@itemprop='about']").text.squish
-    item[:tags] = response.xpath("//div[@id='topics-list-container']/div/a").map { |a| a.text.squish }
+    item[:tags] = response.xpath("//div[starts-with(@class, 'list-topics-container')]/a").map { |a| a.text.squish }
     item[:watch_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Watch')]/a[2]").text.squish
     item[:star_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Star')]/a[2]").text.squish
     item[:fork_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Fork')]/a[2]").text.squish

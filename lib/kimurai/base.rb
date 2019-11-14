@@ -154,7 +154,13 @@ module Kimurai
     end
 
     def self.parse!(handler, *args, **request)
-      spider = self.new
+      if request.has_key? :config
+        config = request[:config]
+        request.delete :config
+      else
+        config = {}
+      end
+      spider = self.new config: config
 
       if args.present?
         spider.public_send(handler, *args)

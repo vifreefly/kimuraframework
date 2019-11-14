@@ -1359,7 +1359,7 @@ end # =>
 
 So what if you're don't care about stats and just want to process request to a particular spider method and get the returning value from this method? Use `.parse!` instead:
 
-#### `.parse!(:method_name, url:)` method
+#### `.parse!(:method_name, url:, config: {})` method
 
 `.parse!` (class method) creates a new spider instance and performs a request to given method with a given url. Value from the method will be returned back:
 
@@ -1376,6 +1376,8 @@ end
 
 ExampleSpider.parse!(:parse, url: "https://example.com/")
 # => "Example Domain"
+# this is example when you need to override config
+ExampleSpider.parse!(:parse, url: "https://example.com/", config: { before_request: { clear_and_set_cookies: true } } )
 ```
 
 Like `.crawl!`, `.parse!` method takes care of a browser instance and kills it (`browser.destroy_driver!`) before returning the value. Unlike `.crawl!`, `.parse!` method can be called from different threads at the same time:

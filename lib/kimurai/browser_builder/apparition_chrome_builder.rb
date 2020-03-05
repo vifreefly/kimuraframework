@@ -86,8 +86,6 @@ module Kimurai::BrowserBuilder
       @browser.spider = spider
       logger.debug "BrowserBuilder (apparition_chrome): created browser instance"
 
-      require 'pry' ; binding.pry
-
       # Proxy (Not TESTED)
       if proxy = @config[:proxy].presence
         proxy_string = (proxy.class == Proc ? proxy.call : proxy).strip

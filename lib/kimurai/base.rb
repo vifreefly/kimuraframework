@@ -220,7 +220,7 @@ module Kimurai
       storage.unique?(scope, value)
     end
 
-    def save_to(path, item, format:, position: true, append: false)
+    def save_to(path, item, format:, position: true, append: false, show: false)
       @savers[path] ||= begin
         options = { format: format, position: position, append: append }
         if self.with_info
@@ -231,16 +231,20 @@ module Kimurai
       end
 
       @savers[path].save(item)
+
+      logger.info "Spider: saved item: #{JSON.generate(item)}" if show
     end
 
     ###
 
-    def add_event(scope = :custom, event)
+    def add_event(scope = :custom, event, log_level: :info)
       if self.with_info
         self.class.add_event(scope, event)
       end
 
-      logger.info "Spider: new event (scope: #{scope}): #{event}" if scope == :custom
+      if scope == :custom
+        logger.public_send(log_level, "Spider: new event (scope: #{scope}): #{event}")
+      end
     end
 
     ###

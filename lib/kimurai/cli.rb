@@ -160,10 +160,11 @@ module Kimurai
 
     desc "dashboard", "Run dashboard"
     def dashboard
-      raise "Can't find Kimurai project" unless inside_project?
+      # raise "Can't find Kimurai project" unless inside_project?
 
-      require './config/boot'
-      if Object.const_defined?("Kimurai::Dashboard")
+      # require './config/boot'
+      if true # Object.const_defined?("Kimurai::Dashboard")
+        require 'kimurai/dashboard'
         require 'kimurai/dashboard/app'
         Kimurai::Dashboard::App.run!
       else

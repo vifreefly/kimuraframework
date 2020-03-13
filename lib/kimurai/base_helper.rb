@@ -4,7 +4,9 @@ module Kimurai
 
     def absolute_url(url, base:)
       return unless url
-      URI.join(base, URI.escape(url)).to_s
+      # URI.join(base, URI.escape(url)).to_s
+      URI.join(base, url).to_s
+      # URI.join(base, URI.encode_www_form(url)).to_s
     end
 
     def escape_url(url)

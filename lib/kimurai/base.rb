@@ -175,8 +175,17 @@ module Kimurai
     def initialize(engine = self.class.engine, config: {})
       @engine = engine || self.class.engine
       @config = self.class.config.deep_merge_excl(config, DMERGE_EXCLUDE)
-      @pipelines = self.class.pipelines.map do |pipeline_name|
-        klass = Pipeline.descendants.find { |kl| kl.name == pipeline_name }
+      # @pipelines = self.class.pipelines.map do |pipeline_name|
+      #   klass = Pipeline.descendants.find { |kl| kl.name == pipeline_name }
+      #   instance = klass.new
+      #   instance.spider = self
+      #   [pipeline_name, instance]
+      # end.to_h
+
+      @pipelines = self.class.pipelines.map do |pipeline_class|
+        klass = pipeline_class
+        pipeline_name = klass.to_s.underscore.to_sym
+
         instance = klass.new
         instance.spider = self
         [pipeline_name, instance]
@@ -190,12 +199,17 @@ module Kimurai
       @browser ||= BrowserBuilder.build(@engine, @config, spider: self)
     end
 
-    def request_to(handler, delay = nil, url:, data: {}, response_type: :html)
+    def request_to(handler, delay = nil, url:, data: {}, response_type: :html, headers: nil)
       raise InvalidUrlError, "Requested url is invalid: #{url}" unless URI.parse(url).kind_of?(URI::HTTP)
 
       if @config[:skip_duplicate_requests] && !unique_request?(url)
         add_event(:duplicate_requests) if self.with_info
         logger.warn "Spider: request_to: not unique url: #{url}, skipped" and return
+      end
+
+      if headers.present?
+        puts "Adding headers..."
+        headers.each { |k, v| browser.driver.add_header(k, v, permanent: false) }
       end
 
       visited = delay ? browser.visit(url, delay: delay) : browser.visit(url)

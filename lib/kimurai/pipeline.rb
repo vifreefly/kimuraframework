@@ -22,8 +22,8 @@ module Kimurai
       spider.unique?(scope, value)
     end
 
-    def save_to(path, item, format:, position: true, append: false)
-      spider.save_to(path, item, format: format, position: position, append: append)
+    def save_to(path, item, format:, position: true, append: false, show: false)
+      spider.save_to(path, item, format: format, position: position, append: append, show: show)
     end
 
     def logger

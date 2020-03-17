@@ -287,10 +287,13 @@ module Kimurai
       logger.debug "Pipeline: starting processing item through #{@pipelines.size} #{'pipeline'.pluralize(@pipelines.size)}..."
       self.class.update(:items, :sent) if self.with_info
 
+      raise_on_error = options.delete(:raise_on_error)
       @pipelines.each do |name, instance|
         item = options[name] ? instance.process_item(item, options: options[name]) : instance.process_item(item)
       end
     rescue => e
+      raise e if raise_on_error
+
       logger.error "Pipeline: dropped: #{e.inspect} (#{e.backtrace.first}), item: #{item}"
       add_event(:drop_items_errors, e.inspect) if self.with_info
       false

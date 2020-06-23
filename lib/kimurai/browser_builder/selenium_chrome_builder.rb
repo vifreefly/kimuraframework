@@ -28,6 +28,10 @@ module Kimurai::BrowserBuilder
         if chrome_path = Kimurai.configuration.selenium_chrome_path
           opts.merge!(binary: chrome_path)
         end
+        
+        if @config[:debugger_address]
+          opts.merge!(debugger_address: @config[:debugger_address])
+        end
 
         # See all options here: https://seleniumhq.github.io/selenium/docs/api/rb/Selenium/WebDriver/Chrome/Options.html
         driver_options = Selenium::WebDriver::Chrome::Options.new(opts)

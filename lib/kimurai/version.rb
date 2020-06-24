@@ -1,3 +1,3 @@
 module Kimurai
-  VERSION = "1.8.0"
+  VERSION = "1.9.0"
 end

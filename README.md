@@ -6,16 +6,8 @@
   <h1>Kimurai Scraping Framework</h1>
 </div>
 
-> **Note about v1.0.0 version:**
-> * The code was massively refactored for a [support](#using-kimurai-inside-existing-ruby-application) to run spiders multiple times from inside a single process. Now it's possible to run Kimurai spiders using background jobs like Sidekiq.
-> * `require 'kimurai'` doesn't require any gems except Active Support. Only when a particular spider [starts](#crawl-method), Capybara will be required with a specific driver.
-> * Although Kimurai [extends](lib/kimurai/capybara_ext) Capybara (all the magic happens inside [extended](lib/kimurai/capybara_ext/session.rb) `Capybara::Session#visit` method), session instances which were created manually will behave normally.
-> * Small changes in design (check the readme again to see what was changed)
-> * Stats database with a web dashboard were removed
-
-<br>
-
 > Note: this readme is for `1.5.0` gem version. CHANGELOG [here](CHANGELOG.md).
+# Kimurai
 
 Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
@@ -223,51 +215,51 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 * Command-line [runner](#runner) to run all project spiders one by one or in parallel
 
 ## Table of Contents
-* [Kimurai](#kimurai)
-  * [Features](#features)
-  * [Table of Contents](#table-of-contents)
-  * [Installation](#installation)
-  * [Getting to Know](#getting-to-know)
-    * [Interactive console](#interactive-console)
-    * [Available engines](#available-engines)
-    * [Minimum required spider structure](#minimum-required-spider-structure)
-    * [Method arguments response, url and data](#method-arguments-response-url-and-data)
-    * [browser object](#browser-object)
-    * [request_to method](#request_to-method)
-    * [save_to helper](#save_to-helper)
-    * [Skip duplicates](#skip-duplicates)
-      * [Automatically skip all duplicated requests urls](#automatically-skip-all-duplicated-requests-urls)
-      * [Storage object](#storage-object)
-    * [Handle request errors](#handle-request-errors)
-      * [skip_request_errors](#skip_request_errors)
-      * [retry_request_errors](#retry_request_errors)
-    * [Logging custom events](#logging-custom-events)
-    * [open_spider and close_spider callbacks](#open_spider-and-close_spider-callbacks)
-    * [KIMURAI_ENV](#kimurai_env)
-    * [Parallel crawling using in_parallel](#parallel-crawling-using-in_parallel)
-    * [Active Support included](#active-support-included)
-    * [Schedule spiders using Cron](#schedule-spiders-using-cron)
-    * [Configuration options](#configuration-options)
-    * [Using Kimurai inside existing Ruby application](#using-kimurai-inside-existing-ruby-application)
-      * [crawl! method](#crawl-method)
-      * [parse! method](#parsemethod_name-url-method)
-      * [Kimurai.list and Kimurai.find_by_name](#kimurailist-and-kimuraifind_by_name)
-    * [Automated sever setup and deployment](#automated-sever-setup-and-deployment)
-      * [Setup](#setup)
-      * [Deploy](#deploy)
-  * [Spider @config](#spider-config)
-    * [All available @config options](#all-available-config-options)
-    * [@config settings inheritance](#config-settings-inheritance)
-  * [Project mode](#project-mode)
-    * [Generate new spider](#generate-new-spider)
-    * [Crawl](#crawl)
-    * [List](#list)
-    * [Parse](#parse)
-    * [Pipelines, send_item method](#pipelines-send_item-method)
-    * [Runner](#runner)
-      * [Runner callbacks](#runner-callbacks)
-  * [Chat Support and Feedback](#chat-support-and-feedback)
-  * [License](#license)
+- [Kimurai](#kimurai)
+  - [Features](#features)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Getting to Know](#getting-to-know)
+    - [Interactive console](#interactive-console)
+    - [Available engines](#available-engines)
+    - [Minimum required spider structure](#minimum-required-spider-structure)
+    - [Method arguments `response`, `url` and `data`](#method-arguments-response-url-and-data)
+    - [`browser` object](#browser-object)
+    - [`request_to` method](#request_to-method)
+    - [`save_to` helper](#save_to-helper)
+    - [Skip duplicates](#skip-duplicates)
+      - [Automatically skip all duplicated requests urls](#automatically-skip-all-duplicated-requests-urls)
+      - [`storage` object](#storage-object)
+    - [Handle request errors](#handle-request-errors)
+      - [skip_request_errors](#skip_request_errors)
+      - [retry_request_errors](#retry_request_errors)
+    - [Logging custom events](#logging-custom-events)
+    - [`open_spider` and `close_spider` callbacks](#open_spider-and-close_spider-callbacks)
+    - [`KIMURAI_ENV`](#kimurai_env)
+    - [Parallel crawling using `in_parallel`](#parallel-crawling-using-in_parallel)
+    - [Active Support included](#active-support-included)
+    - [Schedule spiders using Cron](#schedule-spiders-using-cron)
+    - [Configuration options](#configuration-options)
+    - [Using Kimurai inside existing Ruby application](#using-kimurai-inside-existing-ruby-application)
+      - [`.crawl!` method](#crawl-method)
+      - [`.parse!(:method_name, url:)` method](#parsemethod_name-url-method)
+      - [`Kimurai.list` and `Kimurai.find_by_name()`](#kimurailist-and-kimuraifind_by_name)
+    - [Automated sever setup and deployment](#automated-sever-setup-and-deployment)
+      - [Setup](#setup)
+      - [Deploy](#deploy)
+  - [Spider `@config`](#spider-config)
+    - [All available `@config` options](#all-available-config-options)
+    - [`@config` settings inheritance](#config-settings-inheritance)
+  - [Project mode](#project-mode)
+    - [Generate new spider](#generate-new-spider)
+    - [Crawl](#crawl)
+    - [List](#list)
+    - [Parse](#parse)
+    - [Pipelines, `send_item` method](#pipelines-send_item-method)
+    - [Runner](#runner)
+      - [Runner callbacks](#runner-callbacks)
+  - [Chat Support and Feedback](#chat-support-and-feedback)
+  - [License](#license)
 
 
 ## Installation

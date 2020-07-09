@@ -27,6 +27,9 @@ module Kimurai::BrowserBuilder
         driver_options.profile["browser.link.open_newwindow"] = 3 # open windows in tabs
         driver_options.profile["media.peerconnection.enabled"] = false # disable web rtc
 
+        # Create capabilities
+        capabilities = {}
+
         # Proxy
         if proxy = @config[:proxy].presence
           proxy_string = (proxy.class == Proc ? proxy.call : proxy).strip
@@ -69,6 +72,7 @@ module Kimurai::BrowserBuilder
         if @config[:ignore_ssl_errors].present?
           driver_options.profile.secure_ssl = false
           driver_options.profile.assume_untrusted_certificate_issuer = true
+          capabilities[:accept_insecure_certs] = true
           logger.debug "BrowserBuilder (selenium_firefox): enabled ignore_ssl_errors"
         end
 
@@ -110,7 +114,8 @@ module Kimurai::BrowserBuilder
           end
         end
 
-        Capybara::Selenium::Driver.new(app, browser: :firefox, options: driver_options)
+        desired_capabilities = Selenium::WebDriver::Remote::Capabilities.firefox(capabilities)
+        Capybara::Selenium::Driver.new(app, browser: :firefox, options: driver_options, desired_capabilities: desired_capabilities)
       end
 
       # Create browser instance (Capybara session)

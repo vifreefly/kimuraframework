@@ -9,6 +9,8 @@
 > Note: this readme is for `1.5.0` gem version. CHANGELOG [here](CHANGELOG.md).
 # Kimurai
 
+> UPD. I will soon have a time to work on issues for current 1.4 version and also plan to release new 2.0 version with https://github.com/twalpole/apparition engine.
+
 Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
 Kimurai based on well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Lets see:

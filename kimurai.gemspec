@@ -33,6 +33,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "capybara-mechanize"
   spec.add_dependency "poltergeist"
   spec.add_dependency "selenium-webdriver"
+  spec.add_dependency "apparition"
 
   spec.add_dependency "headless"
   spec.add_dependency "pmap"

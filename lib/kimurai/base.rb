@@ -154,7 +154,13 @@ module Kimurai
     end
 
     def self.parse!(handler, *args, **request)
-      spider = self.new
+      if request.has_key? :config
+        config = request[:config]
+        request.delete :config
+      else
+        config = {}
+      end
+      spider = self.new config: config
 
       if args.present?
         spider.public_send(handler, *args)
@@ -201,7 +207,9 @@ module Kimurai
       visited = delay ? browser.visit(url, delay: delay) : browser.visit(url)
       return unless visited
 
-      public_send(handler, browser.current_response(response_type), { url: url, data: data })
+      options =  { url: url, data: data }
+
+      public_send(handler, browser.current_response(response_type), **options)
     end
 
     def console(response = nil, url: nil, data: {})

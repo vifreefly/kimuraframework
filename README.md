@@ -20,7 +20,7 @@ class GithubSpider < Kimurai::Base
   }
 
   def parse(response, url:, data: {})
-    response.xpath("//ul[@class='repo-list']/div//h3/a").each do |a|
+    response.xpath("//ul[@class='repo-list']//a[@class='v-align-middle']").each do |a|
       request_to :parse_repo_page, url: absolute_url(a[:href], base: url)
     end
 
@@ -36,7 +36,7 @@ class GithubSpider < Kimurai::Base
     item[:repo_name] = response.xpath("//h1/strong[@itemprop='name']/a").text
     item[:repo_url] = url
     item[:description] = response.xpath("//span[@itemprop='about']").text.squish
-    item[:tags] = response.xpath("//div[@id='topics-list-container']/div/a").map { |a| a.text.squish }
+    item[:tags] = response.xpath("//div[starts-with(@class, 'list-topics-container')]/a").map { |a| a.text.squish }
     item[:watch_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Watch')]/a[2]").text.squish
     item[:star_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Star')]/a[2]").text.squish
     item[:fork_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Fork')]/a[2]").text.squish
@@ -1344,7 +1344,7 @@ end # =>
 
 So what if you're don't care about stats and just want to process request to a particular spider method and get the returning value from this method? Use `.parse!` instead:
 
-#### `.parse!(:method_name, url:)` method
+#### `.parse!(:method_name, url:, config: {})` method
 
 `.parse!` (class method) creates a new spider instance and performs a request to given method with a given url. Value from the method will be returned back:
 
@@ -1361,6 +1361,8 @@ end
 
 ExampleSpider.parse!(:parse, url: "https://example.com/")
 # => "Example Domain"
+# this is example when you need to override config
+ExampleSpider.parse!(:parse, url: "https://example.com/", config: { before_request: { clear_and_set_cookies: true } } )
 ```
 
 Like `.crawl!`, `.parse!` method takes care of a browser instance and kills it (`browser.destroy_driver!`) before returning the value. Unlike `.crawl!`, `.parse!` method can be called from different threads at the same time:

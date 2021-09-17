@@ -1,4 +1,10 @@
 # CHANGELOG
+
+## 1.5.0
+### New
+* Add support to [Apparition](https://github.com/twalpole/apparition)
+* Add support to [Cuprite](https://github.com/rubycdp/cuprite)
+
 ## 1.4.0
 ### New
 * Add `encoding` config option (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))

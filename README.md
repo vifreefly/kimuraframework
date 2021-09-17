@@ -1,8 +1,8 @@
 # Kimurai
 
-> UPD. I will soon have a time to work on issues for current 1.4 version and also plan to release new 2.0 version with https://github.com/twalpole/apparition engine.
+> UPD. I will soon have a time to work on issues for current 1.4 version and also plan to release new 2.0 version.
 
-Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
+Kimurai is a modern web scraping framework written in Ruby which **works out of box with Apparition, Cuprite, Headless Chromium/Firefox and PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
 Kimurai based on well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Lets see:
 
@@ -193,7 +193,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 
 ## Features
 * Scrape javascript rendered websites out of box
-* Supported engines: [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome), [Headless Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Headless_mode), [PhantomJS](https://github.com/ariya/phantomjs) or simple HTTP requests ([mechanize](https://github.com/sparklemotion/mechanize) gem)
+* Supported engines: [Apparition](https://github.com/twalpole/apparition), [Cuprite](https://github.com/rubycdp/cuprite), [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome), [Headless Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Headless_mode), [PhantomJS](https://github.com/ariya/phantomjs) or simple HTTP requests ([mechanize](https://github.com/sparklemotion/mechanize) gem)
 * Write spider code once, and use it with any supported engine later
 * All the power of [Capybara](https://github.com/teamcapybara/capybara): use methods like `click_on`, `fill_in`, `select`, `choose`, `set`, `go_back`, etc. to interact with web pages
 * Rich [configuration](#spider-config): **set default headers, cookies, delay between requests, enable proxy/user-agents rotation**
@@ -508,6 +508,8 @@ CLI options:
 ### Available engines
 Kimurai has support for following engines and mostly can switch between them without need to rewrite any code:
 
+* `:apparition` - a Chrome driver for Capybara via [CDP protocol](https://chromedevtools.github.io/devtools-protocol/) (no selenium or chromedriver needed). It started as a fork of Poltergeist and attempts to maintain as much compatibility with the Poltergeist API as possible.
+* `:cuprite` - a pure Ruby driver for Capybara. It allows you to run Capybara tests on a headless Chrome or Chromium. Under the hood it uses [Ferrum](https://github.com/rubycdp/ferrum#index) which is high-level API to the browser by [CDP protocol](https://chromedevtools.github.io/devtools-protocol/) (no selenium or chromedriver needed). The design of the driver is as close to Poltergeist as possible though it's not a goal.
 * `:mechanize` - [pure Ruby fake http browser](https://github.com/sparklemotion/mechanize). Mechanize can't render javascript and don't know what DOM is it. It only can parse original HTML code of a page. Because of it, mechanize much faster, takes much less memory and in general much more stable than any real browser. Use mechanize if you can do it, and the website doesn't use javascript to render any meaningful parts of its structure. Still, because mechanize trying to mimic a real browser, it supports almost all Capybara's [methods to interact with a web page](http://cheatrags.com/capybara) (filling forms, clicking buttons, checkboxes, etc).
 * `:poltergeist_phantomjs` - [PhantomJS headless browser](https://github.com/ariya/phantomjs), can render javascript. In general, PhantomJS still faster than Headless Chrome (and Headless Firefox). PhantomJS has memory leakage, but Kimurai has [memory control feature](#crawler-config) so you shouldn't consider it as a problem. Also, some websites can recognize PhantomJS and block access to them. Like mechanize (and unlike selenium engines) `:poltergeist_phantomjs` can freely rotate proxies and change headers _on the fly_ (see [config section](#all-available-config-options)).
 * `:selenium_chrome` Chrome in headless mode driven by selenium. Modern headless browser solution with proper javascript rendering.

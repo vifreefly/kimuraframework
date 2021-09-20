@@ -198,7 +198,7 @@ module Kimurai
         logger.warn "Spider: request_to: not unique url: #{url}, skipped" and return
       end
 
-      visited = delay ? browser.visit(url, delay: delay) : browser.visit(url)
+      visited = delay ? browser.visit(url, delay: delay, preset_cookies_url: data[:preset_cookies_url]) : browser.visit(url, preset_cookies_url: data[:preset_cookies_url])
       return unless visited
 
       public_send(handler, browser.current_response(response_type), { url: url, data: data })

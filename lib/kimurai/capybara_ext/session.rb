@@ -8,13 +8,13 @@ module Capybara
     attr_accessor :spider
 
     alias_method :original_visit, :visit
-    def visit(visit_uri, delay: config.before_request[:delay], skip_request_options: false, max_retries: 3)
+    def visit(visit_uri, delay: config.before_request[:delay], skip_request_options: false, max_retries: 3, preset_cookies_url: nil)
       if spider
         process_delay(delay) if delay
         retries, sleep_interval = 0, 0
 
         begin
-          check_request_options(visit_uri) unless skip_request_options
+          check_request_options(visit_uri, preset_cookies_url) unless skip_request_options
           driver.requests += 1 and logger.info "Browser: started get request to: #{visit_uri}"
           spider.class.update(:visits, :requests) if spider.with_info
 
@@ -179,7 +179,7 @@ module Capybara
       sleep interval
     end
 
-    def check_request_options(url_to_visit)
+    def check_request_options(url_to_visit, preset_cookies_url = nil)
       # restart_if
       if memory_limit = config.restart_if[:memory_limit]
         memory = driver.current_memory
@@ -201,7 +201,7 @@ module Capybara
       # (Selenium only) if config.cookies present and browser was just created,
       # visit url_to_visit first and only then set cookies:
       if driver.visited.nil? && config.cookies && mode.match?(/selenium/)
-        visit(url_to_visit, skip_request_options: true)
+        visit(preset_cookies_url, skip_request_options: true)
         config.cookies.each do |cookie|
           driver.set_cookie(cookie[:name], cookie[:value], cookie)
         end
@@ -218,7 +218,7 @@ module Capybara
         # (Selenium only) if browser is not visited yet any page, visit url_to_visit
         # first and then set cookies (needs after browser restart):
         if driver.visited.nil? && mode.match?(/selenium/)
-          visit(url_to_visit, skip_request_options: true)
+          visit(preset_cookies_url, skip_request_options: true)
         end
 
         config.cookies.each do |cookie|

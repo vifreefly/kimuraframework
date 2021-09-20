@@ -8,13 +8,13 @@ module Capybara
     attr_accessor :spider
 
     alias_method :original_visit, :visit
-    def visit(visit_uri, delay: config.before_request[:delay], skip_request_options: false, max_retries: 3, preset_cookies_url: nil)
+    def visit(visit_uri, delay: config.before_request[:delay], skip_request_options: false, max_retries: 3, data: {})
       if spider
         process_delay(delay) if delay
         retries, sleep_interval = 0, 0
 
         begin
-          check_request_options(visit_uri, preset_cookies_url) unless skip_request_options
+          check_request_options(visit_uri, data[:preset_cookies_url]) unless skip_request_options
           driver.requests += 1 and logger.info "Browser: started get request to: #{visit_uri}"
           spider.class.update(:visits, :requests) if spider.with_info
 

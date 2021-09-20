@@ -201,7 +201,7 @@ module Capybara
       # (Selenium only) if config.cookies present and browser was just created,
       # visit url_to_visit first and only then set cookies:
       if driver.visited.nil? && config.cookies && mode.match?(/selenium/)
-        visit(preset_cookies_url, skip_request_options: true)
+        visit(preset_cookies_url || url_to_visit, skip_request_options: true)
         config.cookies.each do |cookie|
           driver.set_cookie(cookie[:name], cookie[:value], cookie)
         end
@@ -218,7 +218,7 @@ module Capybara
         # (Selenium only) if browser is not visited yet any page, visit url_to_visit
         # first and then set cookies (needs after browser restart):
         if driver.visited.nil? && mode.match?(/selenium/)
-          visit(preset_cookies_url, skip_request_options: true)
+          visit(preset_cookies_url || url_to_visit, skip_request_options: true)
         end
 
         config.cookies.each do |cookie|

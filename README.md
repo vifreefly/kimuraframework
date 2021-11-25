@@ -1,10 +1,10 @@
 # Kimurai
 
-> UPD. I will soon have a time to work on issues for current 1.4 version and also plan to release new 2.0 version with https://github.com/twalpole/apparition engine.
+> UPDATE: When I have some free time, I plan to resolve the outstanding issues for the current version (1.4.0) and release version 2.0 with the https://github.com/twalpole/apparition engine.
 
-Kimurai is a modern web scraping framework written in Ruby which **works out of box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
+Kimurai is a modern web scraping framework written in Ruby which **works out of the box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows you to scrape and interact with JavaScript rendered websites.**
 
-Kimurai based on well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Lets see:
+Kimurai is based on the well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Let's try an example:
 
 ```ruby
 # github_spider.rb
@@ -130,7 +130,7 @@ I, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720]  INFO -- github_spider:
 ```
 </details><br>
 
-Okay, that was easy. How about javascript rendered websites with dynamic HTML? Lets scrape a page with infinite scroll:
+Okay, that was easy. How about JavaScript rendered websites with dynamic HTML? Let's scrape a page with infinite scroll:
 
 ```ruby
 # infinite_scroll_spider.rb
@@ -192,27 +192,27 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 
 
 ## Features
-* Scrape javascript rendered websites out of box
+* Scrape JavaScript rendered websites out of the box
 * Supported engines: [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome), [Headless Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Headless_mode), [PhantomJS](https://github.com/ariya/phantomjs) or simple HTTP requests ([mechanize](https://github.com/sparklemotion/mechanize) gem)
 * Write spider code once, and use it with any supported engine later
 * All the power of [Capybara](https://github.com/teamcapybara/capybara): use methods like `click_on`, `fill_in`, `select`, `choose`, `set`, `go_back`, etc. to interact with web pages
 * Rich [configuration](#spider-config): **set default headers, cookies, delay between requests, enable proxy/user-agents rotation**
-* Built-in helpers to make scraping easy, like [save_to](#save_to-helper) (save items to JSON, JSON lines, or CSV formats) or [unique?](#skip-duplicates-unique-helper) to skip duplicates
+* Built-in helpers to make scraping easy, like [save_to](#save_to-helper) (save items to JSON, JSON lines, or CSV formats) or [unique?](#skip-duplicates) to skip duplicates
 * Automatically [handle requests errors](#handle-request-errors)
 * Automatically restart browsers when reaching memory limit [**(memory control)**](#spider-config) or requests limit
 * Easily [schedule spiders](#schedule-spiders-using-cron) within cron using [Whenever](https://github.com/javan/whenever) (no need to know cron syntax)
 * [Parallel scraping](#parallel-crawling-using-in_parallel) using simple method `in_parallel`
 * **Two modes:** use single file for a simple spider, or [generate](#project-mode) Scrapy-like **project**
 * Convenient development mode with [console](#interactive-console), colorized logger and debugger ([Pry](https://github.com/pry/pry), [Byebug](https://github.com/deivid-rodriguez/byebug))
-* Automated [server environment setup](#setup) (for ubuntu 18.04) and [deploy](#deploy) using commands `kimurai setup` and `kimurai deploy` ([Ansible](https://github.com/ansible/ansible) under the hood)
-* Command-line [runner](#runner) to run all project spiders one by one or in parallel
+* Automated [server environment setup](#setup) (for Ubuntu 18.04) and [deploy](#deploy) using commands `kimurai setup` and `kimurai deploy` ([Ansible](https://github.com/ansible/ansible) under the hood)
+* Command-line [runner](#runner) to run all project spiders one-by-one or in parallel
 
 ## Table of Contents
 * [Kimurai](#kimurai)
   * [Features](#features)
   * [Table of Contents](#table-of-contents)
   * [Installation](#installation)
-  * [Getting to Know](#getting-to-know)
+  * [Getting to know Kimurai](#getting-to-know-kimurai)
     * [Interactive console](#interactive-console)
     * [Available engines](#available-engines)
     * [Minimum required spider structure](#minimum-required-spider-structure)
@@ -221,9 +221,9 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
     * [request_to method](#request_to-method)
     * [save_to helper](#save_to-helper)
     * [Skip duplicates](#skip-duplicates)
-      * [Automatically skip all duplicated requests urls](#automatically-skip-all-duplicated-requests-urls)
+      * [Automatically skip all duplicate request urls](#automatically-skip-all-duplicate-request-urls)
       * [Storage object](#storage-object)
-    * [Handle request errors](#handle-request-errors)
+    * [Handling request errors](#handling-request-errors)
       * [skip_request_errors](#skip_request_errors)
       * [retry_request_errors](#retry_request_errors)
     * [Logging custom events](#logging-custom-events)
@@ -233,7 +233,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
     * [Active Support included](#active-support-included)
     * [Schedule spiders using Cron](#schedule-spiders-using-cron)
     * [Configuration options](#configuration-options)
-    * [Using Kimurai inside existing Ruby application](#using-kimurai-inside-existing-ruby-application)
+    * [Using Kimurai inside existing Ruby applications](#using-kimurai-inside-existing-ruby-applications)
       * [crawl! method](#crawl-method)
       * [parse! method](#parsemethod_name-url-method)
       * [Kimurai.list and Kimurai.find_by_name](#kimurailist-and-kimuraifind_by_name)
@@ -258,7 +258,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 ## Installation
 Kimurai requires Ruby version `>= 2.5.0`. Supported platforms: `Linux` and `Mac OS X`.
 
-1) If your system doesn't have appropriate Ruby version, install it:
+1) If your system doesn't have the appropriate Ruby version, install it:
 
 <details/>
   <summary>Ubuntu 18.04</summary>
@@ -290,7 +290,7 @@ gem install bundler
   <summary>Mac OS X</summary>
 
 ```bash
-# Install homebrew if you don't have it https://brew.sh/
+# Install Homebrew if you don't have it https://brew.sh/
 # Install rbenv and ruby-build:
 brew install rbenv ruby-build
 
@@ -313,13 +313,13 @@ gem install bundler
 <details/>
   <summary>Ubuntu 18.04</summary>
 
-Note: for Ubuntu 16.04-18.04 there is available automatic installation using `setup` command:
+Note: there's an automatic installation available for Ubuntu 16.04-18.04 using the `setup` command:
 ```bash
 $ kimurai setup localhost --local --ask-sudo
 ```
-It works using [Ansible](https://github.com/ansible/ansible) so you need to install it first: `$ sudo apt install ansible`. You can check using playbooks [here](lib/kimurai/automation).
+It works using [Ansible](https://github.com/ansible/ansible), so you need to install it first: `$ sudo apt install ansible`. See some example playbooks [here](lib/kimurai/automation).
 
-If you chose automatic installation, you can skip following and go to "Getting To Know" part. In case if you want to install everything manually:
+If you chose automatic installation, you can skip the rest of this section and go to ["Getting to know Kimurai"](#getting-to-know-kimur). In case you want to install everything manually:
 
 ```bash
 # Install basic tools
@@ -332,19 +332,19 @@ sudo apt install -q -y xvfb
 sudo apt install -q -y chromium-browser firefox
 
 # Instal chromedriver (2.44 version)
-# All versions located here https://sites.google.com/a/chromium.org/chromedriver/downloads
+# All versions are located here: https://sites.google.com/a/chromium.org/chromedriver/downloads
 cd /tmp && wget https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip
 sudo unzip chromedriver_linux64.zip -d /usr/local/bin
 rm -f chromedriver_linux64.zip
 
 # Install geckodriver (0.23.0 version)
-# All versions located here https://github.com/mozilla/geckodriver/releases/
+# All versions are located here: https://github.com/mozilla/geckodriver/releases/
 cd /tmp && wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz
 sudo tar -xvzf geckodriver-v0.23.0-linux64.tar.gz -C /usr/local/bin
 rm -f geckodriver-v0.23.0-linux64.tar.gz
 
 # Install PhantomJS (2.1.1)
-# All versions located here http://phantomjs.org/download.html
+# All versions are located here: http://phantomjs.org/download.html
 sudo apt install -q -y chrpath libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev
 cd /tmp && wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
 tar -xvjf phantomjs-2.1.1-linux-x86_64.tar.bz2
@@ -373,14 +373,14 @@ brew install phantomjs
 ```
 </details><br>
 
-Also, if you want to save scraped items to the database (using [ActiveRecord](https://github.com/rails/rails/tree/master/activerecord), [Sequel](https://github.com/jeremyevans/sequel) or [MongoDB Ruby Driver](https://github.com/mongodb/mongo-ruby-driver)/[Mongoid](https://github.com/mongodb/mongoid)), you need to install database clients/servers:
+Also, if you want to save scraped items to a database (using [ActiveRecord](https://github.com/rails/rails/tree/master/activerecord), [Sequel](https://github.com/jeremyevans/sequel) or [MongoDB Ruby Driver](https://github.com/mongodb/mongo-ruby-driver)/[Mongoid](https://github.com/mongodb/mongoid)), you need to install database clients/servers:
 
 <details/>
   <summary>Ubuntu 18.04</summary>
 
 SQlite: `$ sudo apt -q -y install libsqlite3-dev sqlite3`.
 
-If you want to connect to a remote database, you don't need database server on a local machine (only client):
+If you want to connect to a remote database, you don't need a database server on a local machine (only a client):
 ```bash
 # Install MySQL client
 sudo apt -q -y install mysql-client libmysqlclient-dev
@@ -392,16 +392,16 @@ sudo apt install -q -y postgresql-client libpq-dev
 sudo apt install -q -y mongodb-clients
 ```
 
-But if you want to save items to a local database, database server required as well:
+But, if you want to save items to a local database, a database server is required as well:
 ```bash
 # Install MySQL client and server
 sudo apt -q -y install mysql-server mysql-client libmysqlclient-dev
 
-# Install  Postgres client and server
+# Install Postgres client and server
 sudo apt install -q -y postgresql postgresql-contrib libpq-dev
 
 # Install MongoDB client and server
-# version 4.0 (check here https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
+# Version 4.0 (check here https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
 # for 16.04:
 # echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
@@ -434,9 +434,9 @@ brew install mongodb
 </details>
 
 
-## Getting to Know
+## Getting to know Kimurai
 ### Interactive console
-Before you get to know all Kimurai features, there is `$ kimurai console` command which is an interactive console where you can try and debug your scraping code very quickly, without having to run any spider (yes, it's like [Scrapy shell](https://doc.scrapy.org/en/latest/topics/shell.html#topics-shell)).
+Before you get to know all of Kimurai's features, there is a `$ kimurai console` command which is an interactive console where you can try and debug your scraping code very quickly, without having to run any spider (yes, it's like [Scrapy shell](https://doc.scrapy.org/en/latest/topics/shell.html#topics-shell)).
 
 ```bash
 $ kimurai console --engine selenium_chrome --url https://github.com/vifreefly/kimuraframework
@@ -501,23 +501,23 @@ $
 ```
 </details><br>
 
-CLI options:
+CLI arguments:
 * `--engine` (optional) [engine](#available-drivers) to use. Default is `mechanize`
-* `--url` (optional) url to process. If url omitted, `response` and `url` objects inside the console will be `nil` (use [browser](#browser-object) object to navigate to any webpage).
+* `--url` (optional) url to process. If url is omitted, `response` and `url` objects inside the console will be `nil` (use [browser](#browser-object) object to navigate to any webpage).
 
 ### Available engines
-Kimurai has support for following engines and mostly can switch between them without need to rewrite any code:
+Kimurai has support for the following engines and can mostly switch between them without the need to rewrite any code:
 
-* `:mechanize` - [pure Ruby fake http browser](https://github.com/sparklemotion/mechanize). Mechanize can't render javascript and don't know what DOM is it. It only can parse original HTML code of a page. Because of it, mechanize much faster, takes much less memory and in general much more stable than any real browser. Use mechanize if you can do it, and the website doesn't use javascript to render any meaningful parts of its structure. Still, because mechanize trying to mimic a real browser, it supports almost all Capybara's [methods to interact with a web page](http://cheatrags.com/capybara) (filling forms, clicking buttons, checkboxes, etc).
-* `:poltergeist_phantomjs` - [PhantomJS headless browser](https://github.com/ariya/phantomjs), can render javascript. In general, PhantomJS still faster than Headless Chrome (and Headless Firefox). PhantomJS has memory leakage, but Kimurai has [memory control feature](#crawler-config) so you shouldn't consider it as a problem. Also, some websites can recognize PhantomJS and block access to them. Like mechanize (and unlike selenium engines) `:poltergeist_phantomjs` can freely rotate proxies and change headers _on the fly_ (see [config section](#all-available-config-options)).
-* `:selenium_chrome` Chrome in headless mode driven by selenium. Modern headless browser solution with proper javascript rendering.
-* `:selenium_firefox` Firefox in headless mode driven by selenium. Usually takes more memory than other drivers, but sometimes can be useful.
+* `:mechanize` – [pure Ruby fake http browser](https://github.com/sparklemotion/mechanize). Mechanize can't render JavaScript and doesn't know what the DOM is it. It can only parse the original HTML code of a page. Because of it, mechanize is much faster, takes much less memory and is in general much more stable than any real browser. It's recommended to use mechanize when possible; if the website doesn't use JavaScript to render any meaningful parts of its structure. Still, because mechanize is trying to mimic a real browser, it supports almost all of Capybara's [methods to interact with a web page](http://cheatrags.com/capybara) (filling forms, clicking buttons, checkboxes, etc).
+* `:poltergeist_phantomjs` – [PhantomJS headless browser](https://github.com/ariya/phantomjs), can render JavaScript. In general, PhantomJS is still faster than Headless Chrome (and Headless Firefox). PhantomJS has memory leakage issues, but Kimurai has a [memory control feature](#crawler-config), so it shouldn't be an issue. Also, some websites can recognize PhantomJS and block access. Like mechanize (and unlike selenium engines) `:poltergeist_phantomjs` can freely rotate proxies and change headers _on the fly_ (see [config section](#all-available-config-options)).
+* `:selenium_chrome` – Chrome in headless mode driven by selenium. A modern headless browser solution with proper JavaScript rendering.
+* `:selenium_firefox` – Firefox in headless mode driven by selenium. Usually takes more memory than other drivers, but can sometimes be useful.
 
-**Tip:** add `HEADLESS=false` ENV variable before command (`$ HEADLESS=false ruby spider.rb`) to run browser in normal (not headless) mode and see it's window (only for selenium-like engines). It works for [console](#interactive-console) command as well.
+**Tip:** prepend a `HEADLESS=false` environment variable on the command line (i.e. `$ HEADLESS=false ruby spider.rb`) to launch an interactive browser in normal (not headless) mode and see its window (only for selenium-like engines). It works for the [console](#interactive-console) command as well.
 
 
 ### Minimum required spider structure
-> You can manually create a spider file, or use generator instead: `$ kimurai generate spider simple_spider`
+> You can manually create a spider file, or use the generate command: `$ kimurai generate spider simple_spider`
 
 ```ruby
 require 'kimurai'
@@ -535,10 +535,10 @@ SimpleSpider.crawl!
 ```
 
 Where:
-* `@name` name of a spider. You can omit name if use single-file spider
-* `@engine` engine for a spider
-* `@start_urls` array of start urls to process one by one inside `parse` method
-* Method `parse` is the start method, should be always present in spider class
+* `@name` – a name for the spider
+* `@engine` – engine to use for the spider
+* `@start_urls` – array of urls to process one-by-one inside the `parse` method
+* The `parse` method is the entry point, and should always be present in a spider class
 
 
 ### Method arguments `response`, `url` and `data`
@@ -548,14 +548,14 @@ def parse(response, url:, data: {})
 end
 ```
 
-* `response` ([Nokogiri::HTML::Document](https://www.rubydoc.info/github/sparklemotion/nokogiri/Nokogiri/HTML/Document) object) Contains parsed HTML code of a processed webpage
-* `url` (String) url of a processed webpage
-* `data` (Hash) uses to pass data between requests
+* `response` – [Nokogiri::HTML::Document](https://www.rubydoc.info/github/sparklemotion/nokogiri/Nokogiri/HTML/Document) object – contains parsed HTML code of a processed webpage
+* `url` – String – url of a processed webpage
+* `data` – Hash – used to pass data between requests
 
 <details/>
-  <summary><strong>Example how to use <code>data</code></strong></summary>
+  <summary><strong>An example of how to use <code>data</code></strong></summary>
 
-Imagine that there is a product page which doesn't contain product category. Category name present only on category page with pagination. This is the case where we can use `data` to pass category name from `parse` to `parse_product` method:
+Imagine that there is a product page that doesn't contain a category name. The category name is only present on category pages with pagination. This is a case where we can use `data` to pass a category name from `parse` to `parse_product`:
 
 ```ruby
 class ProductsSpider < Kimurai::Base
@@ -565,7 +565,7 @@ class ProductsSpider < Kimurai::Base
   def parse(response, url:, data: {})
     category_name = response.xpath("//path/to/category/name").text
     response.xpath("//path/to/products/urls").each do |product_url|
-      # Merge category_name with current data hash and pass it next to parse_product method
+      # Merge category_name with current data hash and pass it to parse_product
       request_to(:parse_product, url: product_url[:href], data: data.merge(category_name: category_name))
     end
 
@@ -574,7 +574,7 @@ class ProductsSpider < Kimurai::Base
 
   def parse_product(response, url:, data: {})
     item = {}
-    # Assign item's category_name from data[:category_name]
+    # Assign an item's category_name from data[:category_name]
     item[:category_name] = data[:category_name]
 
     # ...
@@ -585,16 +585,16 @@ end
 </details><br>
 
 **You can query `response` using [XPath or CSS selectors](https://www.rubydoc.info/github/sparklemotion/nokogiri/Nokogiri/XML/Searchable)**. Check Nokogiri tutorials to understand how to work with `response`:
-* [Parsing HTML with Nokogiri](http://ruby.bastardsbook.com/chapters/html-parsing/) - ruby.bastardsbook.com
-* [HOWTO parse HTML with Ruby & Nokogiri](https://readysteadycode.com/howto-parse-html-with-ruby-and-nokogiri) - readysteadycode.com
-* [Class: Nokogiri::HTML::Document](https://www.rubydoc.info/github/sparklemotion/nokogiri/Nokogiri/HTML/Document) (documentation) - rubydoc.info
+* [Parsing HTML with Nokogiri](http://ruby.bastardsbook.com/chapters/html-parsing/) – ruby.bastardsbook.com
+* [HOWTO parse HTML with Ruby & Nokogiri](https://readysteadycode.com/howto-parse-html-with-ruby-and-nokogiri) – readysteadycode.com
+* [Class: Nokogiri::HTML::Document](https://www.rubydoc.info/github/sparklemotion/nokogiri/Nokogiri/HTML/Document) (documentation) – rubydoc.info
 
 
 ### `browser` object
 
-From any spider instance method there is available `browser` object, which is [Capybara::Session](https://www.rubydoc.info/github/jnicklas/capybara/Capybara/Session) object and uses to process requests and get page response (`current_response` method). Usually you don't need to touch it directly, because there is `response` (see above) which contains page response after it was loaded.
+A browser object is available from any spider instance method, which is a [Capybara::Session](https://www.rubydoc.info/github/jnicklas/capybara/Capybara/Session) object and uses it to process requests and get page responses (`current_response` method). Usually, you don't need to touch it directly because `response` (see above) contains the page response after it was loaded.
 
-But if you need to interact with a page (like filling form fields, clicking elements, checkboxes, etc) `browser` is ready for you:
+But, if you need to interact with a page (like filling form fields, clicking elements, checkboxes, etc) a `browser` is ready for you:
 
 ```ruby
 class GoogleSpider < Kimurai::Base
@@ -606,7 +606,7 @@ class GoogleSpider < Kimurai::Base
     browser.fill_in "q", with: "Kimurai web scraping framework"
     browser.click_button "Google Search"
 
-    # Update response to current response after interaction with a browser
+    # Update response with current_response after interaction with a browser
     response = browser.current_response
 
     # Collect results
@@ -620,13 +620,13 @@ end
 ```
 
 Check out **Capybara cheat sheets** where you can see all available methods **to interact with browser**:
-* [UI Testing with RSpec and Capybara [cheat sheet]](http://cheatrags.com/capybara) - cheatrags.com
-* [Capybara Cheatsheet PDF](https://thoughtbot.com/upcase/test-driven-rails-resources/capybara.pdf) - thoughtbot.com
-* [Class: Capybara::Session](https://www.rubydoc.info/github/jnicklas/capybara/Capybara/Session) (documentation) - rubydoc.info
+* [UI Testing with RSpec and Capybara [cheat sheet]](http://cheatrags.com/capybara) – cheatrags.com
+* [Capybara Cheatsheet PDF](https://thoughtbot.com/upcase/test-driven-rails-resources/capybara.pdf) – thoughtbot.com
+* [Class: Capybara::Session](https://www.rubydoc.info/github/jnicklas/capybara/Capybara/Session) (documentation) – rubydoc.info
 
 ### `request_to` method
 
-For making requests to a particular method there is `request_to`. It requires minimum two arguments: `:method_name` and `url:`. An optional argument is `data:` (see above what for is it). Example:
+For making requests to a particular method, there is `request_to`. It requires at least two arguments: `:method_name` and `url:`. And, optionally `data:` (see above). Example:
 
 ```ruby
 class Spider < Kimurai::Base
@@ -644,7 +644,7 @@ class Spider < Kimurai::Base
 end
 ```
 
-Under the hood `request_to` simply call [#visit](https://www.rubydoc.info/github/jnicklas/capybara/Capybara%2FSession:visit) (`browser.visit(url)`) and then required method with arguments:
+Under the hood, `request_to` simply calls [#visit](https://www.rubydoc.info/github/jnicklas/capybara/Capybara%2FSession:visit) (`browser.visit(url)`), and the provided method with arguments:
 
 <details/>
   <summary>request_to</summary>
@@ -659,10 +659,10 @@ end
 ```
 </details><br>
 
-`request_to` just makes things simpler, and without it we could do something like:
+The `request_to` helper method makes things simpler. We could also do something like:
 
 <details/>
-  <summary>Check the code</summary>
+  <summary>See the code</summary>
 
 ```ruby
 class Spider < Kimurai::Base
@@ -685,7 +685,7 @@ end
 
 ### `save_to` helper
 
-Sometimes all that you need is to simply save scraped data to a file format, like JSON or CSV. You can use `save_to` for it:
+Sometimes all you need is to simply save scraped data to a file. You can use the `save_to` helper method like so:
 
 ```ruby
 class ProductsSpider < Kimurai::Base
@@ -701,31 +701,31 @@ class ProductsSpider < Kimurai::Base
     item[:description] = response.xpath("//desc/path").text.squish
     item[:price] = response.xpath("//price/path").text[/\d+/]&.to_f
 
-    # Add each new item to the `scraped_products.json` file:
+    # Append each new item to the `scraped_products.json` file:
     save_to "scraped_products.json", item, format: :json
   end
 end
 ```
 
 Supported formats:
-* `:json` JSON
-* `:pretty_json` "pretty" JSON (`JSON.pretty_generate`)
-* `:jsonlines` [JSON Lines](http://jsonlines.org/)
-* `:csv` CSV
+* `:json` – JSON
+* `:pretty_json` – "pretty" JSON (`JSON.pretty_generate`)
+* `:jsonlines` – [JSON Lines](http://jsonlines.org/)
+* `:csv` – CSV
 
-Note: `save_to` requires data (item to save) to be a `Hash`.
+Note: `save_to` requires the data (item) to save to be a `Hash`.
 
-By default `save_to` add position key to an item hash. You can disable it with `position: false`: `save_to "scraped_products.json", item, format: :json, position: false`.
+By default, `save_to` will add a position key to an item hash. You can disable it like so: `save_to "scraped_products.json", item, format: :json, position: false`
 
 **How helper works:**
 
-Until spider stops, each new item will be appended to a file. At the next run, helper will clear the content of a file first, and then start again appending items to it.
+While the spider is running, each new item will be appended to the output file. On the next run, this helper will clear the contents of the output file, then start appending items to it.
 
-> If you don't want file to be cleared before each run, add option `append: true`: `save_to "scraped_products.json", item, format: :json, append: true`
+> If you don't want the file to be cleared before each run, pass `append: true` like so: `save_to "scraped_products.json", item, format: :json, append: true`
 
 ### Skip duplicates
 
-It's pretty common when websites have duplicated pages. For example when an e-commerce shop has the same products in different categories. To skip duplicates, there is simple `unique?` helper:
+It's pretty common for websites to have duplicate pages. For example, when an e-commerce site has the same products in different categories. To skip duplicates, there is a simple `unique?` helper:
 
 ```ruby
 class ProductsSpider < Kimurai::Base
@@ -748,11 +748,11 @@ class ProductsSpider < Kimurai::Base
     end
   end
 
-  # Or/and check products for uniqueness using product sku inside of parse_product:
+  # And/or check products for uniqueness using product sku inside of parse_product:
   def parse_product(response, url:, data: {})
     item = {}
     item[:sku] = response.xpath("//product/sku/path").text.strip.upcase
-    # Don't save product and return from method if there is already saved item with the same sku:
+    # Don't save the product if there is already an item with the same sku:
     return unless unique?(:sku, item[:sku])
 
     # ...
@@ -761,14 +761,14 @@ class ProductsSpider < Kimurai::Base
 end
 ```
 
-`unique?` helper works pretty simple:
+The `unique?` helper works quite simply:
 
 ```ruby
-# Check string "http://example.com" in scope `url` for a first time:
+# Check for "http://example.com" in `url` scope for the first time:
 unique?(:url, "http://example.com")
 # => true
 
-# Try again:
+# Next time:
 unique?(:url, "http://example.com")
 # => false
 ```
@@ -786,44 +786,44 @@ unique?(:id, 324234232)
 unique?(:custom, "Lorem Ipsum")
 ```
 
-#### Automatically skip all duplicated requests urls
+#### Automatically skip all duplicate request urls
 
-It is possible to automatically skip all already visited urls while calling `request_to` method, using [@config](#all-available-config-options) option `skip_duplicate_requests: true`. With this option, all already visited urls will be automatically skipped. Also check the [@config](#all-available-config-options) for an additional options of this setting.
+It's possible to automatically skip any previously visited urls when calling the `request_to` method using the `skip_duplicate_requests: true` config option. See [@config](#all-available-config-options) for additional options.
 
 #### `storage` object
 
-`unique?` method it's just an alias for `storage#unique?`. Storage has several methods:
+The `unique?` method is just an alias for `storage#unique?`. Storage has several methods:
 
-* `#all` - display storage hash where keys are existing scopes.
-* `#include?(scope, value)` - return `true` if value in the scope exists, and `false` if not
-* `#add(scope, value)` - add value to the scope
-* `#unique?(scope, value)` - method already described above, will return `false` if value in the scope exists, or return `true` + add value to the scope if value in the scope not exists.
-* `#clear!` - reset the whole storage by deleting all values from all scopes.
+* `#all` – return all scopes
+* `#add(scope, value)` – add a value to the scope
+* `#include?(scope, value)` – returns `true` if the value exists in the scope, or `false` if it doesn't
+* `#unique?(scope, value)` – returns `false` if the value exists in the scope, otherwise adds the value to the scope and returns  `true`
+* `#clear!` – deletes all values from all scopes
 
 
-### Handle request errors
-It is quite common that some pages of crawling website can return different response code than `200 ok`. In such cases, method `request_to` (or `browser.visit`) can raise an exception. Kimurai provides `skip_request_errors` and `retry_request_errors` [config](#spider-config) options to handle such errors:
+### Handling request errors
+It's common while crawling web pages to get response codes other than `200 OK`. In such cases, the `request_to` method (or `browser.visit`) can raise an exception. Kimurai provides the `skip_request_errors` and `retry_request_errors` [config](#spider-config) options to handle such errors:
 
 #### skip_request_errors
-You can automatically skip some of errors while requesting a page using `skip_request_errors` [config](#spider-config) option. If raised error matches one of the errors in the list, then this error will be caught, and request will be skipped. It is a good idea to skip errors like NotFound(404), etc.
+Kimurai can automatically skip certain errors while performing requests using the `skip_request_errors` [config](#spider-config) option. If a raised error matches one of the errors in the list, the error will be caught, and the request will be skipped. It's a good idea to skip errors like `404 Not Found`, etc.
 
-Format for the option: array where elements are error classes or/and hashes. You can use _hash_ format for more flexibility:
+`skip_request_errors` is an array of error classes and/or hashes. You can use a _hash_ for more flexibility like so:
 
 ```
 @config = {
-  skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }]
+  skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }, { error: TimeoutError }]
 }
 ```
-In this case, provided `message:` will be compared with a full error message using `String#include?`. Also you can use regex instead: `{ error: RuntimeError, message: /404|403/ }`.
+In this case, the provided `message:` will be compared with a full error message using `String#include?`. You can also use regex like so: `{ error: RuntimeError, message: /404|403/ }`.
 
 #### retry_request_errors
-You can automatically retry some of errors with a few attempts while requesting a page using `retry_request_errors` [config](#spider-config) option. If raised error matches one of the errors in the list, then this error will be caught and the request will be processed again within a delay.
+Kimurai can automatically retry requests several times after certain errors with the `retry_request_errors` [config](#spider-config) option. If a raised error matches one of the errors in the list, the error will be caught, and the request will be processed again with progressive delay.
 
-There are 3 attempts: first: delay _15 sec_, second: delay _30 sec_, third: delay _45 sec_. If after 3 attempts there is still an exception, then the exception will be raised. It is a good idea to try to retry errros like `ReadTimeout`, `HTTPBadGateway`, etc.
+There are 3 attempts with _15 sec_, _30 sec_, and _45 sec_ delays, respectively. If after 3 attempts there is still an exception, then the exception will be raised. It's a good idea to retry errors like `ReadTimeout`, `HTTPBadGateway`, etc.
 
-Format for the option: same like for `skip_request_errors` option.
+The format for `retry_request_errors` is the same as for `skip_request_errors`.
 
-If you would like to skip (not raise) error after all retries gone, you can specify `skip_on_failure: true` option:
+If you would like to skip (not raise) the error after the 3 retries, you can specify `skip_on_failure: true` like so:
 
 ```ruby
 @config = {
@@ -833,7 +833,7 @@ If you would like to skip (not raise) error after all retries gone, you can spec
 
 ### Logging custom events
 
-It is possible to save custom messages to the [run_info](#open_spider-and-close_spider-callbacks) hash using `add_event('Some message')` method. This feature helps you to keep track on important things which happened during crawling without checking the whole spider log (in case if you're logging these messages using `logger`). Example:
+It's possible to save custom messages to the [run_info](#open_spider-and-close_spider-callbacks) hash using the `add_event('Some message')` method. This feature helps you to keep track of important events during crawling without checking the whole spider log (in case if you're logging these messages using `logger`). For example:
 
 ```ruby
 def parse_product(response, url:, data: {})
@@ -854,7 +854,7 @@ I, [2018-11-28 22:20:19 +0400#7402] [M: 47156576560640]  INFO -- example_spider:
 
 ### `open_spider` and `close_spider` callbacks
 
-You can define `.open_spider` and `.close_spider` callbacks (class methods) to perform some action before spider started or after spider has been stopped:
+You can define `.open_spider` and `.close_spider` callbacks (class methods) to perform some action(s) before or after the spider runs:
 
 ```ruby
 require 'kimurai'
@@ -899,7 +899,7 @@ I, [2018-08-22 14:26:34 +0400#6001] [M: 46996522083840]  INFO -- example_spider:
 ```
 </details><br>
 
-Inside `open_spider` and `close_spider` class methods there is available `run_info` method which contains useful information about spider state:
+The `run_info` method is available from the `open_spider` and `close_spider` class methods. It contains useful information about the spider state:
 
 ```ruby
     11: def self.open_spider
@@ -919,7 +919,7 @@ Inside `open_spider` and `close_spider` class methods there is available `run_in
 }
 ```
 
-Inside `close_spider`, `run_info` will be updated:
+`run_info` will be updated from `close_spider`:
 
 ```ruby
     15: def self.close_spider
@@ -939,7 +939,7 @@ Inside `close_spider`, `run_info` will be updated:
 }
 ```
 
-`run_info[:status]` helps to determine if spider was finished successfully or failed (possible values: `:completed`, `:failed`):
+`run_info[:status]` helps to determine if the spider finished successfully or failed (possible values: `:completed`, `:failed`):
 
 ```ruby
 class ExampleSpider < Kimurai::Base
@@ -987,12 +987,12 @@ example_spider.rb:15:in `parse': undefined method `strip' for nil:NilClass (NoMe
 ```
 </details><br>
 
-**Usage example:** if spider finished successfully, send JSON file with scraped items to a remote FTP location, otherwise (if spider failed), skip incompleted results and send email/notification to slack about it:
+**Usage example:** if the spider finished successfully, send a JSON file with scraped items to a remote FTP location, otherwise (if the spider failed), skip incompleted results and send an email/notification to Slack about it:
 
 <details/>
   <summary>Example</summary>
 
-Also you can use additional methods `completed?` or `failed?`
+You can also use the additional methods `completed?` or `failed?`
 
 ```ruby
 class Spider < Kimurai::Base
@@ -1029,7 +1029,7 @@ end
 
 
 ### `KIMURAI_ENV`
-Kimurai has environments, default is `development`. To provide custom environment pass `KIMURAI_ENV` ENV variable before command: `$ KIMURAI_ENV=production ruby spider.rb`. To access current environment there is `Kimurai.env` method.
+Kimurai supports environments. The default is `development`. To provide a custom environment provide a `KIMURAI_ENV` environment variable like so: `$ KIMURAI_ENV=production ruby spider.rb`. To access the current environment there is a `Kimurai.env` method.
 
 Usage example:
 ```ruby
@@ -1050,7 +1050,7 @@ end
 ```
 
 ### Parallel crawling using `in_parallel`
-Kimurai can process web pages concurrently in one single line: `in_parallel(:parse_product, urls, threads: 3)`, where `:parse_product` is a method to process, `urls` is array of urls to crawl and `threads:` is a number of threads:
+Kimurai can process web pages concurrently: `in_parallel(:parse_product, urls, threads: 3)`, where `:parse_product` is a method to process, `urls` is an array of urls to crawl and `threads:` is a number of threads:
 
 ```ruby
 # amazon_spider.rb
@@ -1065,7 +1065,7 @@ class AmazonSpider < Kimurai::Base
     browser.fill_in "field-keywords", with: "Web Scraping Books"
     browser.click_on "Go"
 
-    # Walk through pagination and collect products urls:
+    # Walk through pagination and collect product urls:
     urls = []
     loop do
       response = browser.current_response
@@ -1076,7 +1076,7 @@ class AmazonSpider < Kimurai::Base
       browser.find(:xpath, "//a[@id='pagnNextLink']", wait: 1).click rescue break
     end
 
-    # Process all collected urls concurrently within 3 threads:
+    # Process all collected urls concurrently using 3 threads:
     in_parallel(:parse_book_page, urls, threads: 3)
   end
 
@@ -1163,7 +1163,7 @@ I, [2018-08-22 14:49:12 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider:
     "title": "Python Web Scraping Cookbook: Over 90 proven recipes to get you scraping with Python, micro services, Docker and AWS",
     "url": "https://www.amazon.com/Python-Web-Scraping-Cookbook-scraping/dp/1787285219/",
     "price": "$39.99",
-    "publisher": "Packt Publishing - ebooks Account (February 9, 2018)",
+    "publisher": "Packt Publishing – ebooks Account (February 9, 2018)",
     "position": 2
   },
   {
@@ -1189,11 +1189,12 @@ I, [2018-08-22 14:49:12 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider:
 
 > Note that [save_to](#save_to-helper) and [unique?](#skip-duplicates-unique-helper) helpers are thread-safe (protected by [Mutex](https://ruby-doc.org/core-2.5.1/Mutex.html)) and can be freely used inside threads.
 
-`in_parallel` can take additional options:
-* `data:` pass with urls custom data hash: `in_parallel(:method, urls, threads: 3, data: { category: "Scraping" })`
-* `delay:` set delay between requests: `in_parallel(:method, urls, threads: 3, delay: 2)`. Delay can be `Integer`, `Float` or `Range` (`2..5`). In case of a Range, delay number will be chosen randomly for each request: `rand (2..5) # => 3`
-* `engine:` set custom engine than a default one: `in_parallel(:method, urls, threads: 3, engine: :poltergeist_phantomjs)`
-* `config:` pass custom options to config (see [config section](#crawler-config))
+`in_parallel` can take additional parameters:
+
+* `data:` – pass custom data like so: `in_parallel(:method, urls, threads: 3, data: { category: "Scraping" })`
+* `delay:` – set delay between requests like so: `in_parallel(:method, urls, threads: 3, delay: 2)`. Delay can be `Integer`, `Float` or `Range` (`2..5`). In case of a Range, the delay (in seconds) will be set randomly for each request: `rand (2..5) # => 3`
+* `engine:` – set custom engine like so: `in_parallel(:method, urls, threads: 3, engine: :poltergeist_phantomjs)`
+* `config:` – set custom [config](#spider-config) options
 
 ### Active Support included
 
@@ -1201,7 +1202,7 @@ You can use all the power of familiar [Rails core-ext methods](https://guides.ru
 
 ### Schedule spiders using Cron
 
-1) Inside spider directory generate [Whenever](https://github.com/javan/whenever) config: `$ kimurai generate schedule`.
+1) Inside the spider directory generate a [Whenever](https://github.com/javan/whenever) schedule configuration like so: `$ kimurai generate schedule`.
 
 <details/>
   <summary><code>schedule.rb</code></summary>
@@ -1210,7 +1211,7 @@ You can use all the power of familiar [Rails core-ext methods](https://guides.ru
 ### Settings ###
 require 'tzinfo'
 
-# Export current PATH to the cron
+# Export current PATH for cron
 env :PATH, ENV["PATH"]
 
 # Use 24 hour format when using `at:` option
@@ -1218,8 +1219,8 @@ set :chronic_options, hours24: true
 
 # Use local_to_utc helper to setup execution time using your local timezone instead
 # of server's timezone (which is probably and should be UTC, to check run `$ timedatectl`).
-# Also maybe you'll want to set same timezone in kimurai as well (use `Kimurai.configuration.time_zone =` for that),
-# to have spiders logs in a specific time zone format.
+# You should also set the same timezone in kimurai (use `Kimurai.configuration.time_zone =` for that).
+#
 # Example usage of helper:
 # every 1.day, at: local_to_utc("7:00", zone: "Europe/Moscow") do
 #   crawl "google_spider.com", output: "log/google_spider.com.log"
@@ -1230,7 +1231,7 @@ end
 
 # Note: by default Whenever exports cron commands with :environment == "production".
 # Note: Whenever can only append log data to a log file (>>). If you want
-# to overwrite (>) log file before each run, pass lambda:
+# to overwrite (>) a log file before each run, use lambda notation:
 # crawl "google_spider.com", output: -> { "> log/google_spider.com.log 2>&1" }
 
 # Project job types
@@ -1243,31 +1244,29 @@ job_type :single, "cd :path && KIMURAI_ENV=:environment ruby :task :output"
 job_type :single_bundle, "cd :path && KIMURAI_ENV=:environment bundle exec ruby :task :output"
 
 ### Schedule ###
-# Usage (check examples here https://github.com/javan/whenever#example-schedulerb-file):
+# Usage (see examples here https://github.com/javan/whenever#example-schedulerb-file):
 # every 1.day do
   # Example to schedule a single spider in the project:
   # crawl "google_spider.com", output: "log/google_spider.com.log"
 
   # Example to schedule all spiders in the project using runner. Each spider will write
-  # it's own output to the `log/spider_name.log` file (handled by a runner itself).
-  # Runner output will be written to log/runner.log file.
-  # Argument number it's a count of concurrent jobs:
-  # runner 3, output:"log/runner.log"
+  # its own output to the `log/spider_name.log` file (handled by runner itself).
+  # Runner output will be written to log/runner.log
 
-  # Example to schedule single spider (without project):
+  # Example to schedule single spider (without a project):
   # single "single_spider.rb", output: "single_spider.log"
 # end
 
-### How to set a cron schedule ###
+### How to set up a cron schedule ###
 # Run: `$ whenever --update-crontab --load-file config/schedule.rb`.
-# If you don't have whenever command, install the gem: `$ gem install whenever`.
+# If you don't have the whenever command, install the gem like so: `$ gem install whenever`.
 
 ### How to cancel a schedule ###
 # Run: `$ whenever --clear-crontab --load-file config/schedule.rb`.
 ```
 </details><br>
 
-2) Add at the bottom of `schedule.rb` following code:
+2) At the bottom of `schedule.rb`, add the following code:
 
 ```ruby
 every 1.day, at: "7:00" do
@@ -1277,14 +1276,14 @@ end
 
 3) Run: `$ whenever --update-crontab --load-file schedule.rb`. Done!
 
-You can check Whenever examples [here](https://github.com/javan/whenever#example-schedulerb-file). To cancel schedule, run: `$ whenever --clear-crontab --load-file schedule.rb`.
+You can see some [Whenever](https://github.com/javan/whenever) examples [here](https://github.com/javan/whenever#example-schedulerb-file). To cancel a schedule, run: `$ whenever --clear-crontab --load-file schedule.rb`.
 
 ### Configuration options
-You can configure several options using `configure` block:
+You can configure several options inside the `configure` block:
 
 ```ruby
 Kimurai.configure do |config|
-  # Default logger has colored mode in development.
+  # The default logger has colorized mode enabled in development.
   # If you would like to disable it, set `colorize_logger` to false.
   # config.colorize_logger = false
 
@@ -1305,13 +1304,13 @@ Kimurai.configure do |config|
 end
 ```
 
-### Using Kimurai inside existing Ruby application
+### Using Kimurai inside existing Ruby applications
 
-You can integrate Kimurai spiders (which are just Ruby classes) to an existing Ruby application like Rails or Sinatra, and run them using background jobs (for example). Check the following info to understand the running process of spiders:
+You can integrate Kimurai spiders (which are just Ruby classes) into an existing Ruby application like Rails or Sinatra, and run them using background jobs, for example. See the following sections to understand the process of running spiders:
 
 #### `.crawl!` method
 
-`.crawl!` (class method) performs a _full run_ of a particular spider. This method will return run_info if run was successful, or an exception if something went wrong.
+`.crawl!` (class method) performs a _full run_ of a particular spider. This method will return run_info if it was successful, or an exception if something went wrong.
 
 ```ruby
 class ExampleSpider < Kimurai::Base
@@ -1328,7 +1327,7 @@ ExampleSpider.crawl!
 # => { :spider_name => "example_spider", :status => :completed, :environment => "development", :start_time => 2018-08-22 18:20:16 +0400, :stop_time => 2018-08-22 18:20:17 +0400, :running_time => 1.216, :visits => { :requests => 1, :responses => 1 }, :items => { :sent => 0, :processed => 0 }, :error => nil }
 ```
 
-You can't `.crawl!` spider in different thread if it still running (because spider instances store some shared data in the `@run_info` class variable while `crawl`ing):
+You can't `.crawl!` a spider in a different thread if it's still running (because spider instances store some shared data in the `@run_info` class variable while `crawl`ing):
 
 ```ruby
 2.times do |i|
@@ -1342,11 +1341,11 @@ end # =>
 # {:spider_name=>"example_spider", :status=>:completed, :environment=>"development", :start_time=>2018-08-22 18:49:22 +0400, :stop_time=>2018-08-22 18:49:23 +0400, :running_time=>0.801, :visits=>{:requests=>1, :responses=>1}, :items=>{:sent=>0, :processed=>0}, :error=>nil}
 ```
 
-So what if you're don't care about stats and just want to process request to a particular spider method and get the returning value from this method? Use `.parse!` instead:
+So, what if you don't care about stats and just want to process a request with a particular spider method and get the return value from this method? Use `.parse!` instead:
 
 #### `.parse!(:method_name, url:)` method
 
-`.parse!` (class method) creates a new spider instance and performs a request to given method with a given url. Value from the method will be returned back:
+The `.parse!` (class method) creates a new spider instance and performs a request with the provided method and url. The value from the method will be returned back:
 
 ```ruby
 class ExampleSpider < Kimurai::Base
@@ -1363,7 +1362,7 @@ ExampleSpider.parse!(:parse, url: "https://example.com/")
 # => "Example Domain"
 ```
 
-Like `.crawl!`, `.parse!` method takes care of a browser instance and kills it (`browser.destroy_driver!`) before returning the value. Unlike `.crawl!`, `.parse!` method can be called from different threads at the same time:
+Like `.crawl!`, the `.parse!` method creates a browser instance and destroys it (`browser.destroy_driver!`) before returning the value. Unlike `.crawl!`, `.parse!` method can be called from different threads at the same time:
 
 ```ruby
 urls = ["https://www.google.com/", "https://www.reddit.com/", "https://en.wikipedia.org/"]
@@ -1377,7 +1376,7 @@ end # =>
 # "reddit: the front page of the internetHotHot"
 ```
 
-Keep in mind, that [save_to](#save_to-helper) and [unique?](#skip-duplicates) helpers are not thread-safe while using `.parse!` method.
+Keep in mind, that [save_to](#save_to-helper) and [unique?](#skip-duplicates) helpers are not thread-safe while using the `.parse!` method.
 
 #### `Kimurai.list` and `Kimurai.find_by_name()`
 
@@ -1398,7 +1397,7 @@ end
 Kimurai.list
 # => {"google_spider"=>GoogleSpider, "reddit_spider"=>RedditSpider, "wikipedia_spider"=>WikipediaSpider}
 
-# To find a particular spider class by it's name:
+# To find a particular spider class by its name:
 Kimurai.find_by_name("reddit_spider")
 # => RedditSpider
 ```
@@ -1408,11 +1407,11 @@ Kimurai.find_by_name("reddit_spider")
 > **EXPERIMENTAL**
 
 #### Setup
-You can automatically setup [required environment](#installation) for Kimurai on the remote server (currently there is only Ubuntu Server 18.04 support) using `$ kimurai setup` command. `setup` will perform installation of: latest Ruby with Rbenv, browsers with webdrivers and in additional databases clients (only clients) for MySQL, Postgres and MongoDB (so you can connect to a remote database from ruby).
+You can automatically setup a [required environment](#installation) for Kimurai on a remote server (currently there is only support for Ubuntu Server 18.04) using the `$ kimurai setup` command. `setup` will perform an installation of the latest Ruby with Rbenv, browsers with webdrivers, and database clients (only the clients) for MySQL, Postgres and MongoDB (so you can connect to a remote database from ruby).
 
-> To perform remote server setup, [Ansible](https://github.com/ansible/ansible) is required **on the desktop** machine (to install: Ubuntu: `$ sudo apt install ansible`, Mac OS X: `$ brew install ansible`)
+> To perform a remote server setup, [Ansible](https://github.com/ansible/ansible) is required **on the local** machine (to install on Ubuntu: `$ sudo apt install ansible`, or for Mac OS X: `$ brew install ansible`)
 
-> It's recommended to use regular user to setup the server, not `root`. To create a new user, login to the server `$ ssh root@your_server_ip`, type `$ adduser username` to create a user, and `$ gpasswd -a username sudo` to add new user to a sudo group.
+> It's recommended to use a regular user to setup the server, not `root`. To create a new user, login to the server `$ ssh root@your_server_ip`, type `$ adduser username` to create a user, and `$ gpasswd -a username sudo` to add the new user to a sudo group.
 
 Example:
 
@@ -1420,19 +1419,19 @@ Example:
 $ kimurai setup deploy@123.123.123.123 --ask-sudo --ssh-key-path path/to/private_key
 ```
 
-CLI options:
-* `--ask-sudo` pass this option to ask sudo (user) password for system-wide installation of packages (`apt install`)
-* `--ssh-key-path path/to/private_key` authorization on the server using private ssh key. You can omit it if required key already [added to keychain](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#adding-your-ssh-key-to-the-ssh-agent) on your desktop (Ansible uses [SSH agent forwarding](https://developer.github.com/v3/guides/using-ssh-agent-forwarding/))
-* `--ask-auth-pass` authorization on the server using user password, alternative option to `--ssh-key-path`.
+CLI arguments:
+* `--ask-sudo` pass this argument to ask sudo (user) password for system-wide installation of packages (`apt install`)
+* `--ssh-key-path path/to/private_key` authorization using a private ssh key. You can omit it if the required key has already been [added to the keychain](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#adding-your-ssh-key-to-the-ssh-agent) on your local machine (Ansible uses [SSH agent forwarding](https://developer.github.com/v3/guides/using-ssh-agent-forwarding/))
+* `--ask-auth-pass` authorization using user password, an alternative argument to `--ssh-key-path`.
 * `-p port_number` custom port for ssh connection (`-p 2222`)
 
-> You can check setup playbook [here](lib/kimurai/automation/setup.yml)
+> You can see the setup playbook [here](lib/kimurai/automation/setup.yml)
 
 #### Deploy
 
-After successful `setup` you can deploy a spider to the remote server using `$ kimurai deploy` command. On each deploy there are performing several tasks: 1) pull repo from a remote origin to `~/repo_name` user directory 2) run `bundle install` 3) Update crontab `whenever --update-crontab` (to update spider schedule from schedule.rb file).
+After a successful `setup` you can deploy a spider to the remote server using the `$ kimurai deploy` command. On each deploy, several tasks need to be performed. First, pull a repo from a remote origin to a `~/repo_name` user directory. Secondly, run `bundle install`. Finally, update crontab `whenever --update-crontab` (to update the spider schedule in the schedule.rb file).
 
-Before `deploy` make sure that inside spider directory you have: 1) git repository with remote origin (bitbucket, github, etc.) 2) `Gemfile` 3) schedule.rb inside subfolder `config` (`config/schedule.rb`).
+Before running `deploy`, make sure your spider directory contains a (1) git repository with a remote origin (BitBucket, GitHub, etc), (2) a `Gemfile`, and (3) a schedule.rb inside a config subdirectory (i.e. `config/schedule.rb`).
 
 Example:
 
@@ -1440,15 +1439,15 @@ Example:
 $ kimurai deploy deploy@123.123.123.123 --ssh-key-path path/to/private_key --repo-key-path path/to/repo_private_key
 ```
 
-CLI options: _same like for [setup](#setup) command_ (except `--ask-sudo`), plus
-* `--repo-url` provide custom repo url (`--repo-url git@bitbucket.org:username/repo_name.git`), otherwise current `origin/master` will be taken (output from `$ git remote get-url origin`)
-* `--repo-key-path` if git repository is private, authorization is required to pull the code on the remote server. Use this option to provide a private repository SSH key. You can omit it if required key already added to keychain on your desktop (same like with `--ssh-key-path` option)
+CLI arguments: _same as for the [setup](#setup) command_ (except `--ask-sudo`), plus
+* `--repo-url` provide custom repo url (`--repo-url git@bitbucket.org:username/repo_name.git`), otherwise the current `origin/master` will be used (i.e. output from `$ git remote get-url origin`)
+* `--repo-key-path` if the git repository is private, authorization is required to pull the code from the remote server. Use this argument to provide a private repository SSH key. You can omit it if the required key has already been added to your keychain (same as with the `--ssh-key-path` argument)
 
-> You can check deploy playbook [here](lib/kimurai/automation/deploy.yml)
+> You can see the deploy playbook [here](lib/kimurai/automation/deploy.yml)
 
 ## Spider `@config`
 
-Using `@config` you can set several options for a spider, like proxy, user-agent, default cookies/headers, delay between requests, browser **memory control** and so on:
+Using `@config` you can set several options for a spider; such as proxy, user-agent, default cookies/headers, delay between requests, browser **memory control** and so on:
 
 ```ruby
 class Spider < Kimurai::Base
@@ -1475,7 +1474,7 @@ class Spider < Kimurai::Base
       change_proxy: true,
       # Clear all cookies and set default cookies (if provided) before each request:
       clear_and_set_cookies: true,
-      # Process delay before each request:
+      # Set a delay before each request:
       delay: 1..3
     }
   }
@@ -1490,94 +1489,110 @@ end
 
 ```ruby
 @config = {
-  # Custom headers, format: hash. Example: { "some header" => "some value", "another header" => "another value" }
-  # Works only for :mechanize and :poltergeist_phantomjs engines (Selenium doesn't allow to set/get headers)
+  # Custom headers hash. Example: { "some header" => "some value", "another header" => "another value" }
+  # Works only for :mechanize and :poltergeist_phantomjs engines. Selenium doesn't support setting headers.
   headers: {},
 
-  # Custom User Agent, format: string or lambda.
+  # Custom User Agent – string or lambda
+  #
   # Use lambda if you want to rotate user agents before each run:
-  # user_agent: -> { ARRAY_OF_USER_AGENTS.sample }
+  # 	user_agent: -> { ARRAY_OF_USER_AGENTS.sample }
+  #
   # Works for all engines
   user_agent: "Mozilla/5.0 Firefox/61.0",
 
-  # Custom cookies, format: array of hashes.
+  # Custom cookies – an array of hashes
   # Format for a single cookie: { name: "cookie name", value: "cookie value", domain: ".example.com" }
+  #
   # Works for all engines
   cookies: [],
 
-  # Proxy, format: string or lambda. Format of a proxy string: "ip:port:protocol:user:password"
-  # `protocol` can be http or socks5. User and password are optional.
+  # Proxy – string or lambda. Format for a proxy string: "ip:port:protocol:user:password"
+  # 	`protocol` can be http or socks5. User and password are optional.
+  #
   # Use lambda if you want to rotate proxies before each run:
-  # proxy: -> { ARRAY_OF_PROXIES.sample }
-  # Works for all engines, but keep in mind that Selenium drivers doesn't support proxies
-  # with authorization. Also, Mechanize doesn't support socks5 proxy format (only http)
+  # 	proxy: -> { ARRAY_OF_PROXIES.sample }
+  #
+  # Works for all engines, but keep in mind that Selenium drivers don't support proxies
+  # with authorization. Also, Mechanize doesn't support socks5 proxy format (only http).
   proxy: "3.4.5.6:3128:http:user:pass",
 
   # If enabled, browser will ignore any https errors. It's handy while using a proxy
-  # with self-signed SSL cert (for example Crawlera or Mitmproxy)
-  # Also, it will allow to visit webpages with expires SSL certificate.
+  # with a self-signed SSL cert (for example Crawlera or Mitmproxy). It will allow you to
+  # visit web pages with expired SSL certificates.
+  #
   # Works for all engines
   ignore_ssl_errors: true,
 
   # Custom window size, works for all engines
   window_size: [1366, 768],
 
-  # Skip images downloading if true, works for all engines
+  # Skip loading images if true, works for all engines. Speeds up processing time.
   disable_images: true,
 
-  # Selenium engines only: headless mode, `:native` or `:virtual_display` (default is :native)
-  # Although native mode has a better performance, virtual display mode
-  # sometimes can be useful. For example, some websites can detect (and block)
-  # headless chrome, so you can use virtual_display mode instead
+  # For Selenium engines only: headless mode, `:native` or `:virtual_display` (default is :native)
+  # Although native mode has better performance, virtual display mode
+  # can sometimes be useful. For example, some websites can detect (and block)
+  # headless chrome, so you can use virtual_display mode instead.
   headless_mode: :native,
 
   # This option tells the browser not to use a proxy for the provided list of domains or IP addresses.
-  # Format: array of strings. Works only for :selenium_firefox and selenium_chrome
+  # Format: array of strings. Works only for :selenium_firefox and selenium_chrome.
   proxy_bypass_list: [],
 
-  # Option to provide custom SSL certificate. Works only for :poltergeist_phantomjs and :mechanize
+  # Option to provide custom SSL certificate. Works only for :poltergeist_phantomjs and :mechanize.
   ssl_cert_path: "path/to/ssl_cert",
 
-  # Inject some JavaScript code to the browser.
-  # Format: array of strings, where each string is a path to JS file.
-  # Works only for poltergeist_phantomjs engine (Selenium doesn't support JS code injection)
+  # Inject some JavaScript code into the browser
+  # Format: array of strings, where each string is a path to a JS file
+  # Works only for poltergeist_phantomjs engine. Selenium doesn't support JS code injection.
   extensions: ["lib/code_to_inject.js"],
 
-  # Automatically skip duplicated (already visited) urls when using `request_to` method.
-  # Possible values: `true` or `hash` with options.
-  # In case of `true`, all visited urls will be added to the storage's scope `:requests_urls`
-  # and if url already contains in this scope, request will be skipped.
+  # Automatically skip already visited urls when using `request_to` method
+  #
+  # Possible values: `true` or a hash with options
+  # In case of `true`, all visited urls will be added to the storage scope `:requests_urls`
+  # and if the url already exists in this scope, the request will be skipped.
+  #
   # You can configure this setting by providing additional options as hash:
-  # `skip_duplicate_requests: { scope: :custom_scope, check_only: true }`, where:
-  # `scope:` - use custom scope than `:requests_urls`
-  # `check_only:` - if true, then scope will be only checked for url, url will not
-  # be added to the scope if scope doesn't contains it.
-  # works for all drivers
+  # 	`skip_duplicate_requests: { scope: :custom_scope, check_only: true }`, where:
+  # 		`scope:` – use a custom scope other than `:requests_urls`
+  # 		`check_only:` – if true, the url will not be added to the scope
+  # 		
+  # Works for all drivers
   skip_duplicate_requests: true,
 
-  # Automatically skip provided errors while requesting a page.
-  # If raised error matches one of the errors in the list, then this error will be caught,
-  # and request will be skipped.
-  # It is a good idea to skip errors like NotFound(404), etc.
-  # Format: array where elements are error classes or/and hashes. You can use hash format
+  # Automatically skip provided errors while requesting a page
+  #
+  # If a raised error matches one of the errors in the list, then the error will be caught,
+  # and the request will be skipped. It's a good idea to skip errors like 404 Not Found, etc.
+  #
+  # Format: array where elements are error classes and/or hashes. You can use a hash
   # for more flexibility: `{ error: "RuntimeError", message: "404 => Net::HTTPNotFound" }`.
-  # Provided `message:` will be compared with a full error message using `String#include?`. Also
-  # you can use regex instead: `{ error: "RuntimeError", message: /404|403/ }`.
+  #
+  # The provided `message:` will be compared with a full error message using `String#include?`.
+  # You can also use regex: `{ error: "RuntimeError", message: /404|403/ }`.
   skip_request_errors: [{ error: RuntimeError, message: "404 => Net::HTTPNotFound" }],
-
-  # Automatically retry provided errors with a few attempts while requesting a page.
-  # If raised error matches one of the errors in the list, then this error will be caught
-  # and the request will be processed again within a delay. There are 3 attempts:
-  # first: delay 15 sec, second: delay 30 sec, third: delay 45 sec.
-  # If after 3 attempts there is still an exception, then the exception will be raised.
-  # It is a good idea to try to retry errros like `ReadTimeout`, `HTTPBadGateway`, etc.
-  # Format: same like for `skip_request_errors` option.
+  
+  # Automatically retry requests several times after certain errors
+  #
+  # If a raised error matches one of the errors in the list, the error will be caught,
+  # and the request will be processed again with progressive delay.
+  #
+  # There are 3 attempts with _15 sec_, _30 sec_, and _45 sec_ delays, respectively. If after 3
+  # attempts there is still an exception, then the exception will be raised. It's a good idea to
+  # retry errors like `ReadTimeout`, `HTTPBadGateway`, etc.
+  #
+  # The format for `retry_request_errors` is the same as for `skip_request_errors`.
   retry_request_errors: [Net::ReadTimeout],
 
-  # Handle page encoding while parsing html response using Nokogiri. There are two modes:
-  # Auto (`:auto`) (try to fetch correct encoding from <meta http-equiv="Content-Type"> or <meta charset> tags)
-  # Set required encoding manually, example: `encoding: "GB2312"` (Set required encoding manually)
-  # Default this option is unset.
+  # Handle page encoding while parsing html response using Nokogiri
+  #
+  # There are two ways to use this option:
+  # 	encoding: :auto # auto-detect from <meta http-equiv="Content-Type"> or <meta charset> tags
+  #		encoding: "GB2312" # set encoding manually
+  #
+  # This option is not set by default
   encoding: nil,
 
   # Restart browser if one of the options is true:
@@ -1591,26 +1606,25 @@ end
 
   # Perform several actions before each request:
   before_request: {
-    # Change proxy before each request. The `proxy:` option above should be presented
-    # and has lambda format. Works only for poltergeist and mechanize engines
-    # (Selenium doesn't support proxy rotation).
+    # Change proxy before each request. The `proxy:` option above should be set with lambda notation
+    # Works only for poltergeist and mechanize engines. Selenium doesn't support proxy rotation.
     change_proxy: true,
 
-    # Change user agent before each request. The `user_agent:` option above should be presented
-    # and has lambda format. Works only for poltergeist and mechanize engines
-    # (selenium doesn't support to get/set headers).
+    # Change user agent before each request. The `user_agent:` option above should set with lambda
+    # notation. Works only for poltergeist and mechanize engines. Selenium doesn't support setting headers.
     change_user_agent: true,
 
-    # Clear all cookies before each request, works for all engines
+    # Clear all cookies before each request. Works for all engines.
     clear_cookies: true,
 
-    # If you want to clear all cookies + set custom cookies (`cookies:` option above should be presented)
-    # use this option instead (works for all engines)
+    # If you want to clear all cookies and set custom cookies, the `cookies:` option above should be set
+    # Use this option instead of clear_cookies. Works for all engines.
     clear_and_set_cookies: true,
 
-    # Global option to set delay between requests.
+    # Global option to set delay between requests
+    #
     # Delay can be `Integer`, `Float` or `Range` (`2..5`). In case of a range,
-    # delay number will be chosen randomly for each request: `rand (2..5) # => 3`
+    # the delay (in seconds) will be set randomly for each request: `rand (2..5) # => 3`
     delay: 1..3
   }
 }
@@ -1645,11 +1659,11 @@ class CustomSpider < ApplicationSpider
 end
 ```
 
-Here, `@config` of `CustomSpider` will be _[deep merged](https://apidock.com/rails/Hash/deep_merge)_ with `ApplicationSpider` config, so `CustomSpider` will keep all inherited options with only `delay` updated.
+Here, `@config` of `CustomSpider` will be _[deep merged](https://apidock.com/rails/Hash/deep_merge)_ with `ApplicationSpider`'s' config. In this example, `CustomSpider` will keep all inherited options with only the `delay` being updated.
 
 ## Project mode
 
-Kimurai can work in project mode ([Like Scrapy](https://doc.scrapy.org/en/latest/intro/tutorial.html#creating-a-project)). To generate a new project, run: `$ kimurai generate project web_spiders` (where `web_spiders` is a name of project).
+Kimurai can work in project mode ([Like Scrapy](https://doc.scrapy.org/en/latest/intro/tutorial.html#creating-a-project)). To generate a new project, run: `$ kimurai generate project web_spiders` (where `web_spiders` is the name for the project).
 
 Structure of the project:
 
@@ -1681,26 +1695,26 @@ Structure of the project:
 <details/>
   <summary>Description</summary>
 
-* `config/` folder for configutation files
-  * `config/initializers` [Rails-like initializers](https://guides.rubyonrails.org/configuring.html#using-initializer-files) to load custom code at start of framework
-  * `config/application.rb` configuration settings for Kimurai (`Kimurai.configure do` block)
-  * `config/automation.yml` specify some settings for [setup and deploy](#automated-sever-setup-and-deployment)
-  * `config/boot.rb` loads framework and project
-  * `config/schedule.rb` Cron [schedule for spiders](#schedule-spiders-using-cron)
-* `spiders/` folder for spiders
-  * `spiders/application_spider.rb` Base parent class for all spiders
-* `db/` store here all database files (`sqlite`, `json`, `csv`, etc.)
-* `helpers/` Rails-like helpers for spiders
-  * `helpers/application_helper.rb` all methods inside ApplicationHelper module will be available for all spiders
-* `lib/` put here custom Ruby code
-* `log/` folder for logs
-* `pipelines/` folder for [Scrapy-like](https://doc.scrapy.org/en/latest/topics/item-pipeline.html) pipelines. One file = one pipeline
-  * `pipelines/validator.rb` example pipeline to validate item
-  * `pipelines/saver.rb` example pipeline to save item
-* `tmp/` folder for temp. files
-* `.env` file to store ENV variables for project and load them using [Dotenv](https://github.com/bkeepers/dotenv)
-* `Gemfile` dependency file
-* `Readme.md` example project readme
+* `config/` – directory for configutation files
+  * `config/initializers` – [Rails-like initializers](https://guides.rubyonrails.org/configuring.html#using-initializer-files) to load custom code when the framework initializes
+  * `config/application.rb` – configuration settings for Kimurai (`Kimurai.configure do` block)
+  * `config/automation.yml` – specify some settings for [setup and deploy](#automated-sever-setup-and-deployment)
+  * `config/boot.rb`–  loads framework and project
+  * `config/schedule.rb` – Cron [schedule for spiders](#schedule-spiders-using-cron)
+* `spiders/` – directory for spiders
+  * `spiders/application_spider.rb` – base parent class for all spiders
+* `db/` – directory for database files (`sqlite`, `json`, `csv`, etc.)
+* `helpers/` – Rails-like helpers for spiders
+  * `helpers/application_helper.rb` – all methods inside the ApplicationHelper module will be available for all spiders
+* `lib/` – custom Ruby code
+* `log/` – directory for logs
+* `pipelines/` – directory for [Scrapy-like](https://doc.scrapy.org/en/latest/topics/item-pipeline.html) pipelines (one file per pipeline)
+  * `pipelines/validator.rb` – example pipeline to validate an item
+  * `pipelines/saver.rb` – example pipeline to save an item
+* `tmp/` – folder for temp files
+* `.env` – file to store environment variables for a project and load them using [Dotenv](https://github.com/bkeepers/dotenv)
+* `Gemfile` – dependency file
+* `Readme.md` – example project readme
 </details>
 
 
@@ -1755,7 +1769,7 @@ class Validator < Kimurai::Pipeline
     # Here you can validate item and raise `DropItemError`
     # if one of the validations failed. Examples:
 
-    # Drop item if it's category is not "shoe":
+    # Drop item if its category is not "shoe":
     if item[:category] != "shoe"
       raise DropItemError, "Wrong item category"
     end
@@ -1954,7 +1968,7 @@ I, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980]  INFO -- github_spider: 
 ```
 </details><br>
 
-Also, you can pass custom options to pipeline from a particular spider if you want to change pipeline behavior for this spider:
+You can also pass custom options to a pipeline from a particular spider if you want to change the pipeline behavior for this spider:
 
 <details>
   <summary>Example</summary>
@@ -2014,7 +2028,7 @@ $ bundle exec kimurai runner -j 3
 <<< Runner: stopped: {:id=>1533727423, :status=>:completed, :start_time=>2018-08-08 15:23:43 +0400, :stop_time=>2018-08-08 15:25:11 +0400, :environment=>"development", :concurrent_jobs=>3, :spiders=>["custom_spider", "github_spider", "example_spider"]}
 ```
 
-Each spider runs in a separate process. Spiders logs available at `log/` folder. Pass `-j` option to specify how many spiders should be processed at the same time (default is 1).
+Each spider runs in a separate process. Spider logs are available in the `log/` directory. Use the `-j` argument to specify how many spiders should be processed at the same time (default is 1).
 
 You can provide additional arguments like `--include` or `--exclude` to specify which spiders to run:
 
@@ -2032,7 +2046,7 @@ You can perform custom actions before runner starts and after runner stops using
 
 
 ## Chat Support and Feedback
-Will be updated
+Submit an issue on GitHub and we'll try to address it in a timely manner.
 
 ## License
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+This gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).

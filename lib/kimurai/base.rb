@@ -154,13 +154,17 @@ module Kimurai
     end
 
     def self.parse!(handler, *args, **request)
+      ap "PARSE!"
       spider = self.new
 
       if args.present?
+        ap "public_send..."
         spider.public_send(handler, *args)
       elsif request.present?
+        ap "request_to..."
         spider.request_to(handler, request)
       else
+        ap "public_send2..."
         spider.public_send(handler)
       end
     ensure

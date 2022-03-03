@@ -663,7 +663,7 @@ def request_to(handler, url:, data: {})
   request_data = { url: url, data: data }
 
   browser.visit(url)
-  public_send(handler, browser.current_response, request_data)
+  public_send(handler, browser.current_response, **request_data)
 end
 ```
 </details><br>

@@ -201,7 +201,7 @@ module Kimurai
       visited = delay ? browser.visit(url, delay: delay) : browser.visit(url)
       return unless visited
 
-      public_send(handler, browser.current_response(response_type), { url: url, data: data })
+      public_send(handler, browser.current_response(response_type), url: url, data: data)
     end
 
     def console(response = nil, url: nil, data: {})
@@ -304,9 +304,9 @@ module Kimurai
           part.each do |url_data|
             if url_data.class == Hash
               if url_data[:url].present? && url_data[:data].present?
-                spider.request_to(handler, delay, url_data)
+                spider.request_to(handler, delay, **url_data)
               else
-                spider.public_send(handler, url_data)
+                spider.public_send(handler, **url_data)
               end
             else
               spider.request_to(handler, delay, url: url_data, data: data)

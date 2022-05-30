@@ -28,9 +28,12 @@ module Kimurai::BrowserBuilder
         if chrome_path = Kimurai.configuration.selenium_chrome_path
           opts.merge!(binary: chrome_path)
         end
-
         # See all options here: https://seleniumhq.github.io/selenium/docs/api/rb/Selenium/WebDriver/Chrome/Options.html
-        driver_options = Selenium::WebDriver::Chrome::Options.new(opts)
+        driver_options = Selenium::WebDriver::Chrome::Options.new(**opts)
+
+        if @config[:debugger_address]
+          driver_options.add_option(:debuggerAddress, @config[:debugger_address])
+        end
 
         # Window size
         if size = @config[:window_size].presence
@@ -107,6 +110,12 @@ module Kimurai::BrowserBuilder
             driver_options.args << "--headless"
             logger.debug "BrowserBuilder (selenium_chrome): enabled native headless_mode"
           end
+        end
+
+        # Additional arguments
+        if @config[:browser_cmd_line_arguments].present?
+          driver_options.args << @config[:browser_cmd_line_arguments].join(' ')
+          logger.debug "BrowserBuilder (selenium_chrome): additional browser command line arguments have been added"
         end
 
         chromedriver_path = Kimurai.configuration.chromedriver_path || "/usr/local/bin/chromedriver"

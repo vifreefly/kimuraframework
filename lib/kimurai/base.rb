@@ -99,7 +99,7 @@ module Kimurai
       end
     end
 
-    def self.crawl!(exception_on_fail: true)
+    def self.crawl!(exception_on_fail: true, data: {})
       logger.error "Spider: already running: #{name}" and return false if running?
 
       @storage = Storage.new
@@ -123,13 +123,13 @@ module Kimurai
       if start_urls
         start_urls.each do |start_url|
           if start_url.class == Hash
-            spider.request_to(:parse, start_url)
+            spider.request_to(:parse, url: start_url[:url], data: data)
           else
-            spider.request_to(:parse, url: start_url)
+            spider.request_to(:parse, url: start_url, data: data)
           end
         end
       else
-        spider.parse
+        spider.parse(data: data)
       end
     rescue StandardError, SignalException, SystemExit => e
       @run_info.merge!(status: :failed, error: e.inspect)
@@ -154,7 +154,13 @@ module Kimurai
     end
 
     def self.parse!(handler, *args, **request)
-      spider = self.new
+      if request.has_key? :config
+        config = request[:config]
+        request.delete :config
+      else
+        config = {}
+      end
+      spider = self.new config: config
 
       if args.present?
         spider.public_send(handler, *args)
@@ -201,7 +207,9 @@ module Kimurai
       visited = delay ? browser.visit(url, delay: delay) : browser.visit(url)
       return unless visited
 
-      public_send(handler, browser.current_response(response_type), { url: url, data: data })
+      options =  { url: url, data: data }
+
+      public_send(handler, browser.current_response(response_type), **options)
     end
 
     def console(response = nil, url: nil, data: {})
@@ -304,9 +312,9 @@ module Kimurai
           part.each do |url_data|
             if url_data.class == Hash
               if url_data[:url].present? && url_data[:data].present?
-                spider.request_to(handler, delay, url_data)
+                spider.request_to(handler, delay, **url_data)
               else
-                spider.public_send(handler, url_data)
+                spider.public_send(handler, **url_data)
               end
             else
               spider.request_to(handler, delay, url: url_data, data: data)

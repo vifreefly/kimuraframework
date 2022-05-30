@@ -20,7 +20,7 @@ class GithubSpider < Kimurai::Base
   }
 
   def parse(response, url:, data: {})
-    response.xpath("//ul[@class='repo-list']/div//h3/a").each do |a|
+    response.xpath("//ul[@class='repo-list']//a[@class='v-align-middle']").each do |a|
       request_to :parse_repo_page, url: absolute_url(a[:href], base: url)
     end
 
@@ -36,7 +36,7 @@ class GithubSpider < Kimurai::Base
     item[:repo_name] = response.xpath("//h1/strong[@itemprop='name']/a").text
     item[:repo_url] = url
     item[:description] = response.xpath("//span[@itemprop='about']").text.squish
-    item[:tags] = response.xpath("//div[@id='topics-list-container']/div/a").map { |a| a.text.squish }
+    item[:tags] = response.xpath("//div[starts-with(@class, 'list-topics-container')]/a").map { |a| a.text.squish }
     item[:watch_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Watch')]/a[2]").text.squish
     item[:star_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Star')]/a[2]").text.squish
     item[:fork_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Fork')]/a[2]").text.squish
@@ -208,51 +208,51 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 * Command-line [runner](#runner) to run all project spiders one by one or in parallel
 
 ## Table of Contents
-* [Kimurai](#kimurai)
-  * [Features](#features)
-  * [Table of Contents](#table-of-contents)
-  * [Installation](#installation)
-  * [Getting to Know](#getting-to-know)
-    * [Interactive console](#interactive-console)
-    * [Available engines](#available-engines)
-    * [Minimum required spider structure](#minimum-required-spider-structure)
-    * [Method arguments response, url and data](#method-arguments-response-url-and-data)
-    * [browser object](#browser-object)
-    * [request_to method](#request_to-method)
-    * [save_to helper](#save_to-helper)
-    * [Skip duplicates](#skip-duplicates)
-      * [Automatically skip all duplicated requests urls](#automatically-skip-all-duplicated-requests-urls)
-      * [Storage object](#storage-object)
-    * [Handle request errors](#handle-request-errors)
-      * [skip_request_errors](#skip_request_errors)
-      * [retry_request_errors](#retry_request_errors)
-    * [Logging custom events](#logging-custom-events)
-    * [open_spider and close_spider callbacks](#open_spider-and-close_spider-callbacks)
-    * [KIMURAI_ENV](#kimurai_env)
-    * [Parallel crawling using in_parallel](#parallel-crawling-using-in_parallel)
-    * [Active Support included](#active-support-included)
-    * [Schedule spiders using Cron](#schedule-spiders-using-cron)
-    * [Configuration options](#configuration-options)
-    * [Using Kimurai inside existing Ruby application](#using-kimurai-inside-existing-ruby-application)
-      * [crawl! method](#crawl-method)
-      * [parse! method](#parsemethod_name-url-method)
-      * [Kimurai.list and Kimurai.find_by_name](#kimurailist-and-kimuraifind_by_name)
-    * [Automated sever setup and deployment](#automated-sever-setup-and-deployment)
-      * [Setup](#setup)
-      * [Deploy](#deploy)
-  * [Spider @config](#spider-config)
-    * [All available @config options](#all-available-config-options)
-    * [@config settings inheritance](#config-settings-inheritance)
-  * [Project mode](#project-mode)
-    * [Generate new spider](#generate-new-spider)
-    * [Crawl](#crawl)
-    * [List](#list)
-    * [Parse](#parse)
-    * [Pipelines, send_item method](#pipelines-send_item-method)
-    * [Runner](#runner)
-      * [Runner callbacks](#runner-callbacks)
-  * [Chat Support and Feedback](#chat-support-and-feedback)
-  * [License](#license)
+- [Kimurai](#kimurai)
+  - [Features](#features)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Getting to Know](#getting-to-know)
+    - [Interactive console](#interactive-console)
+    - [Available engines](#available-engines)
+    - [Minimum required spider structure](#minimum-required-spider-structure)
+    - [Method arguments `response`, `url` and `data`](#method-arguments-response-url-and-data)
+    - [`browser` object](#browser-object)
+    - [`request_to` method](#request_to-method)
+    - [`save_to` helper](#save_to-helper)
+    - [Skip duplicates](#skip-duplicates)
+      - [Automatically skip all duplicated requests urls](#automatically-skip-all-duplicated-requests-urls)
+      - [`storage` object](#storage-object)
+    - [Handle request errors](#handle-request-errors)
+      - [skip_request_errors](#skip_request_errors)
+      - [retry_request_errors](#retry_request_errors)
+    - [Logging custom events](#logging-custom-events)
+    - [`open_spider` and `close_spider` callbacks](#open_spider-and-close_spider-callbacks)
+    - [`KIMURAI_ENV`](#kimurai_env)
+    - [Parallel crawling using `in_parallel`](#parallel-crawling-using-in_parallel)
+    - [Active Support included](#active-support-included)
+    - [Schedule spiders using Cron](#schedule-spiders-using-cron)
+    - [Configuration options](#configuration-options)
+    - [Using Kimurai inside existing Ruby application](#using-kimurai-inside-existing-ruby-application)
+      - [`.crawl!` method](#crawl-method)
+      - [`.parse!(:method_name, url:, config: {})` method](#parsemethod_name-url-config--method)
+      - [`Kimurai.list` and `Kimurai.find_by_name()`](#kimurailist-and-kimuraifind_by_name)
+    - [Automated sever setup and deployment](#automated-sever-setup-and-deployment)
+      - [Setup](#setup)
+      - [Deploy](#deploy)
+  - [Spider `@config`](#spider-config)
+    - [All available `@config` options](#all-available-config-options)
+    - [`@config` settings inheritance](#config-settings-inheritance)
+  - [Project mode](#project-mode)
+    - [Generate new spider](#generate-new-spider)
+    - [Crawl](#crawl)
+    - [List](#list)
+    - [Parse](#parse)
+    - [Pipelines, `send_item` method](#pipelines-send_item-method)
+    - [Runner](#runner)
+      - [Runner callbacks](#runner-callbacks)
+  - [Chat Support and Feedback](#chat-support-and-feedback)
+  - [License](#license)
 
 
 ## Installation
@@ -654,7 +654,7 @@ def request_to(handler, url:, data: {})
   request_data = { url: url, data: data }
 
   browser.visit(url)
-  public_send(handler, browser.current_response, request_data)
+  public_send(handler, browser.current_response, **request_data)
 end
 ```
 </details><br>
@@ -1302,6 +1302,9 @@ Kimurai.configure do |config|
   # config.selenium_chrome_path = "/usr/bin/chromium-browser"
   # Provide custom selenium chromedriver path (default is "/usr/local/bin/chromedriver"):
   # config.chromedriver_path = "~/.local/bin/chromedriver"
+
+  # Provide additional command line arguments that will passed to the browser
+  # config.browser_cmd_line_arguments = %w[--disable-gpu]
 end
 ```
 
@@ -1344,7 +1347,7 @@ end # =>
 
 So what if you're don't care about stats and just want to process request to a particular spider method and get the returning value from this method? Use `.parse!` instead:
 
-#### `.parse!(:method_name, url:)` method
+#### `.parse!(:method_name, url:, config: {})` method
 
 `.parse!` (class method) creates a new spider instance and performs a request to given method with a given url. Value from the method will be returned back:
 
@@ -1361,6 +1364,8 @@ end
 
 ExampleSpider.parse!(:parse, url: "https://example.com/")
 # => "Example Domain"
+# this is example when you need to override config
+ExampleSpider.parse!(:parse, url: "https://example.com/", config: { before_request: { clear_and_set_cookies: true } } )
 ```
 
 Like `.crawl!`, `.parse!` method takes care of a browser instance and kills it (`browser.destroy_driver!`) before returning the value. Unlike `.crawl!`, `.parse!` method can be called from different threads at the same time:

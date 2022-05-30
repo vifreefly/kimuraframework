@@ -34,7 +34,7 @@ class Capybara::Mechanize::Driver
     options[:name]  ||= name
     options[:value] ||= value
 
-    cookie = Mechanize::Cookie.new(options.merge path: "/")
+    cookie = Mechanize::Cookie.new(**options.merge(path: "/"))
     browser.agent.cookie_jar << cookie
   end
 

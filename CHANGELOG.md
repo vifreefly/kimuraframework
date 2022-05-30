@@ -1,4 +1,16 @@
 # CHANGELOG
+## 1.6.0
+* Rename `additional_arguments` config option to `browser_cmd_line_arguments` (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))
+
+## 1.5.0
+### New
+* Add `additional_arguments` config option (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))
+
+## 1.4.1
+New
+* Updated for Ruby 2.7+ support
+* Switched to Addressable.URI.escape from obsolete URI.escape
+
 ## 1.4.0
 ### New
 * Add `encoding` config option (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))

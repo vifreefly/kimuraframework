@@ -47,7 +47,7 @@ module Kimurai::BrowserBuilder
 
       # SSL
       if ssl_cert_path = @config[:ssl_cert_path].presence
-        @browser.driver.browser.agent.http.ca_file = ssl_cert_path
+        @browser.driver.browser.agent.ca_file = ssl_cert_path
         logger.debug "BrowserBuilder (mechanize): enabled custom ssl_cert"
       end
 

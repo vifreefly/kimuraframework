@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'tanakai'
+require 'tanakai/cli'
+
+Tanakai::CLI.start(ARGV)

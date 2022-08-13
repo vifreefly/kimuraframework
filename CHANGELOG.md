@@ -2,6 +2,7 @@
 
 ## 1.5.0
 ### New
+* First release as Tanakai
 * Add support to [Apparition](https://github.com/twalpole/apparition)
 * Add support to [Cuprite](https://github.com/rubycdp/cuprite)
 

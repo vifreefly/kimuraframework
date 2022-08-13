@@ -1,16 +1,14 @@
-# Kimurai
+# Tanakai
 
-> UPD. I will soon have a time to work on issues for current 1.4 version and also plan to release new 2.0 version.
+Tanakai intends to be a maintained fork of [Kimurai](https://github.com/vifreefly/kimuraframework), a modern web scraping framework written in Ruby which **works out of box with Apparition, Cuprite, Headless Chromium/Firefox and PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
-Kimurai is a modern web scraping framework written in Ruby which **works out of box with Apparition, Cuprite, Headless Chromium/Firefox and PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
-
-Kimurai based on well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Lets see:
+Tanakai based on well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Lets see:
 
 ```ruby
 # github_spider.rb
-require 'kimurai'
+require 'tanakai'
 
-class GithubSpider < Kimurai::Base
+class GithubSpider < Tanakai::Base
   @name = "github_spider"
   @engine = :selenium_chrome
   @start_urls = ["https://github.com/search?q=Ruby%20Web%20Scraping"]
@@ -134,9 +132,9 @@ Okay, that was easy. How about javascript rendered websites with dynamic HTML? L
 
 ```ruby
 # infinite_scroll_spider.rb
-require 'kimurai'
+require 'tanakai'
 
-class InfiniteScrollSpider < Kimurai::Base
+class InfiniteScrollSpider < Tanakai::Base
   @name = "infinite_scroll_spider"
   @engine = :selenium_chrome
   @start_urls = ["https://infinite-scroll.com/demo/full-page/"]
@@ -204,11 +202,11 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 * [Parallel scraping](#parallel-crawling-using-in_parallel) using simple method `in_parallel`
 * **Two modes:** use single file for a simple spider, or [generate](#project-mode) Scrapy-like **project**
 * Convenient development mode with [console](#interactive-console), colorized logger and debugger ([Pry](https://github.com/pry/pry), [Byebug](https://github.com/deivid-rodriguez/byebug))
-* Automated [server environment setup](#setup) (for ubuntu 18.04) and [deploy](#deploy) using commands `kimurai setup` and `kimurai deploy` ([Ansible](https://github.com/ansible/ansible) under the hood)
+* Automated [server environment setup](#setup) (for ubuntu 18.04) and [deploy](#deploy) using commands `tanakai setup` and `tanakai deploy` ([Ansible](https://github.com/ansible/ansible) under the hood)
 * Command-line [runner](#runner) to run all project spiders one by one or in parallel
 
 ## Table of Contents
-* [Kimurai](#kimurai)
+* [Tanakai](#tanakai)
   * [Features](#features)
   * [Table of Contents](#table-of-contents)
   * [Installation](#installation)
@@ -228,15 +226,15 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
       * [retry_request_errors](#retry_request_errors)
     * [Logging custom events](#logging-custom-events)
     * [open_spider and close_spider callbacks](#open_spider-and-close_spider-callbacks)
-    * [KIMURAI_ENV](#kimurai_env)
+    * [TANAKAI_ENV](#tanakai_env)
     * [Parallel crawling using in_parallel](#parallel-crawling-using-in_parallel)
     * [Active Support included](#active-support-included)
     * [Schedule spiders using Cron](#schedule-spiders-using-cron)
     * [Configuration options](#configuration-options)
-    * [Using Kimurai inside existing Ruby application](#using-kimurai-inside-existing-ruby-application)
+    * [Using Tanakai inside existing Ruby application](#using-tanakai-inside-existing-ruby-application)
       * [crawl! method](#crawl-method)
       * [parse! method](#parsemethod_name-url-method)
-      * [Kimurai.list and Kimurai.find_by_name](#kimurailist-and-kimuraifind_by_name)
+      * [Tanakai.list and Tanakai.find_by_name](#tanakailist-and-tanakaifind_by_name)
     * [Automated sever setup and deployment](#automated-sever-setup-and-deployment)
       * [Setup](#setup)
       * [Deploy](#deploy)
@@ -256,7 +254,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 
 
 ## Installation
-Kimurai requires Ruby version `>= 2.5.0`. Supported platforms: `Linux` and `Mac OS X`.
+Tanakai requires Ruby version `>= 2.5.0`. Supported platforms: `Linux` and `Mac OS X`.
 
 1) If your system doesn't have appropriate Ruby version, install it:
 
@@ -306,7 +304,7 @@ gem install bundler
 ```
 </details>
 
-2) Install Kimurai gem: `$ gem install kimurai`
+2) Install Tanakai gem: `$ gem install tanakai` or `bundle add tanakai`
 
 3) Install browsers with webdrivers:
 
@@ -315,9 +313,9 @@ gem install bundler
 
 Note: for Ubuntu 16.04-18.04 there is available automatic installation using `setup` command:
 ```bash
-$ kimurai setup localhost --local --ask-sudo
+$ tanakai setup localhost --local --ask-sudo
 ```
-It works using [Ansible](https://github.com/ansible/ansible) so you need to install it first: `$ sudo apt install ansible`. You can check using playbooks [here](lib/kimurai/automation).
+It works using [Ansible](https://github.com/ansible/ansible) so you need to install it first: `$ sudo apt install ansible`. You can check using playbooks [here](lib/tanakai/automation).
 
 If you chose automatic installation, you can skip following and go to "Getting To Know" part. In case if you want to install everything manually:
 
@@ -436,17 +434,17 @@ brew install mongodb
 
 ## Getting to Know
 ### Interactive console
-Before you get to know all Kimurai features, there is `$ kimurai console` command which is an interactive console where you can try and debug your scraping code very quickly, without having to run any spider (yes, it's like [Scrapy shell](https://doc.scrapy.org/en/latest/topics/shell.html#topics-shell)).
+Before you get to know all Tanakai features, there is `$ tanakai console` command which is an interactive console where you can try and debug your scraping code very quickly, without having to run any spider (yes, it's like [Scrapy shell](https://doc.scrapy.org/en/latest/topics/shell.html#topics-shell)).
 
 ```bash
-$ kimurai console --engine selenium_chrome --url https://github.com/vifreefly/kimuraframework
+$ tanakai console --engine selenium_chrome --url https://github.com/vifreefly/kimuraframework
 ```
 
 <details/>
   <summary>Show output</summary>
 
 ```
-$ kimurai console --engine selenium_chrome --url https://github.com/vifreefly/kimuraframework
+$ tanakai console --engine selenium_chrome --url https://github.com/vifreefly/kimuraframework
 
 D, [2018-08-22 13:42:32 +0400#26079] [M: 47461994677760] DEBUG -- : BrowserBuilder (selenium_chrome): created browser instance
 D, [2018-08-22 13:42:32 +0400#26079] [M: 47461994677760] DEBUG -- : BrowserBuilder (selenium_chrome): enabled native headless_mode
@@ -454,21 +452,21 @@ I, [2018-08-22 13:42:32 +0400#26079] [M: 47461994677760]  INFO -- : Browser: sta
 I, [2018-08-22 13:42:35 +0400#26079] [M: 47461994677760]  INFO -- : Browser: finished get request to: https://github.com/vifreefly/kimuraframework
 D, [2018-08-22 13:42:35 +0400#26079] [M: 47461994677760] DEBUG -- : Browser: driver.current_memory: 201701
 
-From: /home/victor/code/kimurai/lib/kimurai/base.rb @ line 189 Kimurai::Base#console:
+From: /home/victor/code/tanakai/lib/tanakai/base.rb @ line 189 Tanakai::Base#console:
 
     188: def console(response = nil, url: nil, data: {})
  => 189:   binding.pry
     190: end
 
-[1] pry(#<Kimurai::Base>)> response.xpath("//title").text
+[1] pry(#<Tanakai::Base>)> response.xpath("//title").text
 => "GitHub - vifreefly/kimuraframework: Modern web scraping framework written in Ruby which works out of box with Headless Chromium/Firefox, PhantomJS, or simple HTTP requests and allows to scrape and interact with JavaScript rendered websites"
 
-[2] pry(#<Kimurai::Base>)> ls
-Kimurai::Base#methods: browser  console  logger  request_to  save_to  unique?
+[2] pry(#<Tanakai::Base>)> ls
+Tanakai::Base#methods: browser  console  logger  request_to  save_to  unique?
 instance variables: @browser  @config  @engine  @logger  @pipelines
 locals: _  __  _dir_  _ex_  _file_  _in_  _out_  _pry_  data  response  url
 
-[3] pry(#<Kimurai::Base>)> ls response
+[3] pry(#<Tanakai::Base>)> ls response
 Nokogiri::XML::PP::Node#methods: inspect  pretty_print
 Nokogiri::XML::Searchable#methods: %  /  at  at_css  at_xpath  css  search  xpath
 Enumerable#methods:
@@ -495,7 +493,7 @@ Nokogiri::XML::Document#methods:
 Nokogiri::HTML::Document#methods: fragment  meta_encoding  meta_encoding=  serialize  title  title=  type
 instance variables: @decorators  @errors  @node_cache
 
-[4] pry(#<Kimurai::Base>)> exit
+[4] pry(#<Tanakai::Base>)> exit
 I, [2018-08-22 13:43:47 +0400#26079] [M: 47461994677760]  INFO -- : Browser: driver selenium_chrome has been destroyed
 $
 ```
@@ -506,12 +504,12 @@ CLI options:
 * `--url` (optional) url to process. If url omitted, `response` and `url` objects inside the console will be `nil` (use [browser](#browser-object) object to navigate to any webpage).
 
 ### Available engines
-Kimurai has support for following engines and mostly can switch between them without need to rewrite any code:
+Tanakai has support for following engines and mostly can switch between them without need to rewrite any code:
 
 * `:apparition` - a Chrome driver for Capybara via [CDP protocol](https://chromedevtools.github.io/devtools-protocol/) (no selenium or chromedriver needed). It started as a fork of Poltergeist and attempts to maintain as much compatibility with the Poltergeist API as possible.
 * `:cuprite` - a pure Ruby driver for Capybara. It allows you to run Capybara tests on a headless Chrome or Chromium. Under the hood it uses [Ferrum](https://github.com/rubycdp/ferrum#index) which is high-level API to the browser by [CDP protocol](https://chromedevtools.github.io/devtools-protocol/) (no selenium or chromedriver needed). The design of the driver is as close to Poltergeist as possible though it's not a goal.
 * `:mechanize` - [pure Ruby fake http browser](https://github.com/sparklemotion/mechanize). Mechanize can't render javascript and don't know what DOM is it. It only can parse original HTML code of a page. Because of it, mechanize much faster, takes much less memory and in general much more stable than any real browser. Use mechanize if you can do it, and the website doesn't use javascript to render any meaningful parts of its structure. Still, because mechanize trying to mimic a real browser, it supports almost all Capybara's [methods to interact with a web page](http://cheatrags.com/capybara) (filling forms, clicking buttons, checkboxes, etc).
-* `:poltergeist_phantomjs` - [PhantomJS headless browser](https://github.com/ariya/phantomjs), can render javascript. In general, PhantomJS still faster than Headless Chrome (and Headless Firefox). PhantomJS has memory leakage, but Kimurai has [memory control feature](#crawler-config) so you shouldn't consider it as a problem. Also, some websites can recognize PhantomJS and block access to them. Like mechanize (and unlike selenium engines) `:poltergeist_phantomjs` can freely rotate proxies and change headers _on the fly_ (see [config section](#all-available-config-options)).
+* `:poltergeist_phantomjs` - [PhantomJS headless browser](https://github.com/ariya/phantomjs), can render javascript. In general, PhantomJS still faster than Headless Chrome (and Headless Firefox). PhantomJS has memory leakage, but Tanakai has [memory control feature](#crawler-config) so you shouldn't consider it as a problem. Also, some websites can recognize PhantomJS and block access to them. Like mechanize (and unlike selenium engines) `:poltergeist_phantomjs` can freely rotate proxies and change headers _on the fly_ (see [config section](#all-available-config-options)).
 * `:selenium_chrome` Chrome in headless mode driven by selenium. Modern headless browser solution with proper javascript rendering.
 * `:selenium_firefox` Firefox in headless mode driven by selenium. Usually takes more memory than other drivers, but sometimes can be useful.
 
@@ -519,12 +517,12 @@ Kimurai has support for following engines and mostly can switch between them wit
 
 
 ### Minimum required spider structure
-> You can manually create a spider file, or use generator instead: `$ kimurai generate spider simple_spider`
+> You can manually create a spider file, or use generator instead: `$ tanakai generate spider simple_spider`
 
 ```ruby
-require 'kimurai'
+require 'tanakai'
 
-class SimpleSpider < Kimurai::Base
+class SimpleSpider < Tanakai::Base
   @name = "simple_spider"
   @engine = :selenium_chrome
   @start_urls = ["https://example.com/"]
@@ -560,7 +558,7 @@ end
 Imagine that there is a product page which doesn't contain product category. Category name present only on category page with pagination. This is the case where we can use `data` to pass category name from `parse` to `parse_product` method:
 
 ```ruby
-class ProductsSpider < Kimurai::Base
+class ProductsSpider < Tanakai::Base
   @engine = :selenium_chrome
   @start_urls = ["https://example-shop.com/example-product-category"]
 
@@ -599,13 +597,13 @@ From any spider instance method there is available `browser` object, which is [C
 But if you need to interact with a page (like filling form fields, clicking elements, checkboxes, etc) `browser` is ready for you:
 
 ```ruby
-class GoogleSpider < Kimurai::Base
+class GoogleSpider < Tanakai::Base
   @name = "google_spider"
   @engine = :selenium_chrome
   @start_urls = ["https://www.google.com/"]
 
   def parse(response, url:, data: {})
-    browser.fill_in "q", with: "Kimurai web scraping framework"
+    browser.fill_in "q", with: "Tanakai web scraping framework"
     browser.click_button "Google Search"
 
     # Update response to current response after interaction with a browser
@@ -631,7 +629,7 @@ Check out **Capybara cheat sheets** where you can see all available methods **to
 For making requests to a particular method there is `request_to`. It requires minimum two arguments: `:method_name` and `url:`. An optional argument is `data:` (see above what for is it). Example:
 
 ```ruby
-class Spider < Kimurai::Base
+class Spider < Tanakai::Base
   @engine = :selenium_chrome
   @start_urls = ["https://example.com/"]
 
@@ -667,7 +665,7 @@ end
   <summary>Check the code</summary>
 
 ```ruby
-class Spider < Kimurai::Base
+class Spider < Tanakai::Base
   @engine = :selenium_chrome
   @start_urls = ["https://example.com/"]
 
@@ -690,7 +688,7 @@ end
 Sometimes all that you need is to simply save scraped data to a file format, like JSON or CSV. You can use `save_to` for it:
 
 ```ruby
-class ProductsSpider < Kimurai::Base
+class ProductsSpider < Tanakai::Base
   @engine = :selenium_chrome
   @start_urls = ["https://example-shop.com/"]
 
@@ -730,7 +728,7 @@ Until spider stops, each new item will be appended to a file. At the next run, h
 It's pretty common when websites have duplicated pages. For example when an e-commerce shop has the same products in different categories. To skip duplicates, there is simple `unique?` helper:
 
 ```ruby
-class ProductsSpider < Kimurai::Base
+class ProductsSpider < Tanakai::Base
   @engine = :selenium_chrome
   @start_urls = ["https://example-shop.com/"]
 
@@ -804,7 +802,7 @@ It is possible to automatically skip all already visited urls while calling `req
 
 
 ### Handle request errors
-It is quite common that some pages of crawling website can return different response code than `200 ok`. In such cases, method `request_to` (or `browser.visit`) can raise an exception. Kimurai provides `skip_request_errors` and `retry_request_errors` [config](#spider-config) options to handle such errors:
+It is quite common that some pages of crawling website can return different response code than `200 ok`. In such cases, method `request_to` (or `browser.visit`) can raise an exception. Tanakai provides `skip_request_errors` and `retry_request_errors` [config](#spider-config) options to handle such errors:
 
 #### skip_request_errors
 You can automatically skip some of errors while requesting a page using `skip_request_errors` [config](#spider-config) option. If raised error matches one of the errors in the list, then this error will be caught, and request will be skipped. It is a good idea to skip errors like NotFound(404), etc.
@@ -859,9 +857,9 @@ I, [2018-11-28 22:20:19 +0400#7402] [M: 47156576560640]  INFO -- example_spider:
 You can define `.open_spider` and `.close_spider` callbacks (class methods) to perform some action before spider started or after spider has been stopped:
 
 ```ruby
-require 'kimurai'
+require 'tanakai'
 
-class ExampleSpider < Kimurai::Base
+class ExampleSpider < Tanakai::Base
   @name = "example_spider"
   @engine = :selenium_chrome
   @start_urls = ["https://example.com/"]
@@ -944,7 +942,7 @@ Inside `close_spider`, `run_info` will be updated:
 `run_info[:status]` helps to determine if spider was finished successfully or failed (possible values: `:completed`, `:failed`):
 
 ```ruby
-class ExampleSpider < Kimurai::Base
+class ExampleSpider < Tanakai::Base
   @name = "example_spider"
   @engine = :selenium_chrome
   @start_urls = ["https://example.com/"]
@@ -980,11 +978,11 @@ I, [2018-08-22 14:34:26 +0400#8459] [M: 47020523644400]  INFO -- example_spider:
 F, [2018-08-22 14:34:26 +0400#8459] [M: 47020523644400] FATAL -- example_spider: Spider: stopped: {:spider_name=>"example_spider", :status=>:failed, :environment=>"development", :start_time=>2018-08-22 14:34:24 +0400, :stop_time=>2018-08-22 14:34:26 +0400, :running_time=>"2s", :visits=>{:requests=>1, :responses=>1}, :error=>"#<NoMethodError: undefined method `strip' for nil:NilClass>"}
 Traceback (most recent call last):
         6: from example_spider.rb:19:in `<main>'
-        5: from /home/victor/code/kimurai/lib/kimurai/base.rb:127:in `crawl!'
-        4: from /home/victor/code/kimurai/lib/kimurai/base.rb:127:in `each'
-        3: from /home/victor/code/kimurai/lib/kimurai/base.rb:128:in `block in crawl!'
-        2: from /home/victor/code/kimurai/lib/kimurai/base.rb:185:in `request_to'
-        1: from /home/victor/code/kimurai/lib/kimurai/base.rb:185:in `public_send'
+        5: from /home/victor/code/tanakai/lib/tanakai/base.rb:127:in `crawl!'
+        4: from /home/victor/code/tanakai/lib/tanakai/base.rb:127:in `each'
+        3: from /home/victor/code/tanakai/lib/tanakai/base.rb:128:in `block in crawl!'
+        2: from /home/victor/code/tanakai/lib/tanakai/base.rb:185:in `request_to'
+        1: from /home/victor/code/tanakai/lib/tanakai/base.rb:185:in `public_send'
 example_spider.rb:15:in `parse': undefined method `strip' for nil:NilClass (NoMethodError)
 ```
 </details><br>
@@ -997,7 +995,7 @@ example_spider.rb:15:in `parse': undefined method `strip' for nil:NilClass (NoMe
 Also you can use additional methods `completed?` or `failed?`
 
 ```ruby
-class Spider < Kimurai::Base
+class Spider < Tanakai::Base
   @engine = :selenium_chrome
   @start_urls = ["https://example.com/"]
 
@@ -1030,17 +1028,17 @@ end
 </details>
 
 
-### `KIMURAI_ENV`
-Kimurai has environments, default is `development`. To provide custom environment pass `KIMURAI_ENV` ENV variable before command: `$ KIMURAI_ENV=production ruby spider.rb`. To access current environment there is `Kimurai.env` method.
+### `TANAKAI_ENV`
+Tanakai has environments, default is `development`. To provide custom environment pass `TANAKAI_ENV` ENV variable before command: `$ TANAKAI_ENV=production ruby spider.rb`. To access current environment there is `Tanakai.env` method.
 
 Usage example:
 ```ruby
-class Spider < Kimurai::Base
+class Spider < Tanakai::Base
   @engine = :selenium_chrome
   @start_urls = ["https://example.com/"]
 
   def self.close_spider
-    if failed? && Kimurai.env == "production"
+    if failed? && Tanakai.env == "production"
       send_error_notification(run_info[:error])
     else
       # Do nothing
@@ -1052,13 +1050,13 @@ end
 ```
 
 ### Parallel crawling using `in_parallel`
-Kimurai can process web pages concurrently in one single line: `in_parallel(:parse_product, urls, threads: 3)`, where `:parse_product` is a method to process, `urls` is array of urls to crawl and `threads:` is a number of threads:
+Tanakai can process web pages concurrently in one single line: `in_parallel(:parse_product, urls, threads: 3)`, where `:parse_product` is a method to process, `urls` is array of urls to crawl and `threads:` is a number of threads:
 
 ```ruby
 # amazon_spider.rb
-require 'kimurai'
+require 'tanakai'
 
-class AmazonSpider < Kimurai::Base
+class AmazonSpider < Tanakai::Base
   @name = "amazon_spider"
   @engine = :mechanize
   @start_urls = ["https://www.amazon.com/"]
@@ -1199,11 +1197,11 @@ I, [2018-08-22 14:49:12 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider:
 
 ### Active Support included
 
-You can use all the power of familiar [Rails core-ext methods](https://guides.rubyonrails.org/active_support_core_extensions.html#loading-all-core-extensions) for scraping inside Kimurai. Especially take a look at [squish](https://apidock.com/rails/String/squish), [truncate_words](https://apidock.com/rails/String/truncate_words), [titleize](https://apidock.com/rails/String/titleize), [remove](https://apidock.com/rails/String/remove), [present?](https://guides.rubyonrails.org/active_support_core_extensions.html#blank-questionmark-and-present-questionmark) and [presence](https://guides.rubyonrails.org/active_support_core_extensions.html#presence).
+You can use all the power of familiar [Rails core-ext methods](https://guides.rubyonrails.org/active_support_core_extensions.html#loading-all-core-extensions) for scraping inside Tanakai. Especially take a look at [squish](https://apidock.com/rails/String/squish), [truncate_words](https://apidock.com/rails/String/truncate_words), [titleize](https://apidock.com/rails/String/titleize), [remove](https://apidock.com/rails/String/remove), [present?](https://guides.rubyonrails.org/active_support_core_extensions.html#blank-questionmark-and-present-questionmark) and [presence](https://guides.rubyonrails.org/active_support_core_extensions.html#presence).
 
 ### Schedule spiders using Cron
 
-1) Inside spider directory generate [Whenever](https://github.com/javan/whenever) config: `$ kimurai generate schedule`.
+1) Inside spider directory generate [Whenever](https://github.com/javan/whenever) config: `$ tanakai generate schedule`.
 
 <details/>
   <summary><code>schedule.rb</code></summary>
@@ -1220,7 +1218,7 @@ set :chronic_options, hours24: true
 
 # Use local_to_utc helper to setup execution time using your local timezone instead
 # of server's timezone (which is probably and should be UTC, to check run `$ timedatectl`).
-# Also maybe you'll want to set same timezone in kimurai as well (use `Kimurai.configuration.time_zone =` for that),
+# Also maybe you'll want to set same timezone in tanakai as well (use `Tanakai.configuration.time_zone =` for that),
 # to have spiders logs in a specific time zone format.
 # Example usage of helper:
 # every 1.day, at: local_to_utc("7:00", zone: "Europe/Moscow") do
@@ -1236,13 +1234,13 @@ end
 # crawl "google_spider.com", output: -> { "> log/google_spider.com.log 2>&1" }
 
 # Project job types
-job_type :crawl,  "cd :path && KIMURAI_ENV=:environment bundle exec kimurai crawl :task :output"
-job_type :runner, "cd :path && KIMURAI_ENV=:environment bundle exec kimurai runner --jobs :task :output"
+job_type :crawl,  "cd :path && TANAKAI_ENV=:environment bundle exec tanakai crawl :task :output"
+job_type :runner, "cd :path && TANAKAI_ENV=:environment bundle exec tanakai runner --jobs :task :output"
 
 # Single file job type
-job_type :single, "cd :path && KIMURAI_ENV=:environment ruby :task :output"
+job_type :single, "cd :path && TANAKAI_ENV=:environment ruby :task :output"
 # Single with bundle exec
-job_type :single_bundle, "cd :path && KIMURAI_ENV=:environment bundle exec ruby :task :output"
+job_type :single_bundle, "cd :path && TANAKAI_ENV=:environment bundle exec ruby :task :output"
 
 ### Schedule ###
 # Usage (check examples here https://github.com/javan/whenever#example-schedulerb-file):
@@ -1285,7 +1283,7 @@ You can check Whenever examples [here](https://github.com/javan/whenever#example
 You can configure several options using `configure` block:
 
 ```ruby
-Kimurai.configure do |config|
+Tanakai.configure do |config|
   # Default logger has colored mode in development.
   # If you would like to disable it, set `colorize_logger` to false.
   # config.colorize_logger = false
@@ -1307,16 +1305,16 @@ Kimurai.configure do |config|
 end
 ```
 
-### Using Kimurai inside existing Ruby application
+### Using Tanakai inside existing Ruby application
 
-You can integrate Kimurai spiders (which are just Ruby classes) to an existing Ruby application like Rails or Sinatra, and run them using background jobs (for example). Check the following info to understand the running process of spiders:
+You can integrate Tanakai spiders (which are just Ruby classes) to an existing Ruby application like Rails or Sinatra, and run them using background jobs (for example). Check the following info to understand the running process of spiders:
 
 #### `.crawl!` method
 
 `.crawl!` (class method) performs a _full run_ of a particular spider. This method will return run_info if run was successful, or an exception if something went wrong.
 
 ```ruby
-class ExampleSpider < Kimurai::Base
+class ExampleSpider < Tanakai::Base
   @name = "example_spider"
   @engine = :mechanize
   @start_urls = ["https://example.com/"]
@@ -1351,7 +1349,7 @@ So what if you're don't care about stats and just want to process request to a p
 `.parse!` (class method) creates a new spider instance and performs a request to given method with a given url. Value from the method will be returned back:
 
 ```ruby
-class ExampleSpider < Kimurai::Base
+class ExampleSpider < Tanakai::Base
   @name = "example_spider"
   @engine = :mechanize
   @start_urls = ["https://example.com/"]
@@ -1381,27 +1379,27 @@ end # =>
 
 Keep in mind, that [save_to](#save_to-helper) and [unique?](#skip-duplicates) helpers are not thread-safe while using `.parse!` method.
 
-#### `Kimurai.list` and `Kimurai.find_by_name()`
+#### `Tanakai.list` and `Tanakai.find_by_name()`
 
 ```ruby
-class GoogleSpider < Kimurai::Base
+class GoogleSpider < Tanakai::Base
   @name = "google_spider"
 end
 
-class RedditSpider < Kimurai::Base
+class RedditSpider < Tanakai::Base
   @name = "reddit_spider"
 end
 
-class WikipediaSpider < Kimurai::Base
+class WikipediaSpider < Tanakai::Base
   @name = "wikipedia_spider"
 end
 
 # To get the list of all available spider classes:
-Kimurai.list
+Tanakai.list
 # => {"google_spider"=>GoogleSpider, "reddit_spider"=>RedditSpider, "wikipedia_spider"=>WikipediaSpider}
 
 # To find a particular spider class by it's name:
-Kimurai.find_by_name("reddit_spider")
+Tanakai.find_by_name("reddit_spider")
 # => RedditSpider
 ```
 
@@ -1410,7 +1408,7 @@ Kimurai.find_by_name("reddit_spider")
 > **EXPERIMENTAL**
 
 #### Setup
-You can automatically setup [required environment](#installation) for Kimurai on the remote server (currently there is only Ubuntu Server 18.04 support) using `$ kimurai setup` command. `setup` will perform installation of: latest Ruby with Rbenv, browsers with webdrivers and in additional databases clients (only clients) for MySQL, Postgres and MongoDB (so you can connect to a remote database from ruby).
+You can automatically setup [required environment](#installation) for Tanakai on the remote server (currently there is only Ubuntu Server 18.04 support) using `$ tanakai setup` command. `setup` will perform installation of: latest Ruby with Rbenv, browsers with webdrivers and in additional databases clients (only clients) for MySQL, Postgres and MongoDB (so you can connect to a remote database from ruby).
 
 > To perform remote server setup, [Ansible](https://github.com/ansible/ansible) is required **on the desktop** machine (to install: Ubuntu: `$ sudo apt install ansible`, Mac OS X: `$ brew install ansible`)
 
@@ -1419,7 +1417,7 @@ You can automatically setup [required environment](#installation) for Kimurai on
 Example:
 
 ```bash
-$ kimurai setup deploy@123.123.123.123 --ask-sudo --ssh-key-path path/to/private_key
+$ tanakai setup deploy@123.123.123.123 --ask-sudo --ssh-key-path path/to/private_key
 ```
 
 CLI options:
@@ -1428,32 +1426,32 @@ CLI options:
 * `--ask-auth-pass` authorization on the server using user password, alternative option to `--ssh-key-path`.
 * `-p port_number` custom port for ssh connection (`-p 2222`)
 
-> You can check setup playbook [here](lib/kimurai/automation/setup.yml)
+> You can check setup playbook [here](lib/tanakai/automation/setup.yml)
 
 #### Deploy
 
-After successful `setup` you can deploy a spider to the remote server using `$ kimurai deploy` command. On each deploy there are performing several tasks: 1) pull repo from a remote origin to `~/repo_name` user directory 2) run `bundle install` 3) Update crontab `whenever --update-crontab` (to update spider schedule from schedule.rb file).
+After successful `setup` you can deploy a spider to the remote server using `$ tanakai deploy` command. On each deploy there are performing several tasks: 1) pull repo from a remote origin to `~/repo_name` user directory 2) run `bundle install` 3) Update crontab `whenever --update-crontab` (to update spider schedule from schedule.rb file).
 
 Before `deploy` make sure that inside spider directory you have: 1) git repository with remote origin (bitbucket, github, etc.) 2) `Gemfile` 3) schedule.rb inside subfolder `config` (`config/schedule.rb`).
 
 Example:
 
 ```bash
-$ kimurai deploy deploy@123.123.123.123 --ssh-key-path path/to/private_key --repo-key-path path/to/repo_private_key
+$ tanakai deploy deploy@123.123.123.123 --ssh-key-path path/to/private_key --repo-key-path path/to/repo_private_key
 ```
 
 CLI options: _same like for [setup](#setup) command_ (except `--ask-sudo`), plus
 * `--repo-url` provide custom repo url (`--repo-url git@bitbucket.org:username/repo_name.git`), otherwise current `origin/master` will be taken (output from `$ git remote get-url origin`)
 * `--repo-key-path` if git repository is private, authorization is required to pull the code on the remote server. Use this option to provide a private repository SSH key. You can omit it if required key already added to keychain on your desktop (same like with `--ssh-key-path` option)
 
-> You can check deploy playbook [here](lib/kimurai/automation/deploy.yml)
+> You can check deploy playbook [here](lib/tanakai/automation/deploy.yml)
 
 ## Spider `@config`
 
 Using `@config` you can set several options for a spider, like proxy, user-agent, default cookies/headers, delay between requests, browser **memory control** and so on:
 
 ```ruby
-class Spider < Kimurai::Base
+class Spider < Tanakai::Base
   USER_AGENTS = ["Chrome", "Firefox", "Safari", "Opera"]
   PROXIES = ["2.3.4.5:8080:http:username:password", "3.4.5.6:3128:http", "1.2.3.4:3000:socks5"]
 
@@ -1624,7 +1622,7 @@ As you can see, most of the options are universal for any engine.
 Settings can be inherited:
 
 ```ruby
-class ApplicationSpider < Kimurai::Base
+class ApplicationSpider < Tanakai::Base
   @engine = :poltergeist_phantomjs
   @config = {
     user_agent: "Firefox",
@@ -1651,7 +1649,7 @@ Here, `@config` of `CustomSpider` will be _[deep merged](https://apidock.com/rai
 
 ## Project mode
 
-Kimurai can work in project mode ([Like Scrapy](https://doc.scrapy.org/en/latest/intro/tutorial.html#creating-a-project)). To generate a new project, run: `$ kimurai generate project web_spiders` (where `web_spiders` is a name of project).
+Tanakai can work in project mode ([Like Scrapy](https://doc.scrapy.org/en/latest/intro/tutorial.html#creating-a-project)). To generate a new project, run: `$ tanakai generate project web_spiders` (where `web_spiders` is a name of project).
 
 Structure of the project:
 
@@ -1685,7 +1683,7 @@ Structure of the project:
 
 * `config/` folder for configutation files
   * `config/initializers` [Rails-like initializers](https://guides.rubyonrails.org/configuring.html#using-initializer-files) to load custom code at start of framework
-  * `config/application.rb` configuration settings for Kimurai (`Kimurai.configure do` block)
+  * `config/application.rb` configuration settings for Tanakai (`Tanakai.configure do` block)
   * `config/automation.yml` specify some settings for [setup and deploy](#automated-sever-setup-and-deployment)
   * `config/boot.rb` loads framework and project
   * `config/schedule.rb` Cron [schedule for spiders](#schedule-spiders-using-cron)
@@ -1710,7 +1708,7 @@ Structure of the project:
 To generate a new spider in the project, run:
 
 ```bash
-$ kimurai generate spider example_spider
+$ tanakai generate spider example_spider
       create  spiders/example_spider.rb
 ```
 
@@ -1728,16 +1726,16 @@ end
 ```
 
 ### Crawl
-To run a particular spider in the project, run: `$ bundle exec kimurai crawl example_spider`. Don't forget to add `bundle exec` before command to load required environment.
+To run a particular spider in the project, run: `$ bundle exec tanakai crawl example_spider`. Don't forget to add `bundle exec` before command to load required environment.
 
 ### List
-To list all project spiders, run: `$ bundle exec kimurai list`
+To list all project spiders, run: `$ bundle exec tanakai list`
 
 ### Parse
-For project spiders you can use `$ kimurai parse` command which helps to debug spiders:
+For project spiders you can use `$ tanakai parse` command which helps to debug spiders:
 
 ```bash
-$ bundle exec kimurai parse example_spider parse_product --url https://example-shop.com/product-1
+$ bundle exec tanakai parse example_spider parse_product --url https://example-shop.com/product-1
 ```
 
 where `example_spider` is a spider to run, `parse_product` is a spider method to process and `--url` is url to open inside processing method.
@@ -1752,7 +1750,7 @@ Imagine if you have three spiders where each of them crawls different e-commerce
 
 pipelines/validator.rb
 ```ruby
-class Validator < Kimurai::Pipeline
+class Validator < Tanakai::Pipeline
   def process_item(item, options: {})
     # Here you can validate item and raise `DropItemError`
     # if one of the validations failed. Examples:
@@ -1791,7 +1789,7 @@ end
 
 pipelines/saver.rb
 ```ruby
-class Saver < Kimurai::Pipeline
+class Saver < Tanakai::Pipeline
   def process_item(item, options: {})
     # Here you can save item to the database, send it to a remote API or
     # simply save item to a file format using `save_to` helper:
@@ -1806,7 +1804,7 @@ end
 
 spiders/application_spider.rb
 ```ruby
-class ApplicationSpider < Kimurai::Base
+class ApplicationSpider < Tanakai::Base
   @engine = :selenium_chrome
   # Define pipelines (by order) for all spiders:
   @pipelines = [:validator, :saver]
@@ -1868,7 +1866,7 @@ When you start using pipelines, there are stats for items appears:
 
 pipelines/validator.rb
 ```ruby
-class Validator < Kimurai::Pipeline
+class Validator < Tanakai::Pipeline
   def process_item(item, options: {})
     if item[:star_count] < 10
       raise DropItemError, "Repository doesn't have enough stars"
@@ -1920,7 +1918,7 @@ end
 ```
 
 ```
-$ bundle exec kimurai crawl github_spider
+$ bundle exec tanakai crawl github_spider
 
 I, [2018-08-22 15:56:35 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Spider: started: github_spider
 D, [2018-08-22 15:56:35 +0400#1358] [M: 47347279209980] DEBUG -- github_spider: BrowserBuilder (selenium_chrome): created browser instance
@@ -1947,7 +1945,7 @@ I, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980]  INFO -- github_spider: 
 D, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980] DEBUG -- github_spider: Browser: driver.current_memory: 211713
 
 D, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980] DEBUG -- github_spider: Pipeline: starting processing item through 1 pipeline...
-E, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980] ERROR -- github_spider: Pipeline: dropped: #<Kimurai::Pipeline::DropItemError: Repository doesn't have enough stars>, item: {:owner=>"preston", :repo_name=>"idclight", :repo_url=>"https://github.com/preston/idclight", :description=>"A Ruby gem for accessing the freely available IDClight (IDConverter Light) web service, which convert between different types of gene IDs such as Hugo and Entrez. Queries are screen scraped from http://idclight.bioinfo.cnio.es.", :tags=>[], :watch_count=>6, :star_count=>1, :fork_count=>0, :last_commit=>"on Apr 12, 2012"}
+E, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980] ERROR -- github_spider: Pipeline: dropped: #<Tanakai::Pipeline::DropItemError: Repository doesn't have enough stars>, item: {:owner=>"preston", :repo_name=>"idclight", :repo_url=>"https://github.com/preston/idclight", :description=>"A Ruby gem for accessing the freely available IDClight (IDConverter Light) web service, which convert between different types of gene IDs such as Hugo and Entrez. Queries are screen scraped from http://idclight.bioinfo.cnio.es.", :tags=>[], :watch_count=>6, :star_count=>1, :fork_count=>0, :last_commit=>"on Apr 12, 2012"}
 
 I, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Info: items: sent: 127, processed: 12
 
@@ -1982,7 +1980,7 @@ end
 
 pipelines/validator.rb
 ```ruby
-class Validator < Kimurai::Pipeline
+class Validator < Tanakai::Pipeline
   def process_item(item, options: {})
 
     # Do not check item sku for uniqueness if options[:skip_uniq_checking] is true
@@ -1997,15 +1995,15 @@ end
 
 ### Runner
 
-You can run project spiders one by one or in parallel using `$ kimurai runner` command:
+You can run project spiders one by one or in parallel using `$ tanakai runner` command:
 
 ```
-$ bundle exec kimurai list
+$ bundle exec tanakai list
 custom_spider
 example_spider
 github_spider
 
-$ bundle exec kimurai runner -j 3
+$ bundle exec tanakai runner -j 3
 >>> Runner: started: {:id=>1533727423, :status=>:processing, :start_time=>2018-08-08 15:23:43 +0400, :stop_time=>nil, :environment=>"development", :concurrent_jobs=>3, :spiders=>["custom_spider", "github_spider", "example_spider"]}
 > Runner: started spider: custom_spider, index: 0
 > Runner: started spider: github_spider, index: 1
@@ -2022,15 +2020,15 @@ You can provide additional arguments like `--include` or `--exclude` to specify 
 
 ```bash
 # Run only custom_spider and example_spider:
-$ bundle exec kimurai runner --include custom_spider example_spider
+$ bundle exec tanakai runner --include custom_spider example_spider
 
 # Run all except github_spider:
-$ bundle exec kimurai runner --exclude github_spider
+$ bundle exec tanakai runner --exclude github_spider
 ```
 
 #### Runner callbacks
 
-You can perform custom actions before runner starts and after runner stops using `config.runner_at_start_callback` and `config.runner_at_stop_callback`. Check [config/application.rb](lib/kimurai/template/config/application.rb) to see example.
+You can perform custom actions before runner starts and after runner stops using `config.runner_at_start_callback` and `config.runner_at_stop_callback`. Check [config/application.rb](lib/tanakai/template/config/application.rb) to see example.
 
 
 ## Chat Support and Feedback

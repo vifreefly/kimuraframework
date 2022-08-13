@@ -1,6 +1,0 @@
-#!/usr/bin/env ruby
-
-require 'kimurai'
-require 'kimurai/cli'
-
-Kimurai::CLI.start(ARGV)

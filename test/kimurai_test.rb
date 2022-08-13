@@ -1,8 +1,8 @@
 require "test_helper"
 
-class KimuraiTest < Minitest::Test
+class TanakaiTest < Minitest::Test
   def test_that_it_has_a_version_number
-    refute_nil ::Kimurai::VERSION
+    refute_nil ::Tanakai::VERSION
   end
 
   def test_it_does_something_useful

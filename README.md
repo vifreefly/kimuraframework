@@ -1,7 +1,5 @@
 # Kimurai
 
-> UPD. I will soon have a time to work on issues for current 1.4 version and also plan to release new 2.0 version.
-
 Kimurai is a modern web scraping framework written in Ruby which **works out of box with Apparition, Cuprite, Headless Chromium/Firefox and PhantomJS**, or simple HTTP requests and **allows to scrape and interact with JavaScript rendered websites.**
 
 Kimurai based on well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Lets see:
@@ -130,7 +128,7 @@ I, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720]  INFO -- github_spider:
 ```
 </details><br>
 
-Okay, that was easy. How about javascript rendered websites with dynamic HTML? Lets scrape a page with infinite scroll:
+Okay, that was easy. How about JavaScript rendered websites with dynamic HTML? Let's scrape a page with infinite scroll:
 
 ```ruby
 # infinite_scroll_spider.rb
@@ -192,12 +190,12 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 
 
 ## Features
-* Scrape javascript rendered websites out of box
+* Scrape JavaScript rendered websites out of the box
 * Supported engines: [Apparition](https://github.com/twalpole/apparition), [Cuprite](https://github.com/rubycdp/cuprite), [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome), [Headless Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Headless_mode), [PhantomJS](https://github.com/ariya/phantomjs) or simple HTTP requests ([mechanize](https://github.com/sparklemotion/mechanize) gem)
 * Write spider code once, and use it with any supported engine later
 * All the power of [Capybara](https://github.com/teamcapybara/capybara): use methods like `click_on`, `fill_in`, `select`, `choose`, `set`, `go_back`, etc. to interact with web pages
 * Rich [configuration](#spider-config): **set default headers, cookies, delay between requests, enable proxy/user-agents rotation**
-* Built-in helpers to make scraping easy, like [save_to](#save_to-helper) (save items to JSON, JSON lines, or CSV formats) or [unique?](#skip-duplicates-unique-helper) to skip duplicates
+* Built-in helpers to make scraping easy, like [save_to](#save_to-helper) (save items to JSON, JSON lines, or CSV formats) or [unique?](#skip-duplicates) to skip duplicates
 * Automatically [handle requests errors](#handle-request-errors)
 * Automatically restart browsers when reaching memory limit [**(memory control)**](#spider-config) or requests limit
 * Easily [schedule spiders](#schedule-spiders-using-cron) within cron using [Whenever](https://github.com/javan/whenever) (no need to know cron syntax)
@@ -224,8 +222,8 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
       - [Automatically skip all duplicated requests urls](#automatically-skip-all-duplicated-requests-urls)
       - [`storage` object](#storage-object)
     - [Handle request errors](#handle-request-errors)
-      - [skip_request_errors](#skip_request_errors)
-      - [retry_request_errors](#retry_request_errors)
+      - [skip\_request\_errors](#skip_request_errors)
+      - [retry\_request\_errors](#retry_request_errors)
     - [Logging custom events](#logging-custom-events)
     - [`open_spider` and `close_spider` callbacks](#open_spider-and-close_spider-callbacks)
     - [`KIMURAI_ENV`](#kimurai_env)
@@ -258,7 +256,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 ## Installation
 Kimurai requires Ruby version `>= 2.5.0`. Supported platforms: `Linux` and `Mac OS X`.
 
-1) If your system doesn't have appropriate Ruby version, install it:
+1) If your system doesn't have the appropriate Ruby version, install it:
 
 <details/>
   <summary>Ubuntu 18.04</summary>
@@ -290,7 +288,7 @@ gem install bundler
   <summary>Mac OS X</summary>
 
 ```bash
-# Install homebrew if you don't have it https://brew.sh/
+# Install Homebrew if you don't have it https://brew.sh/
 # Install rbenv and ruby-build:
 brew install rbenv ruby-build
 
@@ -319,7 +317,7 @@ $ kimurai setup localhost --local --ask-sudo
 ```
 It works using [Ansible](https://github.com/ansible/ansible) so you need to install it first: `$ sudo apt install ansible`. You can check using playbooks [here](lib/kimurai/automation).
 
-If you chose automatic installation, you can skip following and go to "Getting To Know" part. In case if you want to install everything manually:
+If you chose automatic installation, you can skip the rest of this section and go to ["Getting to Know"](#getting-to-know) part. In case if you want to install everything manually:
 
 ```bash
 # Install basic tools
@@ -332,19 +330,19 @@ sudo apt install -q -y xvfb
 sudo apt install -q -y chromium-browser firefox
 
 # Instal chromedriver (2.44 version)
-# All versions located here https://sites.google.com/a/chromium.org/chromedriver/downloads
+# All versions are located here: https://sites.google.com/a/chromium.org/chromedriver/downloads
 cd /tmp && wget https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip
 sudo unzip chromedriver_linux64.zip -d /usr/local/bin
 rm -f chromedriver_linux64.zip
 
 # Install geckodriver (0.23.0 version)
-# All versions located here https://github.com/mozilla/geckodriver/releases/
+# All versions are located here: https://github.com/mozilla/geckodriver/releases/
 cd /tmp && wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz
 sudo tar -xvzf geckodriver-v0.23.0-linux64.tar.gz -C /usr/local/bin
 rm -f geckodriver-v0.23.0-linux64.tar.gz
 
 # Install PhantomJS (2.1.1)
-# All versions located here http://phantomjs.org/download.html
+# All versions are located here: http://phantomjs.org/download.html
 sudo apt install -q -y chrpath libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev
 cd /tmp && wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
 tar -xvjf phantomjs-2.1.1-linux-x86_64.tar.bz2
@@ -373,7 +371,7 @@ brew install phantomjs
 ```
 </details><br>
 
-Also, if you want to save scraped items to the database (using [ActiveRecord](https://github.com/rails/rails/tree/master/activerecord), [Sequel](https://github.com/jeremyevans/sequel) or [MongoDB Ruby Driver](https://github.com/mongodb/mongo-ruby-driver)/[Mongoid](https://github.com/mongodb/mongoid)), you need to install database clients/servers:
+Also, if you want to save scraped items to a database (using [ActiveRecord](https://github.com/rails/rails/tree/master/activerecord), [Sequel](https://github.com/jeremyevans/sequel) or [MongoDB Ruby Driver](https://github.com/mongodb/mongo-ruby-driver)/[Mongoid](https://github.com/mongodb/mongoid)), you need to install database clients/servers:
 
 <details/>
   <summary>Ubuntu 18.04</summary>
@@ -392,7 +390,7 @@ sudo apt install -q -y postgresql-client libpq-dev
 sudo apt install -q -y mongodb-clients
 ```
 
-But if you want to save items to a local database, database server required as well:
+But if you want to save items to a local database, a database server is required as well:
 ```bash
 # Install MySQL client and server
 sudo apt -q -y install mysql-server mysql-client libmysqlclient-dev
@@ -501,9 +499,9 @@ $
 ```
 </details><br>
 
-CLI options:
+CLI arguments:
 * `--engine` (optional) [engine](#available-drivers) to use. Default is `mechanize`
-* `--url` (optional) url to process. If url omitted, `response` and `url` objects inside the console will be `nil` (use [browser](#browser-object) object to navigate to any webpage).
+* `--url` (optional) url to process. If url is omitted, `response` and `url` objects inside the console will be `nil` (use [browser](#browser-object) object to navigate to any webpage).
 
 ### Available engines
 Kimurai has support for following engines and mostly can switch between them without need to rewrite any code:
@@ -515,7 +513,7 @@ Kimurai has support for following engines and mostly can switch between them wit
 * `:selenium_chrome` Chrome in headless mode driven by selenium. Modern headless browser solution with proper javascript rendering.
 * `:selenium_firefox` Firefox in headless mode driven by selenium. Usually takes more memory than other drivers, but sometimes can be useful.
 
-**Tip:** add `HEADLESS=false` ENV variable before command (`$ HEADLESS=false ruby spider.rb`) to run browser in normal (not headless) mode and see it's window (only for selenium-like engines). It works for [console](#interactive-console) command as well.
+**Tip:** prepend a `HEADLESS=false` environment variable on the command line (`$ HEADLESS=false ruby spider.rb`) to launch an interactive browser in normal (not headless) mode and see its window (only for selenium-like engines). It works for the [console](#interactive-console) command as well.
 
 
 ### Minimum required spider structure
@@ -537,10 +535,10 @@ SimpleSpider.crawl!
 ```
 
 Where:
-* `@name` name of a spider. You can omit name if use single-file spider
-* `@engine` engine for a spider
-* `@start_urls` array of start urls to process one by one inside `parse` method
-* Method `parse` is the start method, should be always present in spider class
+* `@name`: name of a spider. You can omit name if use single-file spider
+* `@engine`: engine for a spider
+* `@start_urls`: array of start urls to process one by one inside `parse` method
+* The `parse` method is the entry point, and should always be present in a spider class
 
 
 ### Method arguments `response`, `url` and `data`
@@ -550,9 +548,9 @@ def parse(response, url:, data: {})
 end
 ```
 
-* `response` ([Nokogiri::HTML::Document](https://www.rubydoc.info/github/sparklemotion/nokogiri/Nokogiri/HTML/Document) object) Contains parsed HTML code of a processed webpage
-* `url` (String) url of a processed webpage
-* `data` (Hash) uses to pass data between requests
+* `response` ([Nokogiri::HTML::Document](https://www.rubydoc.info/github/sparklemotion/nokogiri/Nokogiri/HTML/Document) object): contains parsed HTML code of a processed webpage
+* `url` (String): url of a processed webpage
+* `data` (Hash): uses to pass data between requests
 
 <details/>
   <summary><strong>Example how to use <code>data</code></strong></summary>
@@ -576,7 +574,7 @@ class ProductsSpider < Kimurai::Base
 
   def parse_product(response, url:, data: {})
     item = {}
-    # Assign item's category_name from data[:category_name]
+    # Assign an item's category_name from data[:category_name]
     item[:category_name] = data[:category_name]
 
     # ...
@@ -594,7 +592,7 @@ end
 
 ### `browser` object
 
-From any spider instance method there is available `browser` object, which is [Capybara::Session](https://www.rubydoc.info/github/jnicklas/capybara/Capybara/Session) object and uses to process requests and get page response (`current_response` method). Usually you don't need to touch it directly, because there is `response` (see above) which contains page response after it was loaded.
+A browser object is available from any spider instance method, which is a [Capybara::Session](https://www.rubydoc.info/github/jnicklas/capybara/Capybara/Session) object and uses it to process requests and get page response (`current_response` method). Usually you don't need to touch it directly, because there is `response` (see above) which contains page response after it was loaded.
 
 But if you need to interact with a page (like filling form fields, clicking elements, checkboxes, etc) `browser` is ready for you:
 
@@ -608,7 +606,7 @@ class GoogleSpider < Kimurai::Base
     browser.fill_in "q", with: "Kimurai web scraping framework"
     browser.click_button "Google Search"
 
-    # Update response to current response after interaction with a browser
+    # Update response with current_response after interaction with a browser
     response = browser.current_response
 
     # Collect results
@@ -628,7 +626,7 @@ Check out **Capybara cheat sheets** where you can see all available methods **to
 
 ### `request_to` method
 
-For making requests to a particular method there is `request_to`. It requires minimum two arguments: `:method_name` and `url:`. An optional argument is `data:` (see above what for is it). Example:
+For making requests to a particular method there is `request_to`. It requires minimum two arguments: `:method_name` and `url:`. An optional argument is `data:` (see above what for is it) and `response_type` (defaults to `:html`). Example:
 
 ```ruby
 class Spider < Kimurai::Base
@@ -637,11 +635,12 @@ class Spider < Kimurai::Base
 
   def parse(response, url:, data: {})
     # Process request to `parse_product` method with `https://example.com/some_product` url:
-    request_to :parse_product, url: "https://example.com/some_product"
+    request_to :parse_product, url: "https://example.com/some_product.json", response_type: :json
   end
 
   def parse_product(response, url:, data: {})
-    puts "From page https://example.com/some_product !"
+    puts "JSON parsed from page https://example.com/some_product.json"
+    puts response
   end
 end
 ```
@@ -721,7 +720,7 @@ By default `save_to` add position key to an item hash. You can disable it with `
 
 **How helper works:**
 
-Until spider stops, each new item will be appended to a file. At the next run, helper will clear the content of a file first, and then start again appending items to it.
+While the spider is running, each new item will be appended to the output file. On the next run, this helper will clear the contents of the output file, then start appending items to it.
 
 > If you don't want file to be cleared before each run, add option `append: true`: `save_to "scraped_products.json", item, format: :json, append: true`
 
@@ -1196,6 +1195,7 @@ I, [2018-08-22 14:49:12 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider:
 * `delay:` set delay between requests: `in_parallel(:method, urls, threads: 3, delay: 2)`. Delay can be `Integer`, `Float` or `Range` (`2..5`). In case of a Range, delay number will be chosen randomly for each request: `rand (2..5) # => 3`
 * `engine:` set custom engine than a default one: `in_parallel(:method, urls, threads: 3, engine: :poltergeist_phantomjs)`
 * `config:` pass custom options to config (see [config section](#crawler-config))
+* `response_type:` response should be returned as `:html` or `:json`, defaults to `:html`
 
 ### Active Support included
 
@@ -1427,7 +1427,7 @@ Example:
 $ kimurai setup deploy@123.123.123.123 --ask-sudo --ssh-key-path path/to/private_key
 ```
 
-CLI options:
+CLI arguments:
 * `--ask-sudo` pass this option to ask sudo (user) password for system-wide installation of packages (`apt install`)
 * `--ssh-key-path path/to/private_key` authorization on the server using private ssh key. You can omit it if required key already [added to keychain](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#adding-your-ssh-key-to-the-ssh-agent) on your desktop (Ansible uses [SSH agent forwarding](https://developer.github.com/v3/guides/using-ssh-agent-forwarding/))
 * `--ask-auth-pass` authorization on the server using user password, alternative option to `--ssh-key-path`.
@@ -1447,7 +1447,7 @@ Example:
 $ kimurai deploy deploy@123.123.123.123 --ssh-key-path path/to/private_key --repo-key-path path/to/repo_private_key
 ```
 
-CLI options: _same like for [setup](#setup) command_ (except `--ask-sudo`), plus
+CLI arguments: _same like for [setup](#setup) command_ (except `--ask-sudo`), plus
 * `--repo-url` provide custom repo url (`--repo-url git@bitbucket.org:username/repo_name.git`), otherwise current `origin/master` will be taken (output from `$ git remote get-url origin`)
 * `--repo-key-path` if git repository is private, authorization is required to pull the code on the remote server. Use this option to provide a private repository SSH key. You can omit it if required key already added to keychain on your desktop (same like with `--ssh-key-path` option)
 
@@ -2039,7 +2039,7 @@ You can perform custom actions before runner starts and after runner stops using
 
 
 ## Chat Support and Feedback
-Will be updated
+Submit an issue on GitHub and we'll try to address it in a timely manner.
 
 ## License
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+This gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).

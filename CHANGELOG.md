@@ -2,6 +2,10 @@
 ## 1.6.0
 * Rename `additional_arguments` config option to `browser_cmd_line_arguments` (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))
 
+## 1.5.1
+### New
+* Add `response_type` to `in_parallel`
+
 ## 1.5.0
 ### New
 * Add support to [Apparition](https://github.com/twalpole/apparition)

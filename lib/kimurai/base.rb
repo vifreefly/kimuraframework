@@ -295,7 +295,7 @@ module Kimurai
       end
     end
 
-    def in_parallel(handler, urls, threads:, data: {}, delay: nil, engine: @engine, config: {})
+    def in_parallel(handler, urls, threads:, data: {}, delay: nil, engine: @engine, config: {}, response_type: :html)
       parts = urls.in_sorted_groups(threads, false)
       urls_count = urls.size
 
@@ -313,12 +313,12 @@ module Kimurai
           part.each do |url_data|
             if url_data.class == Hash
               if url_data[:url].present? && url_data[:data].present?
-                spider.request_to(handler, delay, **url_data)
+                spider.request_to(handler, delay, url_data, response_type: response_type)
               else
                 spider.public_send(handler, **url_data)
               end
             else
-              spider.request_to(handler, delay, url: url_data, data: data)
+              spider.request_to(handler, delay, url: url_data, data: data, response_type: response_type)
             end
           end
         ensure

@@ -13,7 +13,7 @@ Kimurai based on well-known [Capybara](https://github.com/teamcapybara/capybara)
 - [ ] create an awesome logo in the likes of [this](https://hsto.org/webt/_v/mt/tp/_vmttpbpzbt-y2aook642d9wpz0.png)
 - [ ] have you as new contributor
 
-Tanakai is based on the well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Let's try an example:
+Kimurai is based on the well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Let's try an example:
 
 ```ruby
 # github_spider.rb
@@ -261,6 +261,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
     - [Pipelines, `send_item` method](#pipelines-send_item-method)
     - [Runner](#runner)
       - [Runner callbacks](#runner-callbacks)
+  - [Testing](#testing)
   - [Chat Support and Feedback](#chat-support-and-feedback)
   - [License](#license)
 
@@ -2049,6 +2050,11 @@ $ bundle exec kimurai runner --exclude github_spider
 
 You can perform custom actions before runner starts and after runner stops using `config.runner_at_start_callback` and `config.runner_at_stop_callback`. Check [config/application.rb](lib/kimurai/template/config/application.rb) to see example.
 
+## Testing
+To run tests:
+```bash
+bundle exec rspec
+```
 
 ## Chat Support and Feedback
 Submit an issue on GitHub and we'll try to address it in a timely manner.

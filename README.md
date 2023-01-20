@@ -4,6 +4,17 @@ Kimurai is a modern web scraping framework written in Ruby which **works out of 
 
 Kimurai based on well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Lets see:
 
+### Goals of this fork:
+
+- [x] add support to [Apparition](https://github.com/twalpole/apparition) and [Cuprite](https://github.com/rubycdp/cuprite)
+- [x] add support to Ruby 3
+- [ ] write tests with RSpec
+- [ ] improve configuration options for Apparition and Cuprite (both have been recently added)
+- [ ] create an awesome logo in the likes of [this](https://hsto.org/webt/_v/mt/tp/_vmttpbpzbt-y2aook642d9wpz0.png)
+- [ ] have you as new contributor
+
+Tanakai is based on the well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Let's try an example:
+
 ```ruby
 # github_spider.rb
 require 'kimurai'
@@ -207,6 +218,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 
 ## Table of Contents
 - [Kimurai](#kimurai)
+    - [Goals of this fork:](#goals-of-this-fork)
   - [Features](#features)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)

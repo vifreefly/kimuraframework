@@ -234,7 +234,7 @@ module Kimurai
         if self.with_info
           self.class.savers[path] ||= Saver.new(path, **options)
         else
-          Saver.new(path, options)
+          Saver.new(path, **options)
         end
       end
 

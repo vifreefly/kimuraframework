@@ -1,4 +1,26 @@
 # CHANGELOG
+## 1.6.0
+* Rename `additional_arguments` config option to `browser_cmd_line_arguments` (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))
+
+## 1.6.0
+### New
+* Add support to Ruby 3
+
+## 1.5.1
+### New
+* Add `response_type` to `in_parallel`
+
+## 1.5.0
+### New
+* Add support to [Apparition](https://github.com/twalpole/apparition)
+* Add support to [Cuprite](https://github.com/rubycdp/cuprite)
+* 
+## 1.4.1
+New
+* Updated for Ruby 2.7+ support
+* Switched to Addressable.URI.escape from obsolete URI.escape
+
+
 ## 1.4.0
 ### New
 * Add `encoding` config option (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))

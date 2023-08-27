@@ -1,16 +1,18 @@
+require 'addressable/uri'
+
 module Kimurai
   module BaseHelper
     private
 
     def absolute_url(url, base:)
       return unless url
-      URI.join(base, URI.escape(url)).to_s
+      Addressable::URI.join(base, Addressable::URI.escape(url)).to_s
     end
 
     def escape_url(url)
-      uri = URI.parse(url)
+      uri = Addressable::URI.parse(url)
     rescue URI::InvalidURIError => e
-      URI.parse(URI.escape url).to_s rescue url
+      Addressable::URI.parse(Addressable::URI.escape url).to_s rescue url
     else
       url
     end

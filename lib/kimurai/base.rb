@@ -1,5 +1,6 @@
 require_relative 'base/saver'
 require_relative 'base/storage'
+require 'addressable/uri'
 
 module Kimurai
   class Base
@@ -99,7 +100,7 @@ module Kimurai
       end
     end
 
-    def self.crawl!(exception_on_fail: true)
+    def self.crawl!(exception_on_fail: true, data: {})
       logger.error "Spider: already running: #{name}" and return false if running?
 
       @storage = Storage.new
@@ -123,13 +124,13 @@ module Kimurai
       if start_urls
         start_urls.each do |start_url|
           if start_url.class == Hash
-            spider.request_to(:parse, start_url)
+            spider.request_to(:parse, url: start_url[:url], data: data)
           else
-            spider.request_to(:parse, url: start_url)
+            spider.request_to(:parse, url: start_url, data: data)
           end
         end
       else
-        spider.parse
+        spider.parse(data: data)
       end
     rescue StandardError, SignalException, SystemExit => e
       @run_info.merge!(status: :failed, error: e.inspect)
@@ -154,12 +155,18 @@ module Kimurai
     end
 
     def self.parse!(handler, *args, **request)
-      spider = self.new
+      if request.has_key? :config
+        config = request[:config]
+        request.delete :config
+      else
+        config = {}
+      end
+      spider = self.new config: config
 
       if args.present?
         spider.public_send(handler, *args)
       elsif request.present?
-        spider.request_to(handler, request)
+        spider.request_to(handler, **request)
       else
         spider.public_send(handler)
       end
@@ -191,7 +198,7 @@ module Kimurai
     end
 
     def request_to(handler, delay = nil, url:, data: {}, response_type: :html)
-      raise InvalidUrlError, "Requested url is invalid: #{url}" unless URI.parse(url).kind_of?(URI::HTTP)
+      raise InvalidUrlError, "Requested url is invalid: #{url}" unless URI.parse(url).scheme =~ /http(s)?/
 
       if @config[:skip_duplicate_requests] && !unique_request?(url)
         add_event(:duplicate_requests) if self.with_info
@@ -201,7 +208,7 @@ module Kimurai
       visited = delay ? browser.visit(url, delay: delay) : browser.visit(url)
       return unless visited
 
-      public_send(handler, browser.current_response(response_type), { url: url, data: data })
+      public_send(handler, browser.current_response(response_type), **{ url: url, data: data })
     end
 
     def console(response = nil, url: nil, data: {})
@@ -224,9 +231,9 @@ module Kimurai
       @savers[path] ||= begin
         options = { format: format, position: position, append: append }
         if self.with_info
-          self.class.savers[path] ||= Saver.new(path, options)
+          self.class.savers[path] ||= Saver.new(path, **options)
         else
-          Saver.new(path, options)
+          Saver.new(path, **options)
         end
       end
 
@@ -286,7 +293,7 @@ module Kimurai
       end
     end
 
-    def in_parallel(handler, urls, threads:, data: {}, delay: nil, engine: @engine, config: {})
+    def in_parallel(handler, urls, threads:, data: {}, delay: nil, engine: @engine, config: {}, response_type: :html)
       parts = urls.in_sorted_groups(threads, false)
       urls_count = urls.size
 
@@ -304,12 +311,12 @@ module Kimurai
           part.each do |url_data|
             if url_data.class == Hash
               if url_data[:url].present? && url_data[:data].present?
-                spider.request_to(handler, delay, url_data)
+                spider.request_to(handler, delay, **{ **url_data, response_type: response_type })
               else
-                spider.public_send(handler, url_data)
+                spider.public_send(handler, **url_data)
               end
             else
-              spider.request_to(handler, delay, url: url_data, data: data)
+              spider.request_to(handler, delay, url: url_data, data: data, response_type: response_type)
             end
           end
         ensure

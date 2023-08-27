@@ -50,6 +50,12 @@ module Kimurai::BrowserBuilder
           logger.debug "BrowserBuilder (poltergeist_phantomjs): enabled disable_images"
         end
 
+        # Additional arguments
+        if @config[:browser_cmd_line_arguments].present?
+          driver_options[:phantomjs_options] += @config[:browser_cmd_line_arguments]
+          logger.debug "BrowserBuilder (poltergeist_phantomjs): additional browser command line arguments have been added"
+        end
+
         Capybara::Poltergeist::Driver.new(app, driver_options)
       end
 

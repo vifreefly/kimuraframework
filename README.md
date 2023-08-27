@@ -5,13 +5,9 @@ Kimurai is a modern web scraping framework written in Ruby which **works out of 
 Kimurai based on well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Lets see:
 
 ### Goals of this fork:
-
-- [x] add support to [Apparition](https://github.com/twalpole/apparition) and [Cuprite](https://github.com/rubycdp/cuprite)
-- [x] add support to Ruby 3
-- [ ] write tests with RSpec
-- [ ] improve configuration options for Apparition and Cuprite (both have been recently added)
-- [ ] create an awesome logo in the likes of [this](https://hsto.org/webt/_v/mt/tp/_vmttpbpzbt-y2aook642d9wpz0.png)
-- [ ] have you as new contributor
+- [ ] Not abandon this completely like every other fork of kimurai. Let's start there.
+- [ ] Respond and merge pull requests
+- [x] merge in some commits from abandoned forks with good work
 
 Kimurai is based on the well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Let's try an example:
 

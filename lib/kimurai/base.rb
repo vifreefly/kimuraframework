@@ -1,5 +1,6 @@
 require_relative 'base/saver'
 require_relative 'base/storage'
+require 'addressable/uri'
 
 module Kimurai
   class Base
@@ -197,7 +198,7 @@ module Kimurai
     end
 
     def request_to(handler, delay = nil, url:, data: {}, response_type: :html)
-      raise InvalidUrlError, "Requested url is invalid: #{url}" unless URI.parse(url).kind_of?(URI::HTTP)
+      raise InvalidUrlError, "Requested url is invalid: #{url}" unless URI.parse(url).scheme =~ /http(s)?/
 
       if @config[:skip_duplicate_requests] && !unique_request?(url)
         add_event(:duplicate_requests) if self.with_info

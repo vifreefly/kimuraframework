@@ -165,7 +165,7 @@ module Kimurai
       if args.present?
         spider.public_send(handler, *args)
       elsif request.present?
-        spider.request_to(handler, request)
+        spider.request_to(handler, **request)
       else
         spider.public_send(handler)
       end
@@ -232,9 +232,9 @@ module Kimurai
       @savers[path] ||= begin
         options = { format: format, position: position, append: append }
         if self.with_info
-          self.class.savers[path] ||= Saver.new(path, options)
+          self.class.savers[path] ||= Saver.new(path, **options)
         else
-          Saver.new(path, options)
+          Saver.new(path, **options)
         end
       end
 

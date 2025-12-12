@@ -22,15 +22,14 @@ module Kimurai::BrowserBuilder
       # Register driver
       Capybara.register_driver :selenium_chrome do |app|
         # Create driver options
-        opts = { args: %w[--disable-gpu --no-sandbox --disable-translate] }
+        # See all options here: https://seleniumhq.github.io/selenium/docs/api/rb/Selenium/WebDriver/Chrome/Options.html
+        driver_options = Selenium::WebDriver::Chrome::Options.new
+        driver_options.args += %w[--disable-gpu --no-sandbox --disable-translate --disable-blink-features=AutomationControlled]
 
         # Provide custom chrome browser path:
         if chrome_path = Kimurai.configuration.selenium_chrome_path
-          opts.merge!(binary: chrome_path)
+          driver_options.binary = chrome_path
         end
-
-        # See all options here: https://seleniumhq.github.io/selenium/docs/api/rb/Selenium/WebDriver/Chrome/Options.html
-        driver_options = Selenium::WebDriver::Chrome::Options.new(opts)
 
         # Window size
         if size = @config[:window_size].presence
@@ -109,9 +108,14 @@ module Kimurai::BrowserBuilder
           end
         end
 
-        chromedriver_path = Kimurai.configuration.chromedriver_path || "/usr/local/bin/chromedriver"
-        service = Selenium::WebDriver::Service.chrome(path: chromedriver_path)
-        Capybara::Selenium::Driver.new(app, browser: :chrome, options: driver_options, service: service)
+        # Use Selenium Manager by default (auto-downloads driver), or custom path if configured
+        if chromedriver_path = Kimurai.configuration.chromedriver_path
+          service = Selenium::WebDriver::Service.chrome(path: chromedriver_path)
+          Capybara::Selenium::Driver.new(app, browser: :chrome, options: driver_options, service: service)
+        else
+          # Let Selenium Manager handle driver automatically
+          Capybara::Selenium::Driver.new(app, browser: :chrome, options: driver_options)
+        end
       end
 
       # Create browser instance (Capybara session)

@@ -28,6 +28,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "activesupport"
   spec.add_dependency "murmurhash3"
   spec.add_dependency "nokogiri"
+  spec.add_dependency "csv"
+  spec.add_dependency "ostruct"
 
   spec.add_dependency "capybara", ">= 2.15", "< 4.0"
   spec.add_dependency "capybara-mechanize"

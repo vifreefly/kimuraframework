@@ -31,10 +31,10 @@ Gem::Specification.new do |spec|
   spec.add_dependency "csv"
   spec.add_dependency "ostruct"
 
-  spec.add_dependency "capybara", ">= 2.15", "< 4.0"
+  spec.add_dependency "capybara", "~> 3.40"
   spec.add_dependency "capybara-mechanize"
   spec.add_dependency "poltergeist"
-  spec.add_dependency "selenium-webdriver"
+  spec.add_dependency "selenium-webdriver", "~> 4.34"
 
   spec.add_dependency "headless"
   spec.add_dependency "pmap"

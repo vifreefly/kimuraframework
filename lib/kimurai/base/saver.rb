@@ -42,7 +42,7 @@ module Kimurai
       def save_to_json(item)
         data = JSON.generate([item])
 
-        if @index > 1 || append && File.exists?(path)
+        if @index > 1 || append && File.exist?(path)
           file_content = File.read(path).sub(/\}\]\Z/, "\}\,")
           File.open(path, "w") do |f|
             f.write(file_content + data.sub(/\A\[/, ""))
@@ -55,7 +55,7 @@ module Kimurai
       def save_to_pretty_json(item)
         data = JSON.pretty_generate([item])
 
-        if @index > 1 || append && File.exists?(path)
+        if @index > 1 || append && File.exist?(path)
           file_content = File.read(path).sub(/\}\n\]\Z/, "\}\,\n")
           File.open(path, "w") do |f|
             f.write(file_content + data.sub(/\A\[\n/, ""))
@@ -68,7 +68,7 @@ module Kimurai
       def save_to_jsonlines(item)
         data = JSON.generate(item)
 
-        if @index > 1 || append && File.exists?(path)
+        if @index > 1 || append && File.exist?(path)
           File.open(path, "a") { |file| file.write("\n" + data) }
         else
           File.open(path, "w") { |file| file.write(data) }
@@ -78,7 +78,7 @@ module Kimurai
       def save_to_csv(item)
         data = flatten_hash(item)
 
-        if @index > 1 || append && File.exists?(path)
+        if @index > 1 || append && File.exist?(path)
           CSV.open(path, "a+", force_quotes: true) do |csv|
             csv << data.values
           end

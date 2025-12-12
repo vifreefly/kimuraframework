@@ -31,7 +31,7 @@ module Kimurai
           "--extra-vars", "ansible_python_interpreter=/usr/bin/python3"
         ]
 
-        if File.exists? "config/automation.yml"
+        if File.exist? "config/automation.yml"
           require 'yaml'
           if config = YAML.load_file("config/automation.yml").dig(@playbook)
             config.each { |key, value| @vars[key] = value unless @vars[key] }

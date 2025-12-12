@@ -174,7 +174,7 @@ module Kimurai
     private
 
     def inside_project?
-      Dir.exists?("spiders") && File.exists?("./config/boot.rb")
+      Dir.exist?("spiders") && File.exist?("./config/boot.rb")
     end
   end
 end

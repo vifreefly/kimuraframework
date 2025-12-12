@@ -17,7 +17,7 @@ module Kimurai
 
       def generate_spider(spider_name, in_project:)
         spider_path = in_project ? "spiders/#{spider_name}.rb" : "./#{spider_name}.rb"
-        raise "Spider #{spider_path} already exists" if File.exists? spider_path
+        raise "Spider #{spider_path} already exists" if File.exist? spider_path
 
         spider_class = to_spider_class(spider_name)
         create_file spider_path do

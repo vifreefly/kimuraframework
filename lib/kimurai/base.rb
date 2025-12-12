@@ -224,9 +224,9 @@ module Kimurai
       @savers[path] ||= begin
         options = { format: format, position: position, append: append }
         if self.with_info
-          self.class.savers[path] ||= Saver.new(path, options)
+          self.class.savers[path] ||= Saver.new(path, **options)
         else
-          Saver.new(path, options)
+          Saver.new(path, **options)
         end
       end
 

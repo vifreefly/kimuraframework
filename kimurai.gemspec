@@ -31,8 +31,13 @@ Gem::Specification.new do |spec|
   spec.add_dependency "csv"
   spec.add_dependency "ostruct"
 
+  # for capybara-mechanize compatibility
+  spec.add_dependency "mutex_m"
+  spec.add_dependency "nkf"
+  spec.add_dependency "reline"
+
   spec.add_dependency "capybara", "~> 3.40"
-  spec.add_dependency "capybara-mechanize"
+  spec.add_dependency "capybara-mechanize", "~> 1.13"
   spec.add_dependency "poltergeist"
   spec.add_dependency "selenium-webdriver", "~> 4.34"
 

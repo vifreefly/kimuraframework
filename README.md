@@ -1,8 +1,6 @@
 # Kimurai
 
-> UPDATE: When I have some free time, I plan to resolve the outstanding issues for the current version (1.4.0) and release version 2.0 with the https://github.com/twalpole/apparition engine.
-
-Kimurai is a modern web scraping framework written in Ruby which **works out of the box with Headless Chromium/Firefox, PhantomJS**, or simple HTTP requests and **allows you to scrape and interact with JavaScript rendered websites.**
+Kimurai is a modern web scraping framework written in Ruby which **works out of the box with Headless Chromium/Firefox or simple HTTP requests and **allows you to scrape and interact with JavaScript rendered websites.**
 
 Kimurai is based on the well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Let's try an example:
 
@@ -54,20 +52,13 @@ GithubSpider.crawl!
 
 ```
 I, [2018-08-22 13:08:03 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Spider: started: github_spider
-D, [2018-08-22 13:08:03 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: BrowserBuilder (selenium_chrome): created browser instance
-D, [2018-08-22 13:08:03 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: BrowserBuilder (selenium_chrome): enabled `browser before_request delay`
-D, [2018-08-22 13:08:03 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: Browser: sleep 7 seconds before request...
-D, [2018-08-22 13:08:10 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: BrowserBuilder (selenium_chrome): enabled custom user-agent
-D, [2018-08-22 13:08:10 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: BrowserBuilder (selenium_chrome): enabled native headless_mode
 I, [2018-08-22 13:08:10 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: started get request to: https://github.com/search?q=Ruby%20Web%20Scraping
 I, [2018-08-22 13:08:26 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: finished get request to: https://github.com/search?q=Ruby%20Web%20Scraping
 I, [2018-08-22 13:08:26 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Info: visits: requests: 1, responses: 1
-D, [2018-08-22 13:08:27 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: Browser: driver.current_memory: 107968
 D, [2018-08-22 13:08:27 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: Browser: sleep 5 seconds before request...
 I, [2018-08-22 13:08:32 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: started get request to: https://github.com/lorien/awesome-web-scraping
 I, [2018-08-22 13:08:33 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: finished get request to: https://github.com/lorien/awesome-web-scraping
 I, [2018-08-22 13:08:33 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Info: visits: requests: 2, responses: 2
-D, [2018-08-22 13:08:33 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: Browser: driver.current_memory: 212542
 D, [2018-08-22 13:08:33 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: Browser: sleep 4 seconds before request...
 I, [2018-08-22 13:08:37 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: started get request to: https://github.com/jaimeiniesta/metainspector
 
@@ -76,7 +67,6 @@ I, [2018-08-22 13:08:37 +0400#15477] [M: 47377500980720]  INFO -- github_spider:
 I, [2018-08-22 13:23:07 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: started get request to: https://github.com/preston/idclight
 I, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: finished get request to: https://github.com/preston/idclight
 I, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Info: visits: requests: 140, responses: 140
-D, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: Browser: driver.current_memory: 204198
 I, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: driver selenium_chrome has been destroyed
 
 I, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Spider: stopped: {:spider_name=>"github_spider", :status=>:completed, :environment=>"development", :start_time=>2018-08-22 13:08:03 +0400, :stop_time=>2018-08-22 13:23:08 +0400, :running_time=>"15m, 5s", :visits=>{:requests=>140, :responses=>140}, :error=>nil}
@@ -256,183 +246,107 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 
 
 ## Installation
-Kimurai requires Ruby version `>= 2.5.0`. Supported platforms: `Linux` and `Mac OS X`.
+Kimurai requires Ruby version `>= 3.1.0`. Oficcially supported platforms: `Linux` and `macOS`.
 
 1) If your system doesn't have the appropriate Ruby version, install it:
 
 <details/>
-  <summary>Ubuntu 18.04</summary>
+  <summary>Ubuntu 24.04</summary>
 
 ```bash
-# Install required packages for ruby-build
+# Install required system packages
 sudo apt update
-sudo apt install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libreadline6-dev libyaml-dev libxml2-dev libxslt1-dev libcurl4-openssl-dev libffi-dev
+sudo apt install build-essential rustc libssl-dev libyaml-dev zlib1g-dev libgmp-dev
 
-# Install rbenv and ruby-build
-cd && git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-echo 'eval "$(rbenv init -)"' >> ~/.bashrc
-exec $SHELL
-
-git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
-exec $SHELL
+# Install Mice version manager
+curl https://mise.run | sh
+echo 'eval "$(~/.local/bin/mise activate)"' >> ~/.bashrc
+source ~/.bashrc
 
 # Install latest Ruby
-rbenv install 2.5.3
-rbenv global 2.5.3
-
-gem install bundler
+mise use --global ruby@3
+gem update --system
 ```
 </details>
 
 <details/>
-  <summary>Mac OS X</summary>
+  <summary>macOS</summary>
 
 ```bash
 # Install Homebrew if you don't have it https://brew.sh/
-# Install rbenv and ruby-build:
-brew install rbenv ruby-build
+brew install openssl@3 libyaml gmp rust
 
-# Add rbenv to bash so that it loads every time you open a terminal
-echo 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile
-source ~/.bash_profile
+# Install Mice version manager
+curl https://mise.run | sh
+echo 'eval "$(~/.local/bin/mise activate)"' >> ~/.zshrc
+source ~/.zshrc
 
 # Install latest Ruby
-rbenv install 2.5.3
-rbenv global 2.5.3
-
-gem install bundler
+mise use --global ruby@3
+gem update --system
 ```
 </details>
 
 2) Install Kimurai gem: `$ gem install kimurai`
 
-3) Install browsers with webdrivers:
+3) Install browsers:
 
 <details/>
-  <summary>Ubuntu 18.04</summary>
-
-Note: there's an automatic installation available for Ubuntu 16.04-18.04 using the `setup` command:
-```bash
-$ kimurai setup localhost --local --ask-sudo
-```
-It works using [Ansible](https://github.com/ansible/ansible), so you need to install it first: `$ sudo apt install ansible`. See some example playbooks [here](lib/kimurai/automation).
-
-If you chose automatic installation, you can skip the rest of this section and go to ["Getting to know Kimurai"](#getting-to-know-kimur). In case you want to install everything manually:
+  <summary>Ubuntu 24.04</summary>
 
 ```bash
 # Install basic tools
 sudo apt install -q -y unzip wget tar openssl
 
-# Install xvfb (for virtual_display headless mode, in additional to native)
+# Install xvfb (for virtual_display headless mode, in addition to native)
 sudo apt install -q -y xvfb
-
-# Install chromium-browser and firefox
-sudo apt install -q -y chromium-browser firefox
-
-# Instal chromedriver (2.44 version)
-# All versions are located here: https://sites.google.com/a/chromium.org/chromedriver/downloads
-cd /tmp && wget https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip
-sudo unzip chromedriver_linux64.zip -d /usr/local/bin
-rm -f chromedriver_linux64.zip
-
-# Install geckodriver (0.23.0 version)
-# All versions are located here: https://github.com/mozilla/geckodriver/releases/
-cd /tmp && wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz
-sudo tar -xvzf geckodriver-v0.23.0-linux64.tar.gz -C /usr/local/bin
-rm -f geckodriver-v0.23.0-linux64.tar.gz
-
-# Install PhantomJS (2.1.1)
-# All versions are located here: http://phantomjs.org/download.html
-sudo apt install -q -y chrpath libxft-dev libfreetype6 libfreetype6-dev libfontconfig1 libfontconfig1-dev
-cd /tmp && wget https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-tar -xvjf phantomjs-2.1.1-linux-x86_64.tar.bz2
-sudo mv phantomjs-2.1.1-linux-x86_64 /usr/local/lib
-sudo ln -s /usr/local/lib/phantomjs-2.1.1-linux-x86_64/bin/phantomjs /usr/local/bin
-rm -f phantomjs-2.1.1-linux-x86_64.tar.bz2
 ```
 
+Latest automatically installed selenium drivers doesn't work well with Ubuntu Snap versions of Chrome and Firefox, therefore we need to install classic .deb versions and make sure they are available over Snap versions:
+
+```bash
+# Install google chrome
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo apt-get install -y ./google-chrome-stable_current_amd64.deb
+```
+
+```bash
+# Install firefox (only if you intend to use Firefox as a browser, using selenium_firefox engine)
+# See https://www.omgubuntu.co.uk/2022/04/how-to-install-firefox-deb-apt-ubuntu-22-04
+sudo snap remove firefox
+
+sudo install -d -m 0755 /etc/apt/keyrings
+wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+
+echo "deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main" | sudo tee -a /etc/apt/sources.list.d/mozilla.list > /dev/null
+
+echo '
+Package: *
+Pin: origin packages.mozilla.org
+Pin-Priority: 1000
+
+Package: firefox*
+Pin: release o=Ubuntu
+Pin-Priority: -1' | sudo tee /etc/apt/preferences.d/mozilla
+
+sudo apt update && sudo apt remove firefox
+sudo apt install firefox
+```
 </details>
 
 <details/>
-  <summary>Mac OS X</summary>
+  <summary>macOS</summary>
 
 ```bash
-# Install chrome and firefox
-brew cask install google-chrome firefox
+# Install google chrome
+brew install google-chrome 
+```
 
-# Install chromedriver (latest)
-brew cask install chromedriver
-
-# Install geckodriver (latest)
-brew install geckodriver
-
-# Install PhantomJS (latest)
-brew install phantomjs
+```bash
+# Install firefox (only if you intend to use Firefox as a browser, using selenium_firefox engine)
+brew install firefox
 ```
 </details><br>
-
-Also, if you want to save scraped items to a database (using [ActiveRecord](https://github.com/rails/rails/tree/master/activerecord), [Sequel](https://github.com/jeremyevans/sequel) or [MongoDB Ruby Driver](https://github.com/mongodb/mongo-ruby-driver)/[Mongoid](https://github.com/mongodb/mongoid)), you need to install database clients/servers:
-
-<details/>
-  <summary>Ubuntu 18.04</summary>
-
-SQlite: `$ sudo apt -q -y install libsqlite3-dev sqlite3`.
-
-If you want to connect to a remote database, you don't need a database server on a local machine (only a client):
-```bash
-# Install MySQL client
-sudo apt -q -y install mysql-client libmysqlclient-dev
-
-# Install Postgres client
-sudo apt install -q -y postgresql-client libpq-dev
-
-# Install MongoDB client
-sudo apt install -q -y mongodb-clients
-```
-
-But, if you want to save items to a local database, a database server is required as well:
-```bash
-# Install MySQL client and server
-sudo apt -q -y install mysql-server mysql-client libmysqlclient-dev
-
-# Install Postgres client and server
-sudo apt install -q -y postgresql postgresql-contrib libpq-dev
-
-# Install MongoDB client and server
-# Version 4.0 (check here https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/)
-sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 9DA31620334BD75D9DCB49F368818C72E52529D4
-# for 16.04:
-# echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-# for 18.04:
-echo "deb [ arch=amd64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.0.list
-sudo apt update
-sudo apt install -q -y mongodb-org
-sudo service mongod start
-```
-</details>
-
-<details/>
-  <summary>Mac OS X</summary>
-
-SQlite: `$ brew install sqlite3`
-
-```bash
-# Install MySQL client and server
-brew install mysql
-# Start server if you need it: brew services start mysql
-
-# Install Postgres client and server
-brew install postgresql
-# Start server if you need it: brew services start postgresql
-
-# Install MongoDB client and server
-brew install mongodb
-# Start server if you need it: brew services start mongodb
-```
-</details>
-
 
 ## Getting to know Kimurai
 ### Interactive console
@@ -510,6 +424,7 @@ Kimurai has support for the following engines and can mostly switch between them
 
 * `:mechanize` – [pure Ruby fake http browser](https://github.com/sparklemotion/mechanize). Mechanize can't render JavaScript and doesn't know what the DOM is it. It can only parse the original HTML code of a page. Because of it, mechanize is much faster, takes much less memory and is in general much more stable than any real browser. It's recommended to use mechanize when possible; if the website doesn't use JavaScript to render any meaningful parts of its structure. Still, because mechanize is trying to mimic a real browser, it supports almost all of Capybara's [methods to interact with a web page](http://cheatrags.com/capybara) (filling forms, clicking buttons, checkboxes, etc).
 * `:poltergeist_phantomjs` – [PhantomJS headless browser](https://github.com/ariya/phantomjs), can render JavaScript. In general, PhantomJS is still faster than Headless Chrome (and Headless Firefox). PhantomJS has memory leakage issues, but Kimurai has a [memory control feature](#crawler-config), so it shouldn't be an issue. Also, some websites can recognize PhantomJS and block access. Like mechanize (and unlike selenium engines) `:poltergeist_phantomjs` can freely rotate proxies and change headers _on the fly_ (see [config section](#all-available-config-options)).
+* `:apparition_chrome` – [Apparition headless browser](https://github.com/twalpole/apparition) using Chrome via CDP (Chrome DevTools Protocol). A modern alternative to PhantomJS and Selenium with native support for custom headers, URL filtering, and better performance. Unlike Selenium, Apparition supports header manipulation and proxy rotation on the fly.
 * `:selenium_chrome` – Chrome in headless mode driven by selenium. A modern headless browser solution with proper JavaScript rendering.
 * `:selenium_firefox` – Firefox in headless mode driven by selenium. Usually takes more memory than other drivers, but can sometimes be useful.
 

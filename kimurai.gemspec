@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
   spec.bindir        = "exe"
   spec.executables   = "kimurai"
   spec.require_paths = ["lib"]
-  spec.required_ruby_version = ">= 2.7.0"
+  spec.required_ruby_version = ">= 3.1.0"
 
   spec.add_dependency "thor"
   spec.add_dependency "cliver"
@@ -39,13 +39,13 @@ Gem::Specification.new do |spec|
   spec.add_dependency "capybara", "~> 3.40"
   spec.add_dependency "capybara-mechanize", "~> 1.13"
   spec.add_dependency "poltergeist"
-  spec.add_dependency "selenium-webdriver", "~> 4.34"
+  spec.add_dependency "selenium-webdriver", "~> 4.27"
 
   spec.add_dependency "headless"
   spec.add_dependency "pmap"
 
   spec.add_dependency "whenever"
 
-  spec.add_dependency "rbcat", "~> 0.2"
+  spec.add_dependency "rbcat", "~> 1.0"
   spec.add_dependency "pry"
 end

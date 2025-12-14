@@ -1,6 +1,6 @@
 # Kimurai
 
-Kimurai is a modern web scraping framework written in Ruby which **works out of the box with Headless Chromium/Firefox or simple HTTP requests and **allows you to scrape and interact with JavaScript rendered websites.**
+Kimurai is a modern web scraping framework written in Ruby which **works out of the box with Headless Chromium/Firefox** or simple HTTP requests and **allows you to scrape and interact with JavaScript rendered websites.**
 
 Kimurai is based on the well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Let's try an example:
 
@@ -183,7 +183,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 
 ## Features
 * Scrape JavaScript rendered websites out of the box
-* Supported engines: [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome), [Headless Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Headless_mode), [PhantomJS](https://github.com/ariya/phantomjs) or simple HTTP requests ([mechanize](https://github.com/sparklemotion/mechanize) gem)
+* Supported engines: [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome), [Headless Firefox](https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Headless_mode) or simple HTTP requests ([mechanize](https://github.com/sparklemotion/mechanize) gem)
 * Write spider code once, and use it with any supported engine later
 * All the power of [Capybara](https://github.com/teamcapybara/capybara): use methods like `click_on`, `fill_in`, `select`, `choose`, `set`, `go_back`, etc. to interact with web pages
 * Rich [configuration](#spider-config): **set default headers, cookies, delay between requests, enable proxy/user-agents rotation**
@@ -375,7 +375,7 @@ From: /home/victor/code/kimurai/lib/kimurai/base.rb @ line 189 Kimurai::Base#con
     190: end
 
 [1] pry(#<Kimurai::Base>)> response.xpath("//title").text
-=> "GitHub - vifreefly/kimuraframework: Modern web scraping framework written in Ruby which works out of box with Headless Chromium/Firefox, PhantomJS, or simple HTTP requests and allows to scrape and interact with JavaScript rendered websites"
+=> "GitHub - vifreefly/kimuraframework: Modern web scraping framework written in Ruby which works out of box with Headless Chromium/Firefox or simple HTTP requests and allows to scrape and interact with JavaScript rendered websites"
 
 [2] pry(#<Kimurai::Base>)> ls
 Kimurai::Base#methods: browser  console  logger  request_to  save_to  unique?
@@ -423,8 +423,6 @@ CLI arguments:
 Kimurai has support for the following engines and can mostly switch between them without the need to rewrite any code:
 
 * `:mechanize` – [pure Ruby fake http browser](https://github.com/sparklemotion/mechanize). Mechanize can't render JavaScript and doesn't know what the DOM is it. It can only parse the original HTML code of a page. Because of it, mechanize is much faster, takes much less memory and is in general much more stable than any real browser. It's recommended to use mechanize when possible; if the website doesn't use JavaScript to render any meaningful parts of its structure. Still, because mechanize is trying to mimic a real browser, it supports almost all of Capybara's [methods to interact with a web page](http://cheatrags.com/capybara) (filling forms, clicking buttons, checkboxes, etc).
-* `:poltergeist_phantomjs` – [PhantomJS headless browser](https://github.com/ariya/phantomjs), can render JavaScript. In general, PhantomJS is still faster than Headless Chrome (and Headless Firefox). PhantomJS has memory leakage issues, but Kimurai has a [memory control feature](#crawler-config), so it shouldn't be an issue. Also, some websites can recognize PhantomJS and block access. Like mechanize (and unlike selenium engines) `:poltergeist_phantomjs` can freely rotate proxies and change headers _on the fly_ (see [config section](#all-available-config-options)).
-* `:apparition_chrome` – [Apparition headless browser](https://github.com/twalpole/apparition) using Chrome via CDP (Chrome DevTools Protocol). A modern alternative to PhantomJS and Selenium with native support for custom headers, URL filtering, and better performance. Unlike Selenium, Apparition supports header manipulation and proxy rotation on the fly.
 * `:selenium_chrome` – Chrome in headless mode driven by selenium. A modern headless browser solution with proper JavaScript rendering.
 * `:selenium_firefox` – Firefox in headless mode driven by selenium. Usually takes more memory than other drivers, but can sometimes be useful.
 
@@ -1108,7 +1106,7 @@ I, [2018-08-22 14:49:12 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider:
 
 * `data:` – pass custom data like so: `in_parallel(:method, urls, threads: 3, data: { category: "Scraping" })`
 * `delay:` – set delay between requests like so: `in_parallel(:method, urls, threads: 3, delay: 2)`. Delay can be `Integer`, `Float` or `Range` (`2..5`). In case of a Range, the delay (in seconds) will be set randomly for each request: `rand (2..5) # => 3`
-* `engine:` – set custom engine like so: `in_parallel(:method, urls, threads: 3, engine: :poltergeist_phantomjs)`
+* `engine:` – set custom engine like so: `in_parallel(:method, urls, threads: 3, engine: :selenium_chrome)`
 * `config:` – set custom [config](#spider-config) options
 
 ### Active Support included
@@ -1369,7 +1367,7 @@ class Spider < Kimurai::Base
   USER_AGENTS = ["Chrome", "Firefox", "Safari", "Opera"]
   PROXIES = ["2.3.4.5:8080:http:username:password", "3.4.5.6:3128:http", "1.2.3.4:3000:socks5"]
 
-  @engine = :poltergeist_phantomjs
+  @engine = :selenium_chrome
   @start_urls = ["https://example.com/"]
   @config = {
     headers: { "custom_header" => "custom_value" },
@@ -1405,7 +1403,7 @@ end
 ```ruby
 @config = {
   # Custom headers hash. Example: { "some header" => "some value", "another header" => "another value" }
-  # Works only for :mechanize and :poltergeist_phantomjs engines. Selenium doesn't support setting headers.
+  # Works for :mechanize. Selenium doesn't support setting headers.
   headers: {},
 
   # Custom User Agent – string or lambda
@@ -1442,7 +1440,7 @@ end
   # Custom window size, works for all engines
   window_size: [1366, 768],
 
-  # Skip loading images if true, works for all engines. Speeds up processing time.
+  # Skip loading images if true, works for all engines. Speeds up page load time.
   disable_images: true,
 
   # For Selenium engines only: headless mode, `:native` or `:virtual_display` (default is :native)
@@ -1455,12 +1453,12 @@ end
   # Format: array of strings. Works only for :selenium_firefox and selenium_chrome.
   proxy_bypass_list: [],
 
-  # Option to provide custom SSL certificate. Works only for :poltergeist_phantomjs and :mechanize.
+  # Option to provide custom SSL certificate. Works only for :mechanize.
   ssl_cert_path: "path/to/ssl_cert",
 
-  # Inject some JavaScript code into the browser
-  # Format: array of strings, where each string is a path to a JS file
-  # Works only for poltergeist_phantomjs engine. Selenium doesn't support JS code injection.
+  # Inject some JavaScript code into the browser.
+  # Format: array of strings, where each string is a path to a JS file or extension directory
+  # Selenium doesn't support JS code injection.
   extensions: ["lib/code_to_inject.js"],
 
   # Automatically skip already visited urls when using `request_to` method
@@ -1513,7 +1511,7 @@ end
   # Restart browser if one of the options is true:
   restart_if: {
     # Restart browser if provided memory limit (in kilobytes) is exceeded (works for all engines)
-    memory_limit: 350_000,
+    memory_limit: 1_500_000,
 
     # Restart browser if provided requests limit is exceeded (works for all engines)
     requests_limit: 100
@@ -1521,12 +1519,12 @@ end
 
   # Perform several actions before each request:
   before_request: {
-    # Change proxy before each request. The `proxy:` option above should be set with lambda notation
-    # Works only for poltergeist and mechanize engines. Selenium doesn't support proxy rotation.
+    # Change proxy before each request. The `proxy:` option above should be set with lambda notation.
+    # Works for :mechanize engine. Selenium doesn't support proxy rotation.
     change_proxy: true,
 
     # Change user agent before each request. The `user_agent:` option above should set with lambda
-    # notation. Works only for poltergeist and mechanize engines. Selenium doesn't support setting headers.
+    # notation. Works for :mechanize engine. Selenium doesn't support setting headers.
     change_user_agent: true,
 
     # Clear all cookies before each request. Works for all engines.
@@ -1552,11 +1550,11 @@ Settings can be inherited:
 
 ```ruby
 class ApplicationSpider < Kimurai::Base
-  @engine = :poltergeist_phantomjs
+  @engine = :selenium_chrome
   @config = {
-    user_agent: "Firefox",
+    user_agent: "Chrome",
     disable_images: true,
-    restart_if: { memory_limit: 350_000 },
+    restart_if: { memory_limit: 1_500_000 },
     before_request: { delay: 1..2 }
   }
 end
@@ -1735,6 +1733,7 @@ spiders/application_spider.rb
 ```ruby
 class ApplicationSpider < Kimurai::Base
   @engine = :selenium_chrome
+  
   # Define pipelines (by order) for all spiders:
   @pipelines = [:validator, :saver]
 end

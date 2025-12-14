@@ -74,13 +74,8 @@ module Capybara
     end
 
     def restart!
-      if mode.match?(/poltergeist/)
-        @driver.browser.restart
-        @driver.requests, @driver.responses = 0, 0
-      else
-        destroy_driver!
-        driver
-      end
+      destroy_driver!
+      driver
 
       logger.info "Browser: driver has been restarted: name: #{mode}, pid: #{driver.pid}, port: #{driver.port}"
     end

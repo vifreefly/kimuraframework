@@ -38,7 +38,6 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "capybara", "~> 3.40"
   spec.add_dependency "capybara-mechanize", "~> 1.13"
-  spec.add_dependency "poltergeist"
   spec.add_dependency "selenium-webdriver", "~> 4.27"
 
   spec.add_dependency "headless"

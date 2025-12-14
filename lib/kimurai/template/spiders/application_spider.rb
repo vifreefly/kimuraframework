@@ -5,9 +5,8 @@
 class ApplicationSpider < Kimurai::Base
   include ApplicationHelper
 
-  # Default engine for spiders (available engines: :mechanize, :poltergeist_phantomjs,
-  # :selenium_firefox, :selenium_chrome)
-  @engine = :poltergeist_phantomjs
+  # Default engine for spiders (available engines: :mechanize, :selenium_firefox, :selenium_chrome)
+  @engine = :selenium_chrome
 
   # Pipelines list, by order.
   # To process item through pipelines pass item to the `send_item` method
@@ -17,7 +16,7 @@ class ApplicationSpider < Kimurai::Base
   # from ApplicationSpider. Child's class config will be deep merged with this one
   @config = {
     # Custom headers, format: hash. Example: { "some header" => "some value", "another header" => "another value" }
-    # Works only for :mechanize and :poltergeist_phantomjs engines (Selenium doesn't allow to set/get headers)
+    # Works for :mechanize engine. Selenium doesn't allow to set/get headers.
     # headers: {},
 
     # Custom User Agent, format: string or lambda.
@@ -61,13 +60,8 @@ class ApplicationSpider < Kimurai::Base
     # Format: array of strings. Works only for :selenium_firefox and selenium_chrome
     # proxy_bypass_list: [],
 
-    # Option to provide custom SSL certificate. Works only for :poltergeist_phantomjs and :mechanize
+    # Option to provide custom SSL certificate. Works only for :mechanize
     # ssl_cert_path: "path/to/ssl_cert",
-
-    # Inject some JavaScript code to the browser.
-    # Format: array of strings, where each string is a path to JS file.
-    # Works only for poltergeist_phantomjs engine (Selenium doesn't support JS code injection)
-    # extensions: ["lib/code_to_inject.js"],
 
     # Automatically skip duplicated (already visited) urls when using `request_to` method.
     # Possible values: `true` or `hash` with options.
@@ -118,12 +112,12 @@ class ApplicationSpider < Kimurai::Base
     # Perform several actions before each request:
     before_request: {
       # Change proxy before each request. The `proxy:` option above should be presented
-      # and has lambda format. Works only for poltergeist and mechanize engines
+      # and has lambda format. Works for :mechanize engine.
       # (Selenium doesn't support proxy rotation).
       # change_proxy: true,
 
       # Change user agent before each request. The `user_agent:` option above should be presented
-      # and has lambda format. Works only for poltergeist and mechanize engines
+      # and has lambda format. Works for :mechanize engine.
       # (selenium doesn't support to get/set headers).
       # change_user_agent: true,
 

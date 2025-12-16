@@ -1495,7 +1495,7 @@ Here, `@config` of `CustomSpider` will be _[deep merged](https://apidock.com/rai
 
 ## Project mode
 
-Kimurai can work in project mode ([Like Scrapy](https://doc.scrapy.org/en/latest/intro/tutorial.html#creating-a-project)). To generate a new project, run: `$ kimurai generate project web_spiders` (where `web_spiders` is the name for the project).
+Kimurai can work in project mode. To generate a new project, run: `$ kimurai new web_spiders` (where `web_spiders` is the name for the project).
 
 Structure of the project:
 

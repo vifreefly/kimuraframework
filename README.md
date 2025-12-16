@@ -11,18 +11,17 @@ require 'kimurai'
 class GithubSpider < Kimurai::Base
   @name = "github_spider"
   @engine = :selenium_chrome
-  @start_urls = ["https://github.com/search?q=Ruby%20Web%20Scraping"]
+  @start_urls = ["https://github.com/search?q=ruby+web+scraping&type=repositories"]
   @config = {
-    user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36",
-    before_request: { delay: 4..7 }
+    before_request: { delay: 3..5 }
   }
 
   def parse(response, url:, data: {})
-    response.xpath("//ul[@class='repo-list']/div//h3/a").each do |a|
+    response.xpath("//div[@data-testid='results-list']//div[contains(@class, 'search-title')]/a").each do |a|
       request_to :parse_repo_page, url: absolute_url(a[:href], base: url)
     end
 
-    if next_page = response.at_xpath("//a[@class='next_page']")
+    if next_page = response.at_xpath("//a[@rel='next']")
       request_to :parse, url: absolute_url(next_page[:href], base: url)
     end
   end
@@ -30,15 +29,15 @@ class GithubSpider < Kimurai::Base
   def parse_repo_page(response, url:, data: {})
     item = {}
 
-    item[:owner] = response.xpath("//h1//a[@rel='author']").text
-    item[:repo_name] = response.xpath("//h1/strong[@itemprop='name']/a").text
+    item[:owner] = response.xpath("//a[@rel='author']").text.squish
+    item[:repo_name] = response.xpath("//strong[@itemprop='name']").text.squish
     item[:repo_url] = url
-    item[:description] = response.xpath("//span[@itemprop='about']").text.squish
-    item[:tags] = response.xpath("//div[@id='topics-list-container']/div/a").map { |a| a.text.squish }
-    item[:watch_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Watch')]/a[2]").text.squish
-    item[:star_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Star')]/a[2]").text.squish
-    item[:fork_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Fork')]/a[2]").text.squish
-    item[:last_commit] = response.xpath("//span[@itemprop='dateModified']/*").text
+    item[:description] = response.xpath("//div[h2[text()='About']]/p").text.squish
+    item[:tags] = response.xpath("//div/a[contains(@title, 'Topic')]").map { |a| a.text.squish }
+    item[:watch_count] = response.xpath("//div/h3[text()='Watchers']/following-sibling::div[1]/a/strong").text.squish
+    item[:star_count] = response.xpath("//div/h3[text()='Stars']/following-sibling::div[1]/a/strong").text.squish
+    item[:fork_count] = response.xpath("//div/h3[text()='Forks']/following-sibling::div[1]/a/strong").text.squish
+    item[:last_commit] = response.xpath("//div[@data-testid='latest-commit-details']//relative-time/text()").text.squish
 
     save_to "results.json", item, format: :pretty_json
   end
@@ -51,25 +50,25 @@ GithubSpider.crawl!
   <summary>Run: <code>$ ruby github_spider.rb</code></summary>
 
 ```
-I, [2018-08-22 13:08:03 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Spider: started: github_spider
-I, [2018-08-22 13:08:10 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: started get request to: https://github.com/search?q=Ruby%20Web%20Scraping
-I, [2018-08-22 13:08:26 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: finished get request to: https://github.com/search?q=Ruby%20Web%20Scraping
-I, [2018-08-22 13:08:26 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Info: visits: requests: 1, responses: 1
-D, [2018-08-22 13:08:27 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: Browser: sleep 5 seconds before request...
-I, [2018-08-22 13:08:32 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: started get request to: https://github.com/lorien/awesome-web-scraping
-I, [2018-08-22 13:08:33 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: finished get request to: https://github.com/lorien/awesome-web-scraping
-I, [2018-08-22 13:08:33 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Info: visits: requests: 2, responses: 2
-D, [2018-08-22 13:08:33 +0400#15477] [M: 47377500980720] DEBUG -- github_spider: Browser: sleep 4 seconds before request...
-I, [2018-08-22 13:08:37 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: started get request to: https://github.com/jaimeiniesta/metainspector
+$ ruby github_spider.rb
+
+I, [2025-12-16 12:15:48]  INFO -- github_spider: Spider: started: github_spider
+I, [2025-12-16 12:15:48]  INFO -- github_spider: Browser: started get request to: https://github.com/search?q=ruby+web+scraping&type=repositories
+I, [2025-12-16 12:16:01]  INFO -- github_spider: Browser: finished get request to: https://github.com/search?q=ruby+web+scraping&type=repositories
+I, [2025-12-16 12:16:01]  INFO -- github_spider: Info: visits: requests: 1, responses: 1
+I, [2025-12-16 12:16:01]  INFO -- github_spider: Browser: started get request to: https://github.com/sparklemotion/mechanize
+I, [2025-12-16 12:16:06]  INFO -- github_spider: Browser: finished get request to: https://github.com/sparklemotion/mechanize
+I, [2025-12-16 12:16:06]  INFO -- github_spider: Info: visits: requests: 2, responses: 2
+I, [2025-12-16 12:16:06]  INFO -- github_spider: Browser: started get request to: https://github.com/jaimeiniesta/metainspector
+I, [2025-12-16 12:16:11]  INFO -- github_spider: Browser: finished get request to: https://github.com/jaimeiniesta/metainspector
+I, [2025-12-16 12:16:11]  INFO -- github_spider: Info: visits: requests: 3, responses: 3
+I, [2025-12-16 12:16:11]  INFO -- github_spider: Browser: started get request to: https://github.com/Germey/AwesomeWebScraping
+I, [2025-12-16 12:16:13]  INFO -- github_spider: Browser: finished get request to: https://github.com/Germey/AwesomeWebScraping
+I, [2025-12-16 12:16:13]  INFO -- github_spider: Info: visits: requests: 4, responses: 4
+I, [2025-12-16 12:16:13]  INFO -- github_spider: Browser: started get request to: https://github.com/vifreefly/kimuraframework
+I, [2025-12-16 12:16:17]  INFO -- github_spider: Browser: finished get request to: https://github.com/vifreefly/kimuraframework
 
 ...
-
-I, [2018-08-22 13:23:07 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: started get request to: https://github.com/preston/idclight
-I, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: finished get request to: https://github.com/preston/idclight
-I, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Info: visits: requests: 140, responses: 140
-I, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Browser: driver selenium_chrome has been destroyed
-
-I, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720]  INFO -- github_spider: Spider: stopped: {:spider_name=>"github_spider", :status=>:completed, :environment=>"development", :start_time=>2018-08-22 13:08:03 +0400, :stop_time=>2018-08-22 13:23:08 +0400, :running_time=>"15m, 5s", :visits=>{:requests=>140, :responses=>140}, :error=>nil}
 ```
 </details>
 
@@ -79,42 +78,65 @@ I, [2018-08-22 13:23:08 +0400#15477] [M: 47377500980720]  INFO -- github_spider:
 ```json
 [
   {
-    "owner": "lorien",
-    "repo_name": "awesome-web-scraping",
-    "repo_url": "https://github.com/lorien/awesome-web-scraping",
-    "description": "List of libraries, tools and APIs for web scraping and data processing.",
-    "tags": [
-      "awesome",
-      "awesome-list",
-      "web-scraping",
-      "data-processing",
-      "python",
-      "javascript",
-      "php",
-      "ruby"
-    ],
-    "watch_count": "159",
-    "star_count": "2,423",
-    "fork_count": "358",
-    "last_commit": "4 days ago",
+    "owner": "sparklemotion",
+    "repo_name": "mechanize",
+    "repo_url": "https://github.com/sparklemotion/mechanize",
+    "description": "Mechanize is a ruby library that makes automated web interaction easy.",
+    "tags": ["ruby", "web", "scraping"],
+    "watch_count": "79",
+    "star_count": "4.4k",
+    "fork_count": "480",
+    "last_commit": "Sep 30, 2025",
     "position": 1
   },
-
-  ...
-
   {
-    "owner": "preston",
-    "repo_name": "idclight",
-    "repo_url": "https://github.com/preston/idclight",
-    "description": "A Ruby gem for accessing the freely available IDClight (IDConverter Light) web service, which convert between different types of gene IDs such as Hugo and Entrez. Queries are screen scraped from http://idclight.bioinfo.cnio.es.",
-    "tags": [
-
-    ],
-    "watch_count": "6",
-    "star_count": "1",
+    "owner": "jaimeiniesta",
+    "repo_name": "metainspector",
+    "repo_url": "https://github.com/jaimeiniesta/metainspector",
+    "description": "Ruby gem for web scraping purposes. It scrapes a given URL, and returns you its title, meta description, meta keywords, links, images...",
+    "tags": [],
+    "watch_count": "20",
+    "star_count": "1k",
+    "fork_count": "166",
+    "last_commit": "Oct 8, 2025",
+    "position": 2
+  },
+  {
+    "owner": "Germey",
+    "repo_name": "AwesomeWebScraping",
+    "repo_url": "https://github.com/Germey/AwesomeWebScraping",
+    "description": "List of libraries, tools and APIs for web scraping and data processing.",
+    "tags": ["javascript", "ruby", "python", "golang", "php", "awesome", "captcha", "proxy", "web-scraping", "aswsome-list"],
+    "watch_count": "5",
+    "star_count": "253",
+    "fork_count": "33",
+    "last_commit": "Apr 5, 2024",
+    "position": 3
+  },
+  {
+    "owner": "vifreefly",
+    "repo_name": "kimuraframework",
+    "repo_url": "https://github.com/vifreefly/kimuraframework",
+    "description": "Kimurai is a modern web scraping framework written in Ruby which works out of box with Headless Chromium/Firefox, PhantomJS, or simple HTTP requests and allows to scrape and interact with JavaScript rendered websites",
+    "tags": ["crawler", "scraper", "scrapy", "headless-chrome", "kimurai"],
+    "watch_count": "28",
+    "star_count": "1k",
+    "fork_count": "158",
+    "last_commit": "Dec 12, 2025",
+    "position": 4
+  },
+  // ...
+  {
+    "owner": "citixenken",
+    "repo_name": "web_scraping_with_ruby",
+    "repo_url": "https://github.com/citixenken/web_scraping_with_ruby",
+    "description": "",
+    "tags": [],
+    "watch_count": "1",
+    "star_count": "0",
     "fork_count": "0",
-    "last_commit": "on Apr 12, 2012",
-    "position": 127
+    "last_commit": "Aug 29, 2022",
+    "position": 118
   }
 ]
 ```
@@ -144,7 +166,7 @@ class InfiniteScrollSpider < Kimurai::Base
         logger.info "> Pagination is done" and break
       else
         count = new_count
-        logger.info "> Continue scrolling, current count is #{count}..."
+        logger.info "> Continue scrolling, current posts count is #{count}..."
       end
     end
 
@@ -160,23 +182,21 @@ InfiniteScrollSpider.crawl!
   <summary>Run: <code>$ ruby infinite_scroll_spider.rb</code></summary>
 
 ```
-I, [2018-08-22 13:32:57 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: Spider: started: infinite_scroll_spider
-D, [2018-08-22 13:32:57 +0400#23356] [M: 47375890851320] DEBUG -- infinite_scroll_spider: BrowserBuilder (selenium_chrome): created browser instance
-D, [2018-08-22 13:32:57 +0400#23356] [M: 47375890851320] DEBUG -- infinite_scroll_spider: BrowserBuilder (selenium_chrome): enabled native headless_mode
-I, [2018-08-22 13:32:57 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: Browser: started get request to: https://infinite-scroll.com/demo/full-page/
-I, [2018-08-22 13:33:03 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: Browser: finished get request to: https://infinite-scroll.com/demo/full-page/
-I, [2018-08-22 13:33:03 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: Info: visits: requests: 1, responses: 1
-D, [2018-08-22 13:33:03 +0400#23356] [M: 47375890851320] DEBUG -- infinite_scroll_spider: Browser: driver.current_memory: 95463
-I, [2018-08-22 13:33:05 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: > Continue scrolling, current count is 5...
-I, [2018-08-22 13:33:18 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: > Continue scrolling, current count is 9...
-I, [2018-08-22 13:33:20 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: > Continue scrolling, current count is 11...
-I, [2018-08-22 13:33:26 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: > Continue scrolling, current count is 13...
-I, [2018-08-22 13:33:28 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: > Continue scrolling, current count is 15...
-I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: > Pagination is done
-I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: > All posts from page: 1a - Infinite Scroll full page demo; 1b - RGB Schemes logo in Computer Arts; 2a - RGB Schemes logo; 2b - Masonry gets horizontalOrder; 2c - Every vector 2016; 3a - Logo Pizza delivered; 3b - Some CodePens; 3c - 365daysofmusic.com; 3d - Holograms; 4a - Huebee: 1-click color picker; 4b - Word is Flickity is good; Flickity v2 released: groupCells, adaptiveHeight, parallax; New tech gets chatter; Isotope v3 released: stagger in, IE8 out; Packery v2 released
-I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: Browser: driver selenium_chrome has been destroyed
-I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scroll_spider: Spider: stopped: {:spider_name=>"infinite_scroll_spider", :status=>:completed, :environment=>"development", :start_time=>2018-08-22 13:32:57 +0400, :stop_time=>2018-08-22 13:33:30 +0400, :running_time=>"33s", :visits=>{:requests=>1, :responses=>1}, :error=>nil}
+$ ruby infinite_scroll_spider.rb
 
+I, [2025-12-16 12:47:05]  INFO -- infinite_scroll_spider: Spider: started: infinite_scroll_spider
+I, [2025-12-16 12:47:05]  INFO -- infinite_scroll_spider: Browser: started get request to: https://infinite-scroll.com/demo/full-page/
+I, [2025-12-16 12:47:09]  INFO -- infinite_scroll_spider: Browser: finished get request to: https://infinite-scroll.com/demo/full-page/
+I, [2025-12-16 12:47:09]  INFO -- infinite_scroll_spider: Info: visits: requests: 1, responses: 1
+I, [2025-12-16 12:47:11]  INFO -- infinite_scroll_spider: > Continue scrolling, current posts count is 5...
+I, [2025-12-16 12:47:13]  INFO -- infinite_scroll_spider: > Continue scrolling, current posts count is 9...
+I, [2025-12-16 12:47:15]  INFO -- infinite_scroll_spider: > Continue scrolling, current posts count is 11...
+I, [2025-12-16 12:47:17]  INFO -- infinite_scroll_spider: > Continue scrolling, current posts count is 13...
+I, [2025-12-16 12:47:19]  INFO -- infinite_scroll_spider: > Continue scrolling, current posts count is 15...
+I, [2025-12-16 12:47:21]  INFO -- infinite_scroll_spider: > Pagination is done
+I, [2025-12-16 12:47:21]  INFO -- infinite_scroll_spider: > All posts from page: 1a - Infinite Scroll full page demo; 1b - RGB Schemes logo in Computer Arts; 2a - RGB Schemes logo; 2b - Masonry gets horizontalOrder; 2c - Every vector 2016; 3a - Logo Pizza delivered; 3b - Some CodePens; 3c - 365daysofmusic.com; 3d - Holograms; 4a - Huebee: 1-click color picker; 4b - Word is Flickity is good; Flickity v2 released: groupCells, adaptiveHeight, parallax; New tech gets chatter; Isotope v3 released: stagger in, IE8 out; Packery v2 released
+I, [2025-12-16 12:47:21]  INFO -- infinite_scroll_spider: Browser: driver selenium_chrome has been destroyed
+I, [2025-12-16 12:47:21]  INFO -- infinite_scroll_spider: Spider: stopped: {spider_name: "infinite_scroll_spider", status: :completed, error: nil, environment: "development", start_time: 2025-12-16 12:47:05.372053 +0300, stop_time: 2025-12-16 12:47:21.505078 +0300, running_time: "16s", visits: {requests: 1, responses: 1}, items: {sent: 0, processed: 0}, events: {requests_errors: {}, drop_items_errors: {}, custom: {}}}
 ```
 </details><br>
 
@@ -246,7 +266,7 @@ I, [2018-08-22 13:33:30 +0400#23356] [M: 47375890851320]  INFO -- infinite_scrol
 
 
 ## Installation
-Kimurai requires Ruby version `>= 3.1.0`. Oficcially supported platforms: `Linux` and `macOS`.
+Kimurai requires Ruby version `>= 3.1.0`. Officially supported platforms: `Linux` and `macOS`.
 
 1) If your system doesn't have the appropriate Ruby version, install it:
 
@@ -362,56 +382,26 @@ $ kimurai console --engine selenium_chrome --url https://github.com/vifreefly/ki
 ```
 $ kimurai console --engine selenium_chrome --url https://github.com/vifreefly/kimuraframework
 
-D, [2018-08-22 13:42:32 +0400#26079] [M: 47461994677760] DEBUG -- : BrowserBuilder (selenium_chrome): created browser instance
-D, [2018-08-22 13:42:32 +0400#26079] [M: 47461994677760] DEBUG -- : BrowserBuilder (selenium_chrome): enabled native headless_mode
-I, [2018-08-22 13:42:32 +0400#26079] [M: 47461994677760]  INFO -- : Browser: started get request to: https://github.com/vifreefly/kimuraframework
-I, [2018-08-22 13:42:35 +0400#26079] [M: 47461994677760]  INFO -- : Browser: finished get request to: https://github.com/vifreefly/kimuraframework
-D, [2018-08-22 13:42:35 +0400#26079] [M: 47461994677760] DEBUG -- : Browser: driver.current_memory: 201701
+D, [2025-12-16 13:08:41 +0300#37718] [M: 1208] DEBUG -- : BrowserBuilder (selenium_chrome): created browser instance
+I, [2025-12-16 13:08:41 +0300#37718] [M: 1208]  INFO -- : Browser: started get request to: https://github.com/vifreefly/kimuraframework
+I, [2025-12-16 13:08:43 +0300#37718] [M: 1208]  INFO -- : Browser: finished get request to: https://github.com/vifreefly/kimuraframework
 
-From: /home/victor/code/kimurai/lib/kimurai/base.rb @ line 189 Kimurai::Base#console:
+From: /Users/vic/code/spiders/kimuraframework/lib/kimurai/base.rb:208 Kimurai::Base#console:
 
-    188: def console(response = nil, url: nil, data: {})
- => 189:   binding.pry
-    190: end
+    207: def console(response = nil, url: nil, data: {})
+ => 208:   binding.pry
+    209: end
 
-[1] pry(#<Kimurai::Base>)> response.xpath("//title").text
-=> "GitHub - vifreefly/kimuraframework: Modern web scraping framework written in Ruby which works out of box with Headless Chromium/Firefox or simple HTTP requests and allows to scrape and interact with JavaScript rendered websites"
-
-[2] pry(#<Kimurai::Base>)> ls
-Kimurai::Base#methods: browser  console  logger  request_to  save_to  unique?
-instance variables: @browser  @config  @engine  @logger  @pipelines
-locals: _  __  _dir_  _ex_  _file_  _in_  _out_  _pry_  data  response  url
-
-[3] pry(#<Kimurai::Base>)> ls response
-Nokogiri::XML::PP::Node#methods: inspect  pretty_print
-Nokogiri::XML::Searchable#methods: %  /  at  at_css  at_xpath  css  search  xpath
-Enumerable#methods:
-  all?         collect         drop        each_with_index   find_all    grep_v    lazy    member?    none?      reject        slice_when  take_while  without
-  any?         collect_concat  drop_while  each_with_object  find_index  group_by  many?   min        one?       reverse_each  sort        to_a        zip
-  as_json      count           each_cons   entries           first       include?  map     min_by     partition  select        sort_by     to_h
-  chunk        cycle           each_entry  exclude?          flat_map    index_by  max     minmax     pluck      slice_after   sum         to_set
-  chunk_while  detect          each_slice  find              grep        inject    max_by  minmax_by  reduce     slice_before  take        uniq
-Nokogiri::XML::Node#methods:
-  <=>                   append_class       classes                 document?             has_attribute?      matches?          node_name=        processing_instruction?  to_str
-  ==                    attr               comment?                each                  html?               name=             node_type         read_only?               to_xhtml
-  >                     attribute          content                 elem?                 inner_html          namespace=        parent=           remove                   traverse
-  []                    attribute_nodes    content=                element?              inner_html=         namespace_scopes  parse             remove_attribute         unlink
-  []=                   attribute_with_ns  create_external_subset  element_children      inner_text          namespaced_key?   path              remove_class             values
-  accept                before             create_internal_subset  elements              internal_subset     native_content=   pointer_id        replace                  write_html_to
-  add_class             blank?             css_path                encode_special_chars  key?                next              prepend_child     set_attribute            write_to
-  add_next_sibling      cdata?             decorate!               external_subset       keys                next=             previous          text                     write_xhtml_to
-  add_previous_sibling  child              delete                  first_element_child   lang                next_element      previous=         text?                    write_xml_to
-  after                 children           description             fragment?             lang=               next_sibling      previous_element  to_html                  xml?
-  ancestors             children=          do_xinclude             get_attribute         last_element_child  node_name         previous_sibling  to_s
-Nokogiri::XML::Document#methods:
-  <<         canonicalize  collect_namespaces  create_comment  create_entity     decorate    document  encoding   errors   name        remove_namespaces!  root=  to_java  url       version
-  add_child  clone         create_cdata        create_element  create_text_node  decorators  dup       encoding=  errors=  namespaces  root                slop!  to_xml   validate
-Nokogiri::HTML::Document#methods: fragment  meta_encoding  meta_encoding=  serialize  title  title=  type
-instance variables: @decorators  @errors  @node_cache
-
-[4] pry(#<Kimurai::Base>)> exit
-I, [2018-08-22 13:43:47 +0400#26079] [M: 47461994677760]  INFO -- : Browser: driver selenium_chrome has been destroyed
-$
+[1] pry(#<Kimurai::Base>)> response.css('title').text
+=> "GitHub - vifreefly/kimuraframework: Kimurai is a modern Ruby web scraping framework that supports scraping with antidetect Chrome/Firefox as well as HTTP requests"
+[2] pry(#<Kimurai::Base>)> browser.current_url
+=> "https://github.com/vifreefly/kimuraframework"
+[3] pry(#<Kimurai::Base>)> browser.visit('https://google.com')
+I, [2025-12-16 13:09:24 +0300#37718] [M: 1208]  INFO -- : Browser: started get request to: https://google.com
+I, [2025-12-16 13:09:26 +0300#37718] [M: 1208]  INFO -- : Browser: finished get request to: https://google.com
+=> true
+[4] pry(#<Kimurai::Base>)> browser.current_response.title
+=> "Google"
 ```
 </details><br>
 
@@ -1012,50 +1002,22 @@ AmazonSpider.crawl!
   <summary>Run: <code>$ ruby amazon_spider.rb</code></summary>
 
 ```
-I, [2018-08-22 14:48:37 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider: Spider: started: amazon_spider
-D, [2018-08-22 14:48:37 +0400#13033] [M: 46982297486840] DEBUG -- amazon_spider: BrowserBuilder (mechanize): created browser instance
-I, [2018-08-22 14:48:37 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider: Browser: started get request to: https://www.amazon.com/
-I, [2018-08-22 14:48:38 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider: Browser: finished get request to: https://www.amazon.com/
-I, [2018-08-22 14:48:38 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider: Info: visits: requests: 1, responses: 1
-
-I, [2018-08-22 14:48:43 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider: Spider: in_parallel: starting processing 52 urls within 3 threads
-D, [2018-08-22 14:48:43 +0400#13033] [C: 46982320219020] DEBUG -- amazon_spider: BrowserBuilder (mechanize): created browser instance
-I, [2018-08-22 14:48:43 +0400#13033] [C: 46982320219020]  INFO -- amazon_spider: Browser: started get request to: https://www.amazon.com/Practical-Web-Scraping-Data-Science/dp/1484235819/
-D, [2018-08-22 14:48:44 +0400#13033] [C: 46982320189640] DEBUG -- amazon_spider: BrowserBuilder (mechanize): created browser instance
-I, [2018-08-22 14:48:44 +0400#13033] [C: 46982320189640]  INFO -- amazon_spider: Browser: started get request to: https://www.amazon.com/Python-Web-Scraping-Cookbook-scraping/dp/1787285219/
-D, [2018-08-22 14:48:44 +0400#13033] [C: 46982319187320] DEBUG -- amazon_spider: BrowserBuilder (mechanize): created browser instance
-I, [2018-08-22 14:48:44 +0400#13033] [C: 46982319187320]  INFO -- amazon_spider: Browser: started get request to: https://www.amazon.com/Scraping-Python-Community-Experience-Distilled/dp/1782164367/
-I, [2018-08-22 14:48:45 +0400#13033] [C: 46982320219020]  INFO -- amazon_spider: Browser: finished get request to: https://www.amazon.com/Practical-Web-Scraping-Data-Science/dp/1484235819/
-I, [2018-08-22 14:48:45 +0400#13033] [C: 46982320219020]  INFO -- amazon_spider: Info: visits: requests: 4, responses: 2
-I, [2018-08-22 14:48:45 +0400#13033] [C: 46982320219020]  INFO -- amazon_spider: Browser: started get request to: https://www.amazon.com/Web-Scraping-Python-Collecting-Modern/dp/1491910291/
-I, [2018-08-22 14:48:46 +0400#13033] [C: 46982320189640]  INFO -- amazon_spider: Browser: finished get request to: https://www.amazon.com/Python-Web-Scraping-Cookbook-scraping/dp/1787285219/
-I, [2018-08-22 14:48:46 +0400#13033] [C: 46982320189640]  INFO -- amazon_spider: Info: visits: requests: 5, responses: 3
-I, [2018-08-22 14:48:46 +0400#13033] [C: 46982320189640]  INFO -- amazon_spider: Browser: started get request to: https://www.amazon.com/Web-Scraping-Python-Collecting-Modern/dp/1491985577/
-I, [2018-08-22 14:48:46 +0400#13033] [C: 46982319187320]  INFO -- amazon_spider: Browser: finished get request to: https://www.amazon.com/Scraping-Python-Community-Experience-Distilled/dp/1782164367/
-I, [2018-08-22 14:48:46 +0400#13033] [C: 46982319187320]  INFO -- amazon_spider: Info: visits: requests: 6, responses: 4
-I, [2018-08-22 14:48:46 +0400#13033] [C: 46982319187320]  INFO -- amazon_spider: Browser: started get request to: https://www.amazon.com/Web-Scraping-Excel-Effective-Scrapes-ebook/dp/B01CMMJGZ8/
+$ ruby amazon_spider.rb
 
 ...
 
-I, [2018-08-22 14:49:10 +0400#13033] [C: 46982320219020]  INFO -- amazon_spider: Info: visits: requests: 51, responses: 49
-I, [2018-08-22 14:49:10 +0400#13033] [C: 46982320219020]  INFO -- amazon_spider: Browser: driver mechanize has been destroyed
-I, [2018-08-22 14:49:11 +0400#13033] [C: 46982320189640]  INFO -- amazon_spider: Browser: finished get request to: https://www.amazon.com/Scraping-Ice-Life-Bill-Rayburn-ebook/dp/B00C0NF1L8/
-I, [2018-08-22 14:49:11 +0400#13033] [C: 46982320189640]  INFO -- amazon_spider: Info: visits: requests: 51, responses: 50
-I, [2018-08-22 14:49:11 +0400#13033] [C: 46982320189640]  INFO -- amazon_spider: Browser: started get request to: https://www.amazon.com/Instant-Scraping-Jacob-Ward-2013-07-26/dp/B01FJ1G3G4/
-I, [2018-08-22 14:49:11 +0400#13033] [C: 46982319187320]  INFO -- amazon_spider: Browser: finished get request to: https://www.amazon.com/Php-architects-Guide-Scraping-Author/dp/B010DTKYY4/
-I, [2018-08-22 14:49:11 +0400#13033] [C: 46982319187320]  INFO -- amazon_spider: Info: visits: requests: 52, responses: 51
-I, [2018-08-22 14:49:11 +0400#13033] [C: 46982319187320]  INFO -- amazon_spider: Browser: started get request to: https://www.amazon.com/Ship-Tracking-Maritime-Domain-Awareness/dp/B001J5MTOK/
-I, [2018-08-22 14:49:12 +0400#13033] [C: 46982320189640]  INFO -- amazon_spider: Browser: finished get request to: https://www.amazon.com/Instant-Scraping-Jacob-Ward-2013-07-26/dp/B01FJ1G3G4/
-I, [2018-08-22 14:49:12 +0400#13033] [C: 46982320189640]  INFO -- amazon_spider: Info: visits: requests: 53, responses: 52
-I, [2018-08-22 14:49:12 +0400#13033] [C: 46982320189640]  INFO -- amazon_spider: Browser: driver mechanize has been destroyed
-I, [2018-08-22 14:49:12 +0400#13033] [C: 46982319187320]  INFO -- amazon_spider: Browser: finished get request to: https://www.amazon.com/Ship-Tracking-Maritime-Domain-Awareness/dp/B001J5MTOK/
-I, [2018-08-22 14:49:12 +0400#13033] [C: 46982319187320]  INFO -- amazon_spider: Info: visits: requests: 53, responses: 53
-I, [2018-08-22 14:49:12 +0400#13033] [C: 46982319187320]  INFO -- amazon_spider: Browser: driver mechanize has been destroyed
-
-I, [2018-08-22 14:49:12 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider: Spider: in_parallel: stopped processing 52 urls within 3 threads, total time: 29s
-I, [2018-08-22 14:49:12 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider: Browser: driver mechanize has been destroyed
-
-I, [2018-08-22 14:49:12 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider: Spider: stopped: {:spider_name=>"amazon_spider", :status=>:completed, :environment=>"development", :start_time=>2018-08-22 14:48:37 +0400, :stop_time=>2018-08-22 14:49:12 +0400, :running_time=>"35s", :visits=>{:requests=>53, :responses=>53}, :error=>nil}
+I, [2025-12-16 13:48:19 +0300#39167] [C: 1624]  INFO -- amazon_spider: Info: visits: requests: 305, responses: 305
+I, [2025-12-16 13:48:19 +0300#39167] [C: 1624]  INFO -- amazon_spider: Browser: started get request to: https://www.amazon.com/Real-World-Python-Hackers-Solving-Problems/dp/1718500629/
+I, [2025-12-16 13:48:22 +0300#39167] [C: 1624]  INFO -- amazon_spider: Browser: finished get request to: https://www.amazon.com/Real-World-Python-Hackers-Solving-Problems/dp/1718500629/
+I, [2025-12-16 13:48:22 +0300#39167] [C: 1624]  INFO -- amazon_spider: Info: visits: requests: 306, responses: 306
+I, [2025-12-16 13:48:22 +0300#39167] [C: 1624]  INFO -- amazon_spider: Browser: started get request to: https://www.amazon.com/Introduction-Important-efficient-collection-scraping-ebook/dp/B0D2MLXFT6/
+I, [2025-12-16 13:48:23 +0300#39167] [C: 1624]  INFO -- amazon_spider: Browser: finished get request to: https://www.amazon.com/Introduction-Important-efficient-collection-scraping-ebook/dp/B0D2MLXFT6/
+I, [2025-12-16 13:48:23 +0300#39167] [C: 1624]  INFO -- amazon_spider: Info: visits: requests: 307, responses: 307
+I, [2025-12-16 13:48:23 +0300#39167] [C: 1624]  INFO -- amazon_spider: Browser: driver mechanize has been destroyed
+I, [2025-12-16 13:48:23 +0300#39167] [M: 1152]  INFO -- amazon_spider: Spider: in_parallel: stopped processing 306 urls within 3 threads, total time: 2m, 37s
+I, [2025-12-16 13:48:23 +0300#39167] [M: 1152]  INFO -- amazon_spider: Browser: driver mechanize has been destroyed
+I, [2025-12-16 13:48:23 +0300#39167] [M: 1152]  INFO -- amazon_spider: Spider: stopped: {spider_name: "amazon_spider", status: :completed, error: nil, environment: "development", start_time: 2025-12-16 13:45:12.5338 +0300, stop_time: 2025-12-16 13:48:23.526221 +0300, running_time: "3m, 10s", visits: {requests: 307, responses: 307}, items: {sent: 0, processed: 0}, events: {requests_errors: {}, drop_items_errors: {}, custom: {}}}
+vic@Vics-MacBook-Air single % 
 
 ```
 </details>
@@ -1066,35 +1028,39 @@ I, [2018-08-22 14:49:12 +0400#13033] [M: 46982297486840]  INFO -- amazon_spider:
 ```json
 [
   {
-    "title": "Web Scraping with Python: Collecting More Data from the Modern Web2nd Edition",
-    "url": "https://www.amazon.com/Web-Scraping-Python-Collecting-Modern/dp/1491985577/",
-    "price": "$26.94",
-    "publisher": "O'Reilly Media; 2 edition (April 14, 2018)",
+    "title": "Web Scraping with Python: Data Extraction from the Modern Web 3rd Edition",
+    "url": "https://www.amazon.com/Web-Scraping-Python-Extraction-Modern/dp/1098145356/",
+    "price": "$27.00",
+    "author": "Ryan Mitchell",
+    "publication_date": "March 26, 2024",
     "position": 1
   },
   {
-    "title": "Python Web Scraping Cookbook: Over 90 proven recipes to get you scraping with Python, micro services, Docker and AWS",
-    "url": "https://www.amazon.com/Python-Web-Scraping-Cookbook-scraping/dp/1787285219/",
-    "price": "$39.99",
-    "publisher": "Packt Publishing – ebooks Account (February 9, 2018)",
+    "title": "Web Scraping with Python: Collecting More Data from the Modern Web 2nd Edition",
+    "url": "https://www.amazon.com/Web-Scraping-Python-Collecting-Modern/dp/1491985577/",
+    "price": "$13.20 - $38.15",
+    "author": "Ryan Mitchell",
+    "publication_date": "May 8, 2018",
     "position": 2
   },
   {
-    "title": "Web Scraping with Python: Collecting Data from the Modern Web1st Edition",
-    "url": "https://www.amazon.com/Web-Scraping-Python-Collecting-Modern/dp/1491910291/",
-    "price": "$15.75",
-    "publisher": "O'Reilly Media; 1 edition (July 24, 2015)",
+    "title": "Scripting: Automation with Bash, PowerShell, and Python—Automate Everyday IT Tasks from Backups to Web Scraping in Just a Few Lines of Code (Rheinwerk Computing) First Edition",
+    "url": "https://www.amazon.com/Scripting-Automation-Bash-PowerShell-Python/dp/1493225561/",
+    "price": "$47.02",
+    "author": "Michael Kofler",
+    "publication_date": "February 25, 2024",
     "position": 3
   },
 
-  ...
-
+  // ...
+  
   {
-    "title": "Instant Web Scraping with Java by Ryan Mitchell (2013-08-26)",
-    "url": "https://www.amazon.com/Instant-Scraping-Java-Mitchell-2013-08-26/dp/B01FEM76X2/",
-    "price": "$35.82",
-    "publisher": "Packt Publishing (2013-08-26) (1896)",
-    "position": 52
+    "title": "Introduction to Python Important points for efficient data collection with scraping (Japanese Edition) Kindle Edition",
+    "url": "https://www.amazon.com/Introduction-Important-efficient-collection-scraping-ebook/dp/B0D2MLXFT6/",
+    "price": "$0.00",
+    "author": "r",
+    "publication_date": "April 24, 2024",
+    "position": 306
   }
 ]
 ```
@@ -1807,22 +1773,20 @@ end
 
 spiders/github_spider.rb
 ```ruby
-class GithubSpider < ApplicationSpider
+class GithubSpider < Kimurai::Base
   @name = "github_spider"
   @engine = :selenium_chrome
-  @pipelines = [:validator]
-  @start_urls = ["https://github.com/search?q=Ruby%20Web%20Scraping"]
+  @start_urls = ["https://github.com/search?q=ruby+web+scraping&type=repositories"]
   @config = {
-    user_agent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.84 Safari/537.36",
-    before_request: { delay: 4..7 }
+    before_request: { delay: 3..5 }
   }
 
   def parse(response, url:, data: {})
-    response.xpath("//ul[@class='repo-list']/div//h3/a").each do |a|
+    response.xpath("//div[@data-testid='results-list']//div[contains(@class, 'search-title')]/a").each do |a|
       request_to :parse_repo_page, url: absolute_url(a[:href], base: url)
     end
 
-    if next_page = response.at_xpath("//a[@class='next_page']")
+    if next_page = response.at_xpath("//a[@rel='next']")
       request_to :parse, url: absolute_url(next_page[:href], base: url)
     end
   end
@@ -1830,17 +1794,17 @@ class GithubSpider < ApplicationSpider
   def parse_repo_page(response, url:, data: {})
     item = {}
 
-    item[:owner] = response.xpath("//h1//a[@rel='author']").text
-    item[:repo_name] = response.xpath("//h1/strong[@itemprop='name']/a").text
+    item[:owner] = response.xpath("//a[@rel='author']").text.squish
+    item[:repo_name] = response.xpath("//strong[@itemprop='name']").text.squish
     item[:repo_url] = url
-    item[:description] = response.xpath("//span[@itemprop='about']").text.squish
-    item[:tags] = response.xpath("//div[@id='topics-list-container']/div/a").map { |a| a.text.squish }
-    item[:watch_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Watch')]/a[2]").text.squish.delete(",").to_i
-    item[:star_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Star')]/a[2]").text.squish.delete(",").to_i
-    item[:fork_count] = response.xpath("//ul[@class='pagehead-actions']/li[contains(., 'Fork')]/a[2]").text.squish.delete(",").to_i
-    item[:last_commit] = response.xpath("//span[@itemprop='dateModified']/*").text
+    item[:description] = response.xpath("//div[h2[text()='About']]/p").text.squish
+    item[:tags] = response.xpath("//div/a[contains(@title, 'Topic')]").map { |a| a.text.squish }
+    item[:watch_count] = response.xpath("//div/h3[text()='Watchers']/following-sibling::div[1]/a/strong").text.squish
+    item[:star_count] = response.xpath("//div/h3[text()='Stars']/following-sibling::div[1]/a/strong").text.squish
+    item[:fork_count] = response.xpath("//div/h3[text()='Forks']/following-sibling::div[1]/a/strong").text.squish
+    item[:last_commit] = response.xpath("//div[@data-testid='latest-commit-details']//relative-time/text()").text.squish
 
-    send_item item
+    save_to "results.json", item, format: :pretty_json
   end
 end
 ```
@@ -1848,37 +1812,37 @@ end
 ```
 $ bundle exec kimurai crawl github_spider
 
-I, [2018-08-22 15:56:35 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Spider: started: github_spider
-D, [2018-08-22 15:56:35 +0400#1358] [M: 47347279209980] DEBUG -- github_spider: BrowserBuilder (selenium_chrome): created browser instance
-I, [2018-08-22 15:56:40 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Browser: started get request to: https://github.com/search?q=Ruby%20Web%20Scraping
-I, [2018-08-22 15:56:44 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Browser: finished get request to: https://github.com/search?q=Ruby%20Web%20Scraping
-I, [2018-08-22 15:56:44 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Info: visits: requests: 1, responses: 1
-D, [2018-08-22 15:56:44 +0400#1358] [M: 47347279209980] DEBUG -- github_spider: Browser: driver.current_memory: 116182
-D, [2018-08-22 15:56:44 +0400#1358] [M: 47347279209980] DEBUG -- github_spider: Browser: sleep 5 seconds before request...
+I, [2018-08-22 15:56:35 +0400#1358]  INFO -- github_spider: Spider: started: github_spider
+D, [2018-08-22 15:56:35 +0400#1358] DEBUG -- github_spider: BrowserBuilder (selenium_chrome): created browser instance
+I, [2018-08-22 15:56:40 +0400#1358]  INFO -- github_spider: Browser: started get request to: https://github.com/search?q=Ruby%20Web%20Scraping
+I, [2018-08-22 15:56:44 +0400#1358]  INFO -- github_spider: Browser: finished get request to: https://github.com/search?q=Ruby%20Web%20Scraping
+I, [2018-08-22 15:56:44 +0400#1358]  INFO -- github_spider: Info: visits: requests: 1, responses: 1
+D, [2018-08-22 15:56:44 +0400#1358] DEBUG -- github_spider: Browser: driver.current_memory: 116182
+D, [2018-08-22 15:56:44 +0400#1358] DEBUG -- github_spider: Browser: sleep 5 seconds before request...
 
-I, [2018-08-22 15:56:49 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Browser: started get request to: https://github.com/lorien/awesome-web-scraping
-I, [2018-08-22 15:56:50 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Browser: finished get request to: https://github.com/lorien/awesome-web-scraping
-I, [2018-08-22 15:56:50 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Info: visits: requests: 2, responses: 2
-D, [2018-08-22 15:56:50 +0400#1358] [M: 47347279209980] DEBUG -- github_spider: Browser: driver.current_memory: 217432
-D, [2018-08-22 15:56:50 +0400#1358] [M: 47347279209980] DEBUG -- github_spider: Pipeline: starting processing item through 1 pipeline...
-I, [2018-08-22 15:56:50 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Pipeline: processed: {"owner":"lorien","repo_name":"awesome-web-scraping","repo_url":"https://github.com/lorien/awesome-web-scraping","description":"List of libraries, tools and APIs for web scraping and data processing.","tags":["awesome","awesome-list","web-scraping","data-processing","python","javascript","php","ruby"],"watch_count":159,"star_count":2423,"fork_count":358,"last_commit":"4 days ago"}
-I, [2018-08-22 15:56:50 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Info: items: sent: 1, processed: 1
-D, [2018-08-22 15:56:50 +0400#1358] [M: 47347279209980] DEBUG -- github_spider: Browser: sleep 6 seconds before request...
+I, [2018-08-22 15:56:49 +0400#1358]  INFO -- github_spider: Browser: started get request to: https://github.com/lorien/awesome-web-scraping
+I, [2018-08-22 15:56:50 +0400#1358]  INFO -- github_spider: Browser: finished get request to: https://github.com/lorien/awesome-web-scraping
+I, [2018-08-22 15:56:50 +0400#1358]  INFO -- github_spider: Info: visits: requests: 2, responses: 2
+D, [2018-08-22 15:56:50 +0400#1358] DEBUG -- github_spider: Browser: driver.current_memory: 217432
+D, [2018-08-22 15:56:50 +0400#1358] DEBUG -- github_spider: Pipeline: starting processing item through 1 pipeline...
+I, [2018-08-22 15:56:50 +0400#1358]  INFO -- github_spider: Pipeline: processed: {"owner":"lorien","repo_name":"awesome-web-scraping","repo_url":"https://github.com/lorien/awesome-web-scraping","description":"List of libraries, tools and APIs for web scraping and data processing.","tags":["awesome","awesome-list","web-scraping","data-processing","python","javascript","php","ruby"],"watch_count":159,"star_count":2423,"fork_count":358,"last_commit":"4 days ago"}
+I, [2018-08-22 15:56:50 +0400#1358]  INFO -- github_spider: Info: items: sent: 1, processed: 1
+D, [2018-08-22 15:56:50 +0400#1358] DEBUG -- github_spider: Browser: sleep 6 seconds before request...
 
 ...
 
-I, [2018-08-22 16:11:50 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Browser: started get request to: https://github.com/preston/idclight
-I, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Browser: finished get request to: https://github.com/preston/idclight
-I, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Info: visits: requests: 140, responses: 140
-D, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980] DEBUG -- github_spider: Browser: driver.current_memory: 211713
+I, [2018-08-22 16:11:50 +0400#1358]  INFO -- github_spider: Browser: started get request to: https://github.com/preston/idclight
+I, [2018-08-22 16:11:51 +0400#1358]  INFO -- github_spider: Browser: finished get request to: https://github.com/preston/idclight
+I, [2018-08-22 16:11:51 +0400#1358]  INFO -- github_spider: Info: visits: requests: 140, responses: 140
+D, [2018-08-22 16:11:51 +0400#1358] DEBUG -- github_spider: Browser: driver.current_memory: 211713
 
-D, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980] DEBUG -- github_spider: Pipeline: starting processing item through 1 pipeline...
-E, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980] ERROR -- github_spider: Pipeline: dropped: #<Kimurai::Pipeline::DropItemError: Repository doesn't have enough stars>, item: {:owner=>"preston", :repo_name=>"idclight", :repo_url=>"https://github.com/preston/idclight", :description=>"A Ruby gem for accessing the freely available IDClight (IDConverter Light) web service, which convert between different types of gene IDs such as Hugo and Entrez. Queries are screen scraped from http://idclight.bioinfo.cnio.es.", :tags=>[], :watch_count=>6, :star_count=>1, :fork_count=>0, :last_commit=>"on Apr 12, 2012"}
+D, [2018-08-22 16:11:51 +0400#1358] DEBUG -- github_spider: Pipeline: starting processing item through 1 pipeline...
+E, [2018-08-22 16:11:51 +0400#1358] ERROR -- github_spider: Pipeline: dropped: #<Kimurai::Pipeline::DropItemError: Repository doesn't have enough stars>, item: {:owner=>"preston", :repo_name=>"idclight", :repo_url=>"https://github.com/preston/idclight", :description=>"A Ruby gem for accessing the freely available IDClight (IDConverter Light) web service, which convert between different types of gene IDs such as Hugo and Entrez. Queries are screen scraped from http://idclight.bioinfo.cnio.es.", :tags=>[], :watch_count=>6, :star_count=>1, :fork_count=>0, :last_commit=>"on Apr 12, 2012"}
 
-I, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Info: items: sent: 127, processed: 12
+I, [2018-08-22 16:11:51 +0400#1358]  INFO -- github_spider: Info: items: sent: 127, processed: 12
 
-I, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Browser: driver selenium_chrome has been destroyed
-I, [2018-08-22 16:11:51 +0400#1358] [M: 47347279209980]  INFO -- github_spider: Spider: stopped: {:spider_name=>"github_spider", :status=>:completed, :environment=>"development", :start_time=>2018-08-22 15:56:35 +0400, :stop_time=>2018-08-22 16:11:51 +0400, :running_time=>"15m, 16s", :visits=>{:requests=>140, :responses=>140}, :items=>{:sent=>127, :processed=>12}, :error=>nil}
+I, [2018-08-22 16:11:51 +0400#1358]  INFO -- github_spider: Browser: driver selenium_chrome has been destroyed
+I, [2018-08-22 16:11:51 +0400#1358]  INFO -- github_spider: Spider: stopped: {:spider_name=>"github_spider", :status=>:completed, :environment=>"development", :start_time=>2018-08-22 15:56:35 +0400, :stop_time=>2018-08-22 16:11:51 +0400, :running_time=>"15m, 16s", :visits=>{:requests=>140, :responses=>140}, :items=>{:sent=>127, :processed=>12}, :error=>nil}
 ```
 </details><br>
 

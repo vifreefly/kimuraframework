@@ -214,7 +214,6 @@ I, [2025-12-16 12:47:21]  INFO -- infinite_scroll_spider: Spider: stopped: {spid
 * [Parallel scraping](#parallel-crawling-using-in_parallel) using simple method `in_parallel`
 * **Two modes:** use single file for a simple spider, or [generate](#project-mode) Scrapy-like **project**
 * Convenient development mode with [console](#interactive-console), colorized logger and debugger ([Pry](https://github.com/pry/pry), [Byebug](https://github.com/deivid-rodriguez/byebug))
-* Automated [server environment setup](#setup) (for Ubuntu 18.04) and [deploy](#deploy) using commands `kimurai setup` and `kimurai deploy` ([Ansible](https://github.com/ansible/ansible) under the hood)
 * Command-line [runner](#runner) to run all project spiders one-by-one or in parallel
 
 ## Table of Contents
@@ -247,9 +246,6 @@ I, [2025-12-16 12:47:21]  INFO -- infinite_scroll_spider: Spider: stopped: {spid
       * [crawl! method](#crawl-method)
       * [parse! method](#parsemethod_name-url-method)
       * [Kimurai.list and Kimurai.find_by_name](#kimurailist-and-kimuraifind_by_name)
-    * [Automated sever setup and deployment](#automated-sever-setup-and-deployment)
-      * [Setup](#setup)
-      * [Deploy](#deploy)
   * [Spider @config](#spider-config)
     * [All available @config options](#all-available-config-options)
     * [@config settings inheritance](#config-settings-inheritance)
@@ -1281,49 +1277,6 @@ Kimurai.find_by_name("reddit_spider")
 # => RedditSpider
 ```
 
-
-### Automated sever setup and deployment
-> **EXPERIMENTAL**
-
-#### Setup
-You can automatically setup a [required environment](#installation) for Kimurai on a remote server (currently there is only support for Ubuntu Server 18.04) using the `$ kimurai setup` command. `setup` will perform an installation of the latest Ruby with Rbenv, browsers with webdrivers, and database clients (only the clients) for MySQL, Postgres and MongoDB (so you can connect to a remote database from ruby).
-
-> To perform a remote server setup, [Ansible](https://github.com/ansible/ansible) is required **on the local** machine (to install on Ubuntu: `$ sudo apt install ansible`, or for Mac OS X: `$ brew install ansible`)
-
-> It's recommended to use a regular user to setup the server, not `root`. To create a new user, login to the server `$ ssh root@your_server_ip`, type `$ adduser username` to create a user, and `$ gpasswd -a username sudo` to add the new user to a sudo group.
-
-Example:
-
-```bash
-$ kimurai setup deploy@123.123.123.123 --ask-sudo --ssh-key-path path/to/private_key
-```
-
-CLI arguments:
-* `--ask-sudo` pass this argument to ask sudo (user) password for system-wide installation of packages (`apt install`)
-* `--ssh-key-path path/to/private_key` authorization using a private ssh key. You can omit it if the required key has already been [added to the keychain](https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/#adding-your-ssh-key-to-the-ssh-agent) on your local machine (Ansible uses [SSH agent forwarding](https://developer.github.com/v3/guides/using-ssh-agent-forwarding/))
-* `--ask-auth-pass` authorization using user password, an alternative argument to `--ssh-key-path`.
-* `-p port_number` custom port for ssh connection (`-p 2222`)
-
-> You can see the setup playbook [here](lib/kimurai/automation/setup.yml)
-
-#### Deploy
-
-After a successful `setup` you can deploy a spider to the remote server using the `$ kimurai deploy` command. On each deploy, several tasks need to be performed. First, pull a repo from a remote origin to a `~/repo_name` user directory. Secondly, run `bundle install`. Finally, update crontab `whenever --update-crontab` (to update the spider schedule in the schedule.rb file).
-
-Before running `deploy`, make sure your spider directory contains a (1) git repository with a remote origin (BitBucket, GitHub, etc), (2) a `Gemfile`, and (3) a schedule.rb inside a config subdirectory (i.e. `config/schedule.rb`).
-
-Example:
-
-```bash
-$ kimurai deploy deploy@123.123.123.123 --ssh-key-path path/to/private_key --repo-key-path path/to/repo_private_key
-```
-
-CLI arguments: _same as for the [setup](#setup) command_ (except `--ask-sudo`), plus
-* `--repo-url` provide custom repo url (`--repo-url git@bitbucket.org:username/repo_name.git`), otherwise the current `origin/master` will be used (i.e. output from `$ git remote get-url origin`)
-* `--repo-key-path` if the git repository is private, authorization is required to pull the code from the remote server. Use this argument to provide a private repository SSH key. You can omit it if the required key has already been added to your keychain (same as with the `--ssh-key-path` argument)
-
-> You can see the deploy playbook [here](lib/kimurai/automation/deploy.yml)
-
 ## Spider `@config`
 
 Using `@config` you can set several options for a spider; such as proxy, user-agent, default cookies/headers, delay between requests, browser **memory control** and so on:
@@ -1551,7 +1504,6 @@ Structure of the project:
 ├── config/
 │   ├── initializers/
 │   ├── application.rb
-│   ├── automation.yml
 │   ├── boot.rb
 │   └── schedule.rb
 ├── spiders/
@@ -1577,7 +1529,6 @@ Structure of the project:
 * `config/` – directory for configutation files
   * `config/initializers` – [Rails-like initializers](https://guides.rubyonrails.org/configuring.html#using-initializer-files) to load custom code when the framework initializes
   * `config/application.rb` – configuration settings for Kimurai (`Kimurai.configure do` block)
-  * `config/automation.yml` – specify some settings for [setup and deploy](#automated-sever-setup-and-deployment)
   * `config/boot.rb`–  loads framework and project
   * `config/schedule.rb` – Cron [schedule for spiders](#schedule-spiders-using-cron)
 * `spiders/` – directory for spiders

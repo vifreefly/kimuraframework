@@ -24,50 +24,6 @@ module Kimurai
 
     ###
 
-    desc "setup", "Setup server"
-    option :port, aliases: :p, type: :string, banner: "Port for ssh connection"
-    option "ask-sudo", type: :boolean, banner: "Provide sudo password for a user to install system-wide packages"
-    option "ask-auth-pass", type: :boolean, banner: "Auth using password"
-    option "ssh-key-path", type: :string, banner: "Auth using ssh key"
-    option :local, type: :boolean, banner: "Run setup on a local machine (Ubuntu only)"
-    def setup(user_host)
-      command = AnsibleCommandBuilder.new(user_host, options, playbook: "setup").get
-
-      pid = spawn *command
-      Process.wait pid
-    end
-
-    desc "deploy", "Deploy project to the server and update cron schedule"
-    option :port, aliases: :p, type: :string, banner: "Port for ssh connection"
-    option "ask-auth-pass", type: :boolean, banner: "Auth using password"
-    option "ssh-key-path", type: :string, banner: "Auth using ssh key"
-    option "repo-url", type: :string, banner: "Repo url"
-    option "repo-key-path", type: :string, banner: "SSH key for a git repo"
-    option "skip-check", type: :boolean, default: false, banner: "Skip git repository checks"
-    def deploy(user_host)
-      unless options["skip-check"]
-        if !`git status --short`.empty?
-          raise "Deploy: Please commit your changes first"
-        elsif `git remote`.empty?
-          raise "Deploy: Please add remote origin repository to your repo first"
-        elsif !`git rev-list master...origin/master`.empty?
-          raise "Deploy: Please push your commits to the remote origin repo first"
-        end
-      end
-
-      repo_url = options["repo-url"] ? options["repo-url"] : `git remote get-url origin`.strip
-      repo_name = repo_url[/\/([^\/]*)\.git/i, 1]
-
-      command = AnsibleCommandBuilder.new(user_host, options, playbook: "deploy",
-        vars: { repo_url: repo_url, repo_name: repo_name, repo_key_path: options["repo-key-path"] }
-      ).get
-
-      pid = spawn *command
-      Process.wait pid
-    end
-
-    ###
-
     desc "crawl", "Run a particular spider by it's name"
     def crawl(spider_name)
       raise "Can't find Kimurai project" unless inside_project?
@@ -180,4 +136,3 @@ module Kimurai
 end
 
 require_relative 'cli/generator'
-require_relative 'cli/ansible_command_builder'

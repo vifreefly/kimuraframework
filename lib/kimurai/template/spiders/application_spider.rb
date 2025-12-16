@@ -48,7 +48,7 @@ class ApplicationSpider < Kimurai::Base
     # window_size: [1366, 768],
 
     # Skip images downloading if true, works for all engines
-    disable_images: true,
+    # disable_images: true,
 
     # Selenium engines only: headless mode, `:native` or `:virtual_display` (default is :native)
     # Although native mode has a better performance, virtual display mode

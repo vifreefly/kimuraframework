@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Validator < Kimurai::Pipeline
   def process_item(item, options: {})
     # Here you can validate item and raise `DropItemError`

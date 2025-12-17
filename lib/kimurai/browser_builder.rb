@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 module Kimurai
   module BrowserBuilder
     def self.build(engine, config = {}, spider:)
       begin
         require "kimurai/browser_builder/#{engine}_builder"
-      rescue LoadError => e
+      rescue LoadError
       end
 
       builder_class_name = "#{engine}_builder".classify

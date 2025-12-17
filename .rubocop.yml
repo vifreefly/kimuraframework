@@ -1,0 +1,6 @@
+AllCops:
+  TargetRubyVersion: 3.1.0
+Style/TrivialAccessors:
+  Enabled: false
+Style/RescueModifier:
+  Enabled: false

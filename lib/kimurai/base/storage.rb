@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Kimurai
   class Base
     class Storage
@@ -24,7 +26,7 @@ module Kimurai
       def add(scope, value)
         @mutex.synchronize do
           database[scope] ||= []
-          if value.kind_of?(Array)
+          if value.is_a?(Array)
             database[scope] += value
             database[scope].uniq!
           else

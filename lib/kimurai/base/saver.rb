@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'json'
 require 'csv'
 
@@ -7,9 +9,7 @@ module Kimurai
       attr_reader :format, :path, :position, :append
 
       def initialize(path, format:, position: true, append: false)
-        unless %i(json pretty_json jsonlines csv).include?(format)
-          raise "SimpleSaver: wrong type of format: #{format}"
-        end
+        raise "SimpleSaver: wrong type of format: #{format}" unless %i[json pretty_json jsonlines csv].include?(format)
 
         @path = path
         @format = format
@@ -44,11 +44,11 @@ module Kimurai
 
         if @index > 1 || append && File.exist?(path)
           file_content = File.read(path).sub(/\}\]\Z/, "\}\,")
-          File.open(path, "w") do |f|
-            f.write(file_content + data.sub(/\A\[/, ""))
+          File.open(path, 'w') do |f|
+            f.write(file_content + data.sub(/\A\[/, ''))
           end
         else
-          File.open(path, "w") { |f| f.write(data) }
+          File.open(path, 'w') { |f| f.write(data) }
         end
       end
 
@@ -57,11 +57,11 @@ module Kimurai
 
         if @index > 1 || append && File.exist?(path)
           file_content = File.read(path).sub(/\}\n\]\Z/, "\}\,\n")
-          File.open(path, "w") do |f|
-            f.write(file_content + data.sub(/\A\[\n/, ""))
+          File.open(path, 'w') do |f|
+            f.write(file_content + data.sub(/\A\[\n/, ''))
           end
         else
-          File.open(path, "w") { |f| f.write(data) }
+          File.open(path, 'w') { |f| f.write(data) }
         end
       end
 
@@ -69,9 +69,9 @@ module Kimurai
         data = JSON.generate(item)
 
         if @index > 1 || append && File.exist?(path)
-          File.open(path, "a") { |file| file.write("\n" + data) }
+          File.open(path, 'a') { |file| file.write("\n#{data}") }
         else
-          File.open(path, "w") { |file| file.write(data) }
+          File.open(path, 'w') { |file| file.write(data) }
         end
       end
 
@@ -79,11 +79,11 @@ module Kimurai
         data = flatten_hash(item)
 
         if @index > 1 || append && File.exist?(path)
-          CSV.open(path, "a+", force_quotes: true) do |csv|
+          CSV.open(path, 'a+', force_quotes: true) do |csv|
             csv << data.values
           end
         else
-          CSV.open(path, "w", force_quotes: true) do |csv|
+          CSV.open(path, 'w', force_quotes: true) do |csv|
             csv << data.keys
             csv << data.values
           end
@@ -102,5 +102,3 @@ module Kimurai
     end
   end
 end
-
-

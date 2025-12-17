@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
 module Kimurai
   class Pipeline
     class DropItemError < StandardError; end
+
     def self.name
-      self.to_s.sub(/.*?::/, "").underscore.to_sym
+      to_s.sub(/.*?::/, '').underscore.to_sym
     end
 
     include BaseHelper

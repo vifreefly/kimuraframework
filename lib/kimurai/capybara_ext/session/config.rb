@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Capybara
   class SessionConfig
     attr_accessor :cookies, :proxy, :user_agent, :encoding

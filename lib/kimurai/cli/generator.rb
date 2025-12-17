@@ -1,17 +1,19 @@
+# frozen_string_literal: true
+
 module Kimurai
   class CLI
     class Generator < Thor::Group
       include Thor::Actions
 
       def self.source_root
-        File.dirname(File.expand_path('..', __FILE__))
+        File.dirname(File.expand_path(__dir__))
       end
 
       def generate_project(project_name)
-        directory "template", project_name
+        directory 'template', project_name
         inside(project_name) do
-          run "bundle install"
-          run "git init"
+          run 'bundle install'
+          run 'git init'
         end
       end
 
@@ -33,24 +35,24 @@ module Kimurai
           RUBY
         end
 
-        unless in_project
-          insert_into_file spider_path, "  @engine = :mechanize\n", after: "@name = \"#{spider_name}\"\n"
-          prepend_to_file spider_path, "require 'kimurai'\n\n"
-          append_to_file spider_path, "\n#{spider_class}.crawl!"
-        end
+        return if in_project
+
+        insert_into_file spider_path, "  @engine = :mechanize\n", after: "@name = \"#{spider_name}\"\n"
+        prepend_to_file spider_path, "require 'kimurai'\n\n"
+        append_to_file spider_path, "\n#{spider_class}.crawl!"
       end
 
       def generate_schedule
-        copy_file "template/config/schedule.rb", "./schedule.rb"
+        copy_file 'template/config/schedule.rb', './schedule.rb'
       end
 
       private
 
       def to_spider_class(string)
-        string.sub(/^./) { $&.capitalize }
-          .gsub(/(?:_|(\/))([a-z\d]*)/) { "#{$1}#{$2.capitalize}" }
-          .gsub(/(?:-|(\/))([a-z\d]*)/) { "Dash#{$2.capitalize}" }
-          .gsub(/(?:\.|(\/))([a-z\d]*)/) { "#{$1}#{$2.capitalize}" }
+        string.sub(/^./) { ::Regexp.last_match(0).capitalize }
+              .gsub(%r{(?:_|(/))([a-z\d]*)}) { "#{::Regexp.last_match(1)}#{::Regexp.last_match(2).capitalize}" }
+              .gsub(%r{(?:-|(/))([a-z\d]*)}) { "Dash#{::Regexp.last_match(2).capitalize}" }
+              .gsub(%r{(?:\.|(/))([a-z\d]*)}) { "#{::Regexp.last_match(1)}#{::Regexp.last_match(2).capitalize}" }
       end
     end
   end

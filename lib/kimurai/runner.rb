@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pmap'
 
 module Kimurai
@@ -19,17 +21,17 @@ module Kimurai
         spiders: @spiders
       }
 
-      if time_zone = Kimurai.configuration.time_zone
+      if (time_zone = Kimurai.configuration.time_zone)
         Kimurai.time_zone = time_zone
       end
 
-      ENV.store("SESSION_ID", @start_time.to_i.to_s)
-      ENV.store("RBCAT_COLORIZER", "false")
+      ENV.store('SESSION_ID', @start_time.to_i.to_s)
+      ENV.store('RBCAT_COLORIZER', 'false')
     end
 
     def run!(exception_on_fail: true)
       puts ">>> Runner: started: #{session_info}"
-      if at_start_callback = Kimurai.configuration.runner_at_start_callback
+      if (at_start_callback = Kimurai.configuration.runner_at_start_callback)
         at_start_callback.call(session_info)
       end
 
@@ -38,7 +40,7 @@ module Kimurai
         next unless running
 
         puts "> Runner: started spider: #{spider}, index: #{i}"
-        pid = spawn("bundle", "exec", "kimurai", "crawl", spider, [:out, :err] => "log/#{spider}.log")
+        pid = spawn('bundle', 'exec', 'kimurai', 'crawl', spider, %i[out err] => "log/#{spider}.log")
         Process.wait pid
 
         puts "< Runner: stopped spider: #{spider}, index: #{i}"
@@ -51,7 +53,7 @@ module Kimurai
     else
       session_info.merge!(status: :completed, stop_time: Time.now)
     ensure
-      if at_stop_callback = Kimurai.configuration.runner_at_stop_callback
+      if (at_stop_callback = Kimurai.configuration.runner_at_stop_callback)
         at_stop_callback.call(session_info)
       end
       puts "<<< Runner: stopped: #{session_info}"

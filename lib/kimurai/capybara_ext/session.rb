@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'capybara'
 require 'nokogiri'
 require 'json'
@@ -7,11 +9,12 @@ module Capybara
   class Session
     attr_accessor :spider
 
-    alias_method :original_visit, :visit
+    alias original_visit visit
     def visit(visit_uri, delay: config.before_request[:delay], skip_request_options: false, max_retries: 3)
       if spider
         process_delay(delay) if delay
-        retries, sleep_interval = 0, 0
+        retries = 0
+        sleep_interval = 0
 
         begin
           check_request_options(visit_uri) unless skip_request_options
@@ -19,7 +22,7 @@ module Capybara
           spider.class.update(:visits, :requests) if spider.with_info
 
           original_visit(visit_uri)
-        rescue => e
+        rescue StandardError => e
           if match_error?(e, type: :to_skip)
             logger.error "Browser: skip request error: #{e.inspect}, url: #{visit_uri}"
             spider.add_event(:requests_errors, e.inspect) if spider.with_info
@@ -29,7 +32,7 @@ module Capybara
             spider.add_event(:requests_errors, e.inspect) if spider.with_info
 
             if (retries += 1) <= max_retries
-              logger.info "Browser: sleep #{(sleep_interval += 15)} seconds and process retry № #{retries} to the url: #{visit_uri}"
+              logger.info "Browser: sleep #{sleep_interval += 15} seconds and process retry № #{retries} to the url: #{visit_uri}"
               sleep sleep_interval and retry
             else
               logger.error "Browser: all retries (#{retries - 1}) to the url #{visit_uri} are gone"
@@ -48,7 +51,7 @@ module Capybara
             logger.info "Info: visits: requests: #{spider.class.visits[:requests]}, responses: #{spider.class.visits[:responses]}"
           end
 
-          if memory = driver.current_memory
+          if (memory = driver.current_memory)
             logger.debug "Browser: driver.current_memory: #{memory}"
           end
         end
@@ -62,7 +65,7 @@ module Capybara
         begin
           @driver.quit
         # handle Net::ReadTimeout error for Selenium like drivers
-        rescue Net::ReadTimeout => e
+        rescue Net::ReadTimeout
           @driver.quit
         end
 
@@ -85,7 +88,7 @@ module Capybara
       when :html
         if config.encoding
           if config.encoding == :auto
-            charset = body.force_encoding("ISO-8859-1").encode("UTF-8")[/<meta.*?charset=["]?([\w+\d+\-]*)/i, 1]
+            charset = body.force_encoding('ISO-8859-1').encode('UTF-8')[/<meta.*?charset="?([\w+\d+-]*)/i, 1]
             Nokogiri::HTML(body, nil, charset)
           else
             Nokogiri::HTML(body, nil, config.encoding)
@@ -103,23 +106,22 @@ module Capybara
     # Handy method to perform some processing in the new tab within block and then automatically close this tab:
     # Usage (url):
     # browser.within_new_window_by(url: "https://google.com") do
-      # do some stuff and then automatically close this tab and return back to the first tab
+    # do some stuff and then automatically close this tab and return back to the first tab
     # end
     # Usage (action) (when new tab opening by some action, for example by clicking
     # on a particular element):
     # action = -> { browser.find("//some/element/path").click }
     # browser.within_new_window_by(action: action) do
-      # do some stuff and then automatically close this tab and return back to the first tab
+    # do some stuff and then automatically close this tab and return back to the first tab
     # end
     def within_new_window_by(action: nil, url: nil)
-      case
-      when action
+      if action
         opened_window = window_opened_by { action.call }
         within_window(opened_window) do
           yield
           current_window.close
         end
-      when url
+      elsif url
         within_window(open_new_window) do
           visit(url)
 
@@ -132,14 +134,14 @@ module Capybara
     ###
 
     def scroll_to_bottom
-      execute_script("window.scrollBy(0,10000)")
+      execute_script('window.scrollBy(0,10000)')
     end
 
     private
 
     def skip_error_on_failure?(e)
       config.retry_request_errors.any? do |error|
-        error[:skip_on_failure] && e.class.ancestors.include?(error[:error]) if error.kind_of?(Hash)
+        error[:skip_on_failure] && e.class.ancestors.include?(error[:error]) if error.is_a?(Hash)
       end
     end
 
@@ -151,10 +153,10 @@ module Capybara
         end
 
       errors.any? do |error|
-        if error.kind_of?(Hash)
+        if error.is_a?(Hash)
           match_class = e.class.ancestors.include?(error[:error])
           if error[:message].present?
-            if error[:message].kind_of?(Regexp)
+            if error[:message].is_a?(Regexp)
               e.message&.match?(error[:message])
             else
               e.message&.include?(error[:message])
@@ -169,14 +171,14 @@ module Capybara
     end
 
     def process_delay(delay)
-      interval = (delay.class == Range ? rand(delay) : delay)
+      interval = (delay.instance_of?(Range) ? rand(delay) : delay)
       logger.debug "Browser: sleep #{interval.round(2)} #{'second'.pluralize(interval)} before request..."
       sleep interval
     end
 
     def check_request_options(url_to_visit)
       # restart_if
-      if memory_limit = config.restart_if[:memory_limit]
+      if (memory_limit = config.restart_if[:memory_limit])
         memory = driver.current_memory
         if memory && memory >= memory_limit
           logger.warn "Browser: memory_limit #{memory_limit} of driver.current_memory (#{memory}) is exceeded (engine: #{mode})"
@@ -184,7 +186,7 @@ module Capybara
         end
       end
 
-      if requests_limit = config.restart_if[:requests_limit]
+      if (requests_limit = config.restart_if[:requests_limit])
         requests = driver.requests
         if requests >= requests_limit
           logger.warn "Browser: requests_limit #{requests_limit} of driver.requests (#{requests}) is exceeded (engine: #{mode})"
@@ -204,7 +206,7 @@ module Capybara
 
       if config.before_request[:clear_cookies]
         driver.clear_cookies
-        logger.debug "Browser: cleared cookies before request"
+        logger.debug 'Browser: cleared cookies before request'
       end
 
       if config.before_request[:clear_and_set_cookies]
@@ -212,29 +214,27 @@ module Capybara
 
         # (Selenium only) if browser is not visited yet any page, visit url_to_visit
         # first and then set cookies (needs after browser restart):
-        if driver.visited.nil? && mode.match?(/selenium/)
-          visit(url_to_visit, skip_request_options: true)
-        end
+        visit(url_to_visit, skip_request_options: true) if driver.visited.nil? && mode.match?(/selenium/)
 
         config.cookies.each do |cookie|
           driver.set_cookie(cookie[:name], cookie[:value], cookie)
         end
 
-        logger.debug "Browser: cleared and set cookies before request"
+        logger.debug 'Browser: cleared and set cookies before request'
       end
 
       # user_agent
       if config.before_request[:change_user_agent]
-        driver.add_header("User-Agent", config.user_agent.call)
-        logger.debug "Browser: changed user_agent before request"
+        driver.add_header('User-Agent', config.user_agent.call)
+        logger.debug 'Browser: changed user_agent before request'
       end
 
       # proxy
-      if config.before_request[:change_proxy]
-        proxy_string = config.proxy.call
-        driver.set_proxy(*proxy_string.split(":"))
-        logger.debug "Browser: changed proxy before request"
-      end
+      return unless config.before_request[:change_proxy]
+
+      proxy_string = config.proxy.call
+      driver.set_proxy(*proxy_string.split(':'))
+      logger.debug 'Browser: changed proxy before request'
     end
 
     def logger

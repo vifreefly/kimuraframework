@@ -312,7 +312,7 @@ gem update --system
 
 ```bash
 # Install basic tools
-sudo apt install -q -y unzip wget tar openssl
+sudo apt install -q -y unzip wget tar openssl lsof
 
 # Install xvfb (for virtual_display headless mode, in addition to native)
 sudo apt install -q -y xvfb

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'capybara'
 
 Capybara.configure do |config|

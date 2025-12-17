@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Kimurai
   module BrowserBuilder
     def self.build(engine, config = {}, spider:)

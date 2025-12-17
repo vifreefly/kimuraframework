@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Saver < Kimurai::Pipeline
   def process_item(item, options: {})
     # Here you can save item to the database, send it to a remote API or

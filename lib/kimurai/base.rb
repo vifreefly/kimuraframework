@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'English'
 require_relative 'base/saver'
 require_relative 'base/storage'

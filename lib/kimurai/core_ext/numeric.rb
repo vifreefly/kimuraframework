@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Numeric
   # https://stackoverflow.com/a/1679963
   def duration

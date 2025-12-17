@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 Kimurai.configure do |config|
   # Default logger has colored mode in development.
   # If you would like to disable it, set `colorize_logger` to false.

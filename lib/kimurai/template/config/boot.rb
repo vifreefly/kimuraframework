@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # require project gems
 require 'bundler/setup'
 Bundler.require(:default, Kimurai.env)

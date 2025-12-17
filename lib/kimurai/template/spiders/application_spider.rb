@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 # ApplicationSpider is a default base spider class. You can set here
 # default settings for all spiders inherited from ApplicationSpider.
 # To generate a new spider, run: `$ kimurai generate spider spider_name`

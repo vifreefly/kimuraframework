@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class Array
   def in_sorted_groups(number, fill_width = nil)
     sorted_groups = Array.new(number) { |_a| [] }

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 module Kimurai
   class CLI
     class Generator < Thor::Group

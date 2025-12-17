@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'murmurhash3'
 
 class String

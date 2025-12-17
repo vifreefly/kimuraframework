@@ -1,4 +1,25 @@
 # CHANGELOG
+## 2.0.0
+### Breaking changes 2.0.0
+* **Minimum Ruby version is now 3.1+** (due to Ruby 3.0+ keyword argument changes and Ruby 3.4 compatibility requirements)
+* **Removed poltergeist_phantomjs driver** - PhantomJS is no longer maintained. Use `:selenium_chrome`, `:selenium_firefox`, or `:mechanize` engines instead
+* **Removed Ansible automation/deployment feature** - Removed all Ansible playbooks and CLI commands for server setup and deployment
+
+### New
+* **Selenium Manager support** - Selenium 4.6+ automatically downloads and manages webdrivers. No need to manually install chromedriver/geckodriver
+
+### Fixes
+* **Ruby 3.4 compatibility:** Fixed deprecated `Dir.exists?` and `File.exists?` methods (changed to `Dir.exist?` and `File.exist?`)
+* **Ruby 3.4 compatibility:** Added bundled gem dependencies (`mutex_m`, `nkf`, `reline`) that were extracted from Ruby stdlib
+* **Ruby 3.0+ compatibility:** Fixed keyword argument splatting in `Saver` initialization
+* **Ruby 3.0+ compatibility:** Replaced deprecated `URI.escape` with `URI::DEFAULT_PARSER.escape`
+* **Selenium 4.x compatibility:** Updated Chrome options initialization to match new Selenium WebDriver API
+* Updated capybara-mechanize dependency with Ruby 3.4 bundled gems (`mutex_m`, `logger`, `base64`, `nkf`, `reline`)
+
+### Improvements
+* Simplified browser restart logic by removing poltergeist-specific code
+* Updated project templates and documentation to reflect removed poltergeist driver
+
 ## 1.4.0
 ### New
 * Add `encoding` config option (see [All available config options](https://github.com/vifreefly/kimuraframework#all-available-config-options))

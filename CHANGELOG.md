@@ -1,4 +1,8 @@
 # CHANGELOG
+## 2.0.1
+### Fixes
+* Remove xpath as default Capybara selector type (fixes https://github.com/vifreefly/kimuraframework/issues/28)
+
 ## 2.0.0
 ### Breaking changes 2.0.0
 * **Minimum Ruby version is now 3.1+** (due to Ruby 3.0+ keyword argument changes and Ruby 3.4 compatibility requirements)

@@ -19,23 +19,36 @@ module Kimurai
 
       def save(item)
         @mutex.synchronize do
-          @index += 1
-          item[:position] = @index if position
+          if item.is_a?(Array)
+            item.each do |it|
+              @index += 1
+              it[:position] = @index if position
 
-          case format
-          when :json
-            save_to_json(item)
-          when :pretty_json
-            save_to_pretty_json(item)
-          when :jsonlines
-            save_to_jsonlines(item)
-          when :csv
-            save_to_csv(item)
+              save_item(it)
+            end
+          else
+            @index += 1
+            item[:position] = @index if position
+            
+            save_item(item)
           end
         end
       end
 
       private
+
+      def save_item(item)
+        case format
+        when :json
+          save_to_json(item)
+        when :pretty_json
+          save_to_pretty_json(item)
+        when :jsonlines
+          save_to_jsonlines(item)
+        when :csv
+          save_to_csv(item)
+        end
+      end
 
       def save_to_json(item)
         data = JSON.generate([item])

@@ -6,9 +6,7 @@
   <h1>Kimurai</h1>
 </div>
 
-Kimurai is a modern web scraping framework written in Ruby which **works out of the box with Headless Antidetect Chromium/Firefox** or simple HTTP requests and **allows you to scrape and interact with JavaScript rendered websites.**
-
-Kimurai is based on the well-known [Capybara](https://github.com/teamcapybara/capybara) and [Nokogiri](https://github.com/sparklemotion/nokogiri) gems, so you don't have to learn anything new. Let's try an example:
+Kimurai is a modern Ruby web scraping framework designed to scrape and interact with JavaScript-rendered websites using headless antidetect Chromium, Firefox, or simple HTTP requests — right out of the box:
 
 ```ruby
 # github_spider.rb
@@ -200,7 +198,23 @@ I, [2025-12-16 12:47:15]  INFO -- infinite_scroll_spider: > Continue scrolling, 
 I, [2025-12-16 12:47:17]  INFO -- infinite_scroll_spider: > Continue scrolling, current posts count is 13...
 I, [2025-12-16 12:47:19]  INFO -- infinite_scroll_spider: > Continue scrolling, current posts count is 15...
 I, [2025-12-16 12:47:21]  INFO -- infinite_scroll_spider: > Pagination is done
-I, [2025-12-16 12:47:21]  INFO -- infinite_scroll_spider: > All posts from page: 1a - Infinite Scroll full page demo; 1b - RGB Schemes logo in Computer Arts; 2a - RGB Schemes logo; 2b - Masonry gets horizontalOrder; 2c - Every vector 2016; 3a - Logo Pizza delivered; 3b - Some CodePens; 3c - 365daysofmusic.com; 3d - Holograms; 4a - Huebee: 1-click color picker; 4b - Word is Flickity is good; Flickity v2 released: groupCells, adaptiveHeight, parallax; New tech gets chatter; Isotope v3 released: stagger in, IE8 out; Packery v2 released
+I, [2025-12-16 12:47:21]  INFO -- infinite_scroll_spider: > All posts from page: 
+
+1a - Infinite Scroll full page demo;
+1b - RGB Schemes logo in Computer Arts;
+2a - RGB Schemes logo;
+2b - Masonry gets horizontalOrder;
+2c - Every vector 2016;
+3a - Logo Pizza delivered;
+3b - Some CodePens;
+3c - 365daysofmusic.com;
+3d - Holograms;
+4a - Huebee: 1-click color picker;
+4b - Word is Flickity is good;
+Flickity v2 released: groupCells, adaptiveHeight, parallax;
+New tech gets chatter; Isotope v3 released: stagger in, IE8 out;
+Packery v2 released
+
 I, [2025-12-16 12:47:21]  INFO -- infinite_scroll_spider: Browser: driver selenium_chrome has been destroyed
 I, [2025-12-16 12:47:21]  INFO -- infinite_scroll_spider: Spider: stopped: {spider_name: "infinite_scroll_spider", status: :completed, error: nil, environment: "development", start_time: 2025-12-16 12:47:05.372053 +0300, stop_time: 2025-12-16 12:47:21.505078 +0300, running_time: "16s", visits: {requests: 1, responses: 1}, items: {sent: 0, processed: 0}, events: {requests_errors: {}, drop_items_errors: {}, custom: {}}}
 ```

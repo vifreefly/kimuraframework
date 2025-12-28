@@ -53,22 +53,22 @@ RSpec.describe Kimurai::Base::Saver do
 
       result = JSON.parse(File.read(file_path), symbolize_names: true)
       expect(result).to eq([
-        { name: 'Alice', age: 30, position: 1 },
-        { name: 'Bob', age: 25, position: 2 }
-      ])
+                             { name: 'Alice', age: 30, position: 1 },
+                             { name: 'Bob', age: 25, position: 2 }
+                           ])
     end
 
     it 'saves array of items' do
       saver.save([
-        { name: 'Alice', age: 30 },
-        { name: 'Bob', age: 25 }
-      ])
+                   { name: 'Alice', age: 30 },
+                   { name: 'Bob', age: 25 }
+                 ])
 
       result = JSON.parse(File.read(file_path), symbolize_names: true)
       expect(result).to eq([
-        { name: 'Alice', age: 30, position: 1 },
-        { name: 'Bob', age: 25, position: 2 }
-      ])
+                             { name: 'Alice', age: 30, position: 1 },
+                             { name: 'Bob', age: 25, position: 2 }
+                           ])
     end
 
     it 'saves without position when disabled' do
@@ -88,9 +88,9 @@ RSpec.describe Kimurai::Base::Saver do
 
       result = JSON.parse(File.read(file_path), symbolize_names: true)
       expect(result).to eq([
-        { name: 'Charlie', age: 35, position: 1 },
-        { name: 'Alice', age: 30, position: 1 }
-      ])
+                             { name: 'Charlie', age: 35, position: 1 },
+                             { name: 'Alice', age: 30, position: 1 }
+                           ])
     end
   end
 
@@ -101,8 +101,8 @@ RSpec.describe Kimurai::Base::Saver do
       saver.save({ name: 'Alice', age: 30 })
 
       content = File.read(file_path)
-      expect(content).to include("  \"name\": \"Alice\"")
-      expect(content).to include("  \"age\": 30")
+      expect(content).to include('  "name": "Alice"')
+      expect(content).to include('  "age": 30')
 
       result = JSON.parse(content, symbolize_names: true)
       expect(result).to eq([{ name: 'Alice', age: 30, position: 1 }])
@@ -114,9 +114,9 @@ RSpec.describe Kimurai::Base::Saver do
 
       result = JSON.parse(File.read(file_path), symbolize_names: true)
       expect(result).to eq([
-        { name: 'Alice', age: 30, position: 1 },
-        { name: 'Bob', age: 25, position: 2 }
-      ])
+                             { name: 'Alice', age: 30, position: 1 },
+                             { name: 'Bob', age: 25, position: 2 }
+                           ])
     end
   end
 
@@ -149,9 +149,9 @@ RSpec.describe Kimurai::Base::Saver do
 
     it 'saves array of items as separate lines' do
       saver.save([
-        { name: 'Alice', age: 30 },
-        { name: 'Bob', age: 25 }
-      ])
+                   { name: 'Alice', age: 30 },
+                   { name: 'Bob', age: 25 }
+                 ])
 
       lines = File.read(file_path).split("\n")
       expect(lines.length).to eq(2)
@@ -175,8 +175,8 @@ RSpec.describe Kimurai::Base::Saver do
       saver.save({ name: 'Alice', age: 30 })
 
       csv = CSV.read(file_path)
-      expect(csv[0]).to eq(['name', 'age', 'position'])
-      expect(csv[1]).to eq(['Alice', '30', '1'])
+      expect(csv[0]).to eq(%w[name age position])
+      expect(csv[1]).to eq(%w[Alice 30 1])
     end
 
     it 'saves multiple items without repeating headers' do
@@ -185,16 +185,16 @@ RSpec.describe Kimurai::Base::Saver do
 
       csv = CSV.read(file_path)
       expect(csv.length).to eq(3) # 1 header + 2 data rows
-      expect(csv[0]).to eq(['name', 'age', 'position'])
-      expect(csv[1]).to eq(['Alice', '30', '1'])
-      expect(csv[2]).to eq(['Bob', '25', '2'])
+      expect(csv[0]).to eq(%w[name age position])
+      expect(csv[1]).to eq(%w[Alice 30 1])
+      expect(csv[2]).to eq(%w[Bob 25 2])
     end
 
     it 'saves array of items' do
       saver.save([
-        { name: 'Alice', age: 30 },
-        { name: 'Bob', age: 25 }
-      ])
+                   { name: 'Alice', age: 30 },
+                   { name: 'Bob', age: 25 }
+                 ])
 
       csv = CSV.read(file_path)
       expect(csv.length).to eq(3)
@@ -213,14 +213,14 @@ RSpec.describe Kimurai::Base::Saver do
       saver.save({ name: 'Alice', age: 30 })
 
       csv = CSV.read(file_path)
-      expect(csv[0]).to eq(['name', 'age'])
-      expect(csv[1]).to eq(['Alice', '30'])
+      expect(csv[0]).to eq(%w[name age])
+      expect(csv[1]).to eq(%w[Alice 30])
     end
 
     it 'appends to existing file when append is true' do
       CSV.open(file_path, 'w', force_quotes: true) do |csv|
-        csv << ['name', 'age', 'position']
-        csv << ['Charlie', '35', '1']
+        csv << %w[name age position]
+        csv << %w[Charlie 35 1]
       end
 
       saver = described_class.new(file_path, format: :csv, append: true)
@@ -228,7 +228,7 @@ RSpec.describe Kimurai::Base::Saver do
 
       csv = CSV.read(file_path)
       expect(csv.length).to eq(3)
-      expect(csv[2]).to eq(['Alice', '30', '1'])
+      expect(csv[2]).to eq(%w[Alice 30 1])
     end
 
     it 'quotes all values' do
@@ -262,16 +262,16 @@ RSpec.describe Kimurai::Base::Saver do
 
     it 'flattens deeply nested hashes' do
       saver.save({
-        user: {
-          profile: {
-            name: 'Alice',
-            age: 30
-          },
-          settings: {
-            theme: 'dark'
-          }
-        }
-      })
+                   user: {
+                     profile: {
+                       name: 'Alice',
+                       age: 30
+                     },
+                     settings: {
+                       theme: 'dark'
+                     }
+                   }
+                 })
 
       csv = CSV.read(file_path)
       expect(csv[0]).to include('user.profile.name', 'user.profile.age', 'user.settings.theme')
@@ -285,9 +285,9 @@ RSpec.describe Kimurai::Base::Saver do
     end
 
     it 'preserves non-hash values' do
-      saver.save({ name: 'Alice', tags: ['ruby', 'rails'], count: 5 })
+      saver.save({ name: 'Alice', tags: %w[ruby rails], count: 5 })
 
-      csv = CSV.read(file_path)
+      CSV.read(file_path)
       content = File.read(file_path)
       expect(content).to include('Alice')
       expect(content).to include('5')

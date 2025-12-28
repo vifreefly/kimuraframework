@@ -29,7 +29,7 @@ module Kimurai
           else
             @index += 1
             item[:position] = @index if position
-            
+
             save_item(item)
           end
         end

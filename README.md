@@ -632,7 +632,7 @@ Supported formats:
 * `:jsonlines` – [JSON Lines](http://jsonlines.org/)
 * `:csv` – CSV
 
-Note: `save_to` requires the data (item) to save to be a `Hash`.
+Note: `save_to` requires the data (item) to save to be a  Hash or Array of Hashes.
 
 By default, `save_to` will add a position key to an item hash. You can disable it like so: `save_to "scraped_products.json", item, format: :json, position: false`
 

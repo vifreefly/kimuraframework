@@ -7,10 +7,11 @@ module Kimurai
       attr_reader :format, :path, :position, :append
 
       def initialize(path, format:, position: true, append: false)
-        raise "SimpleSaver: wrong type of format: #{format}" unless %i[json pretty_json jsonlines csv].include?(format)
+        raise "SimpleSaver: wrong type of format: #{format}" unless %i[json pretty_json compact_json jsonlines csv].include?(format)
 
         @path = path
         @format = format
+        @format = :json if format == :pretty_json # :pretty_json is now an alias for :json
         @position = position
         @index = 0
         @append = append
@@ -41,8 +42,8 @@ module Kimurai
         case format
         when :json
           save_to_json(item)
-        when :pretty_json
-          save_to_pretty_json(item)
+        when :compact_json
+          save_to_compact_json(item)
         when :jsonlines
           save_to_jsonlines(item)
         when :csv
@@ -51,25 +52,25 @@ module Kimurai
       end
 
       def save_to_json(item)
-        data = JSON.generate([item])
-
-        if @index > 1 || append && File.exist?(path)
-          file_content = File.read(path).sub(/\}\]\Z/, "\}\,")
-          File.open(path, 'w') do |f|
-            f.write(file_content + data.sub(/\A\[/, ''))
-          end
-        else
-          File.open(path, 'w') { |f| f.write(data) }
-        end
-      end
-
-      def save_to_pretty_json(item)
         data = JSON.pretty_generate([item])
 
         if @index > 1 || append && File.exist?(path)
           file_content = File.read(path).sub(/\}\n\]\Z/, "\}\,\n")
           File.open(path, 'w') do |f|
             f.write(file_content + data.sub(/\A\[\n/, ''))
+          end
+        else
+          File.open(path, 'w') { |f| f.write(data) }
+        end
+      end
+
+      def save_to_compact_json(item)
+        data = JSON.generate([item])
+
+        if @index > 1 || append && File.exist?(path)
+          file_content = File.read(path).sub(/\}\]\Z/, "\}\,")
+          File.open(path, 'w') do |f|
+            f.write(file_content + data.sub(/\A\[/, ''))
           end
         else
           File.open(path, 'w') { |f| f.write(data) }

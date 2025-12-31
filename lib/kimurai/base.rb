@@ -69,7 +69,7 @@ module Kimurai
     @config = {}
 
     def self.name
-      @name
+      @name || to_s.underscore
     end
 
     def self.engine

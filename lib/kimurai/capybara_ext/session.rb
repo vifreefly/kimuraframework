@@ -10,7 +10,6 @@ module Capybara
     alias original_visit visit
     def visit(visit_uri, delay: config.before_request[:delay], skip_request_options: false, max_retries: 3)
       if spider
-        process_delay(delay) if delay
         retries = 0
         sleep_interval = 0
 
@@ -20,6 +19,9 @@ module Capybara
           spider.class.update(:visits, :requests) if spider.with_info
 
           original_visit(visit_uri)
+
+          logger.info "Browser: finished get request to: #{visit_uri}"
+          process_delay(delay) if delay
         rescue StandardError => e
           if match_error?(e, type: :to_skip)
             logger.error "Browser: skip request error: #{e.inspect}, url: #{visit_uri}"
@@ -40,7 +42,7 @@ module Capybara
             raise e
           end
         else
-          driver.responses += 1 and logger.info "Browser: finished get request to: #{visit_uri}"
+          driver.responses += 1
           spider.class.update(:visits, :responses) if spider.with_info
           driver.visited = true unless driver.visited
           true
@@ -170,7 +172,7 @@ module Capybara
 
     def process_delay(delay)
       interval = (delay.instance_of?(Range) ? rand(delay) : delay)
-      logger.debug "Browser: sleep #{interval.round(2)} #{'second'.pluralize(interval)} before request..."
+      logger.debug "Browser: delay #{interval.round(2)} #{'second'.pluralize(interval)}..."
       sleep interval
     end
 

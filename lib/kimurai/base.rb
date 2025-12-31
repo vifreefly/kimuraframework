@@ -84,11 +84,22 @@ module Kimurai
       @start_urls
     end
 
+    def self.delay
+      @delay ||= superclass.respond_to?(:delay) ? superclass.delay : nil
+    end
+
     def self.config
-      if superclass.equal?(::Object)
-        @config
+      base_config = if superclass.equal?(::Object)
+                      @config
+                    else
+                      superclass.config.deep_merge_excl(@config || {}, DMERGE_EXCLUDE)
+                    end
+
+      # Merge @delay shortcut into config if set
+      if delay
+        base_config.deep_merge_excl({ before_request: { delay: delay } }, DMERGE_EXCLUDE)
       else
-        superclass.config.deep_merge_excl(@config || {}, DMERGE_EXCLUDE)
+        base_config
       end
     end
 
